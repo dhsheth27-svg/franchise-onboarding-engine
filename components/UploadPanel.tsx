@@ -150,12 +150,7 @@ export default function UploadPanel() {
           ))}
         </div>
       )}
-      <p className="px-4 pb-1 pt-2.5 text-center text-xs uppercase tracking-wider text-slate-500">
-        Applications + Territories sheets ·{' '}
-        <a className="text-slate-700 underline-offset-2 transition hover:text-brand-700 hover:underline" href="/api/sample-file">
-          sample as Excel
-        </a>
-      </p>
+      <p className="px-4 pb-1 pt-2.5 text-center text-xs uppercase tracking-wider text-slate-500">Workbook with Applications and Territories sheets</p>
     </div>
   );
 }

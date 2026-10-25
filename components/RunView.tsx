@@ -159,15 +159,11 @@ function RunViewInner({ id }: { id: string }) {
             <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">v{data.version}</span>
             {data.version > 1 && <span className="hidden md:inline"> · {data.label}</span>}
           </div>
-          <SimulateDate asOf={r.asOf} today={data.today} busy={!!busy} onApply={(days) => postEvents([{ type: 'dateAdvance', payload: { days } }], `Moved the date forward ${days} days`)} />
           <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => setShowHistory(true)}>
             History
           </Button>
           <a className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 sm:inline-flex" href={`/api/runs/${id}/export`}>
             Export Excel
-          </a>
-          <a className="hidden rounded-md px-2 py-1.5 text-sm font-medium text-slate-500 hover:bg-slate-100 lg:inline-flex" href={`/api/runs/${id}/export?format=csv`}>
-            CSV
           </a>
           <Button variant="primary" className="xl:hidden" onClick={() => setAskOpen(true)}>
             Ask
@@ -202,9 +198,6 @@ function RunViewInner({ id }: { id: string }) {
             <div className="flex animate-fade-up flex-wrap items-center gap-2 text-xs text-slate-500" style={{ animationDelay: '80ms' }}>
               <span className="rounded-full border border-slate-200 px-3 py-1">
                 v{data.version} {data.version > 1 ? `· ${data.label}` : ''}
-              </span>
-              <span className="rounded-full border border-slate-200 px-3 py-1">
-                {r.decisions.length} decided in {r.durationMs < 1000 ? `${Math.max(1, r.durationMs)} ms` : `${(r.durationMs / 1000).toFixed(1)} s`}
               </span>
             </div>
           </div>
@@ -288,35 +281,6 @@ function RunViewInner({ id }: { id: string }) {
         />
       )}
       {showHistory && <HistoryPanel runId={id} currentId={id} onClose={() => setShowHistory(false)} />}
-    </div>
-  );
-}
-
-function SimulateDate({ asOf, today, busy, onApply }: { asOf: string; today: string; busy: boolean; onApply: (days: number) => void }) {
-  const [value, setValue] = useState(asOf);
-  useEffect(() => {
-    setValue(asOf);
-  }, [asOf]);
-  const days = Math.round((Date.parse(value) - Date.parse(asOf)) / 86400000);
-  return (
-    <div className="flex items-center gap-1.5 text-sm">
-      <label htmlFor="simdate" className="hidden text-slate-500 lg:inline">
-        Simulate date
-      </label>
-      <input
-        id="simdate"
-        type="date"
-        min={asOf}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className="w-[8.25rem] rounded-full border border-slate-300 bg-surface px-3 py-1 text-xs text-slate-800 transition hover:border-slate-400 sm:w-auto sm:text-sm"
-        title={asOf !== today ? `Simulated: real date is ${fmtDate(today)}` : 'Move the date forward to see reservations expire and the waitlist promote'}
-      />
-      {days > 0 && (
-        <Button variant="secondary" disabled={busy} onClick={() => onApply(days)}>
-          +{days}d
-        </Button>
-      )}
     </div>
   );
 }

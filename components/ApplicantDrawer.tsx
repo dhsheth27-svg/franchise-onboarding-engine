@@ -122,22 +122,12 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
               </span>
             )}
             {d.waitlistPosition && <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">Waitlist #{d.waitlistPosition}</span>}
-            {d.estimatedPaybackMonths && (
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600" title="Illustrative: based on the payback assumptions in Rules in use">
-                Payback ~{d.estimatedPaybackMonths} mo
-              </span>
-            )}
           </div>
         </div>
 
         {/* Summary */}
         <div className="px-5 py-4 sm:px-6">
           <p className="text-[15px] leading-relaxed text-slate-800">{d.summary}</p>
-          <div className="mt-2 flex flex-wrap gap-1">
-            {d.reasons.map((r) => (
-              <Tag key={r}>{r}</Tag>
-            ))}
-          </div>
           {d.override && (
             <div className={`mt-3 rounded-md border p-3 text-sm ${d.override.status === 'applied' ? 'border-brand-200 bg-brand-50 text-brand-900' : 'border-rose-200 bg-rose-50 text-rose-900'}`}>
               {d.override.status === 'applied' ? (

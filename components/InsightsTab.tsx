@@ -3,7 +3,7 @@
 import { useMemo, type ReactNode } from 'react';
 import type { Config } from '@/lib/config';
 import type { EngineEvent, RunResult } from '@/lib/engine/types';
-import { computeInsights, monthLabel } from '@/lib/insights';
+import { computeInsights } from '@/lib/insights';
 import { Card, Empty } from './ui';
 
 function Panel({ title, children, note, className = '' }: { title: string; children: ReactNode; note?: string; className?: string }) {
@@ -37,38 +37,14 @@ function Bars({ rows, max, unit = '' }: { rows: { label: ReactNode; n: number; h
   );
 }
 
-function Stat({ value, label, sub }: { value: ReactNode; label: string; sub?: string }) {
-  return (
-    <div className="rounded-2xl border border-slate-200/70 bg-surface/75 shadow-card backdrop-blur-xl px-4 py-3">
-      <div className="text-2xl font-semibold tabular-nums text-slate-900">{value}</div>
-      <div className="text-xs font-medium text-slate-600">{label}</div>
-      {sub && <div className="mt-0.5 text-xs text-slate-400">{sub}</div>}
-    </div>
-  );
-}
-
 const OUTCOME_TITLE = { HOLD: 'Why applications are on hold', WAITLISTED: 'Why qualified applicants are waiting', REJECTED: 'Why applications are rejected' } as const;
 
 export default function InsightsTab({ result, config, events, onOpen }: { result: RunResult; config: Config; events: EngineEvent[]; onOpen: (key: string) => void }) {
   const ins = useMemo(() => computeInsights(result, config, events), [result, config, events]);
-  const langs = ['Kannada', 'English', 'Hindi'];
 
   return (
     <div className="space-y-5">
-      <section aria-label="Impact" className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
-        <Stat value={ins.impact.decided} label="Applications decided" sub={ins.impact.seconds < 1 ? `in ${Math.max(1, Math.round(ins.impact.seconds * 1000))} ms` : `in ${ins.impact.seconds.toFixed(1)} seconds`} />
-        <Stat value={`${ins.impact.holdsWithAsk}/${ins.impact.holds}`} label="Holds with a specific ask" sub="ready to send" />
-        <Stat value={`${ins.impact.slotsFilled}/${ins.impact.slotsAvailable}`} label="Usable slots filled" sub="slots limited by free pins" />
-        <Stat value={ins.impact.withMessage} label="Messages prepared" sub="in each applicant's language" />
-        <Stat value={ins.impact.redirectsOffered} label="Redirects offered" sub="instead of plain rejections" />
-        <Stat value={ins.openings.reduce((n, o) => n + o.n, 0)} label="Expected openings" sub={ins.openings.length ? `${monthLabel(ins.openings[0].month)} onward` : '—'} />
-      </section>
-
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="Funnel" note="How many applications survive each stage.">
-          <Bars rows={ins.funnel.map((f) => ({ label: f.label, n: f.n }))} max={ins.funnel[0].n} />
-        </Panel>
-
         <Panel title="Near-misses and the cheapest fix" note="Not approved today, but one change would get them there.">
           {ins.nearMisses.length ? (
             <ul className="space-y-2 text-sm">
@@ -134,50 +110,6 @@ export default function InsightsTab({ result, config, events, onOpen }: { result
           ) : (
             <p className="text-sm text-slate-600">No contested slot was decided by {config.closeCallMargin.value} points or less.</p>
           )}
-        </Panel>
-
-        <Panel title="Where approvals land" note="Approvals by city.">
-          {ins.concentration.length ? <Bars rows={ins.concentration.map((c) => ({ label: c.city, n: c.n }))} /> : <Empty>No approvals yet.</Empty>}
-          <p className={`mt-3 text-sm ${ins.concentrationWarning ? 'rounded-md bg-amber-50 px-3 py-2 text-amber-950' : 'text-slate-600'}`}>
-            {ins.concentrationWarning ? <>⚠ {ins.concentrationWarning}</> : `No city has more than ${Math.round(config.concentrationWarningShare.value * 100)}% of approvals.`}
-          </p>
-        </Panel>
-
-        <Panel title="Training load" note="Partners finishing training, by month and language (plan trainers accordingly).">
-          {ins.trainingLoad.length ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="text-left text-xs text-slate-500">
-                    <th className="py-1 pr-4 font-medium">Month</th>
-                    {langs.map((l) => (
-                      <th key={l} className="py-1 pr-4 text-right font-medium">
-                        {l}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {ins.trainingLoad.map((t) => (
-                    <tr key={t.month}>
-                      <td className="py-1.5 pr-4 text-slate-800">{monthLabel(t.month)}</td>
-                      {langs.map((l) => (
-                        <td key={l} className="py-1.5 pr-4 text-right tabular-nums text-slate-800">
-                          {t.byLanguage[l] ?? 0}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <Empty>No approved partners in training.</Empty>
-          )}
-        </Panel>
-
-        <Panel title="Opening timeline" note="Earliest realistic opening month for approved partners.">
-          {ins.openings.length ? <Bars rows={ins.openings.map((o) => ({ label: monthLabel(o.month), n: o.n }))} /> : <Empty>No openings planned yet.</Empty>}
         </Panel>
 
         <Panel title="Overrides" note="Human overrides by the engine reason they went against.">

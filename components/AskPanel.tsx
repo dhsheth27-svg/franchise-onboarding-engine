@@ -44,7 +44,6 @@ function suggestions(decisions: Decision[]): string[] {
   if (contested) out.push(`Why did ${contested.competitor!.id} beat ${contested.applicationId}?`);
   out.push('What should the team do today?');
   if (contested) out.push(`${contested.competitor!.id} has withdrawn`);
-  out.push('Move forward 35 days');
   return out;
 }
 

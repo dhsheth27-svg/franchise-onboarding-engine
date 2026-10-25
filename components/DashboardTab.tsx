@@ -72,10 +72,10 @@ export default function DashboardTab({
     <div className="space-y-4">
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Kpi label="Applications decided" value={r.decisions.length} delay={0} sub={`in ${r.durationMs < 1000 ? `${Math.max(1, r.durationMs)} ms` : `${(r.durationMs / 1000).toFixed(1)} s`}`} />
+        <Kpi label="Applications decided" value={r.decisions.length} delay={0} sub="in this run" />
         <Kpi label="Slots filled" value={approved} of={capacity} delay={60} sub="usable slots (free pins)" />
         <Kpi label="Open actions" value={openActions.length} accent delay={120} sub="for the team today" />
-        <Kpi label="Holds with a clear ask" value={ins.impact.holdsWithAsk} of={ins.impact.holds} delay={180} sub="messages ready to send" />
+        <Kpi label="Info requests to send" value={ins.impact.holds} delay={180} sub="holds with a ready message" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
