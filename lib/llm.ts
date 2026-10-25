@@ -43,7 +43,7 @@ async function jsonCall(system: string, user: string, schema: Record<string, unk
 const PATCH_KEYS = ['spaceAvailable', 'spaceSize', 'floor', 'investment', 'experience', 'targetLaunch', 'pin', 'language', 'notes'] as const;
 
 const IntentSchema = z.object({
-  intent: z.enum(['explain', 'compare', 'status', 'whatif', 'update', 'withdraw', 'reservationMissed', 'milestone', 'dateAdvance', 'actions', 'overview', 'unclear']),
+  intent: z.enum(['explain', 'compare', 'status', 'territories', 'whatif', 'update', 'withdraw', 'reservationMissed', 'milestone', 'dateAdvance', 'actions', 'overview', 'unclear']),
   applicationIds: z.array(z.string()),
   territoryId: z.string().nullable(),
   city: z.string().nullable(),
@@ -92,11 +92,13 @@ const INTENT_JSON_SCHEMA = {
 };
 
 const INTENT_SYSTEM = `You convert a franchise expansion team member's message into a structured intent. You never decide outcomes.
-Intents: explain (why an application got its decision), compare (two applications), status (a territory or city), whatif (hypothetical change, nothing saved), update (new real information about an applicant), withdraw, reservationMissed (missed deadline), milestone (e.g. signed the agreement), dateAdvance (move the date forward N days), actions (what the team should do today), overview (overall results), unclear.
-Only fill patch fields the message actually states; leave others null. Investment is in lakh rupees, size in sq ft, experience in years, target launch in months. Use application IDs exactly as written (e.g. APP-007).`;
+Intents: explain (why an application got its decision), compare (two applications), status (one territory or city), territories (which territories still have room / open slots / where new stores can go), whatif (hypothetical change, nothing saved), update (new real information about an applicant), withdraw, reservationMissed (missed deadline), milestone (e.g. signed the agreement), dateAdvance (move the date forward N days), actions (what the team should do today), overview (overall counts and results), unclear.
+Identify applicants from the directory. If the message gives an ID, use it exactly. If it describes someone (by name, city, business), use the ID only when exactly one directory entry clearly matches; if none or several could match, return no IDs and intent "unclear". Never guess.
+Only fill patch fields the message explicitly states; leave every other field null. If a space was found but the message does not say owned or rented, set spaceAvailable to "Rented" (never assume "Owned"). Convert number words ("four hundred") to numbers. Investment is in lakh rupees, size in sq ft, experience in years, target launch in months.`;
 
-export async function parseIntentLLM(message: string, knownIds: string[]): Promise<{ raw: z.infer<typeof IntentSchema> } | null> {
-  const out = await jsonCall(INTENT_SYSTEM, `Known application IDs: ${knownIds.slice(0, 400).join(', ')}\n\nMessage: ${message}`, INTENT_JSON_SCHEMA, 8000, 'followup_intent');
+/** `directory` is one line per applicant: "ID | name | city | business" (used only to resolve who the message is about). */
+export async function parseIntentLLM(message: string, directory: string[]): Promise<{ raw: z.infer<typeof IntentSchema> } | null> {
+  const out = await jsonCall(INTENT_SYSTEM, `Applicant directory (ID | name | city | business):\n${directory.slice(0, 500).join('\n')}\n\nMessage: ${message}`, INTENT_JSON_SCHEMA, 9000, 'followup_intent');
   const parsed = IntentSchema.safeParse(out);
   return parsed.success ? { raw: parsed.data } : null;
 }
@@ -129,6 +131,8 @@ export function llmToIntent(raw: z.infer<typeof IntentSchema>, resolve: (id: str
       return { kind: 'actions' };
     case 'overview':
       return { kind: 'overview' };
+    case 'territories':
+      return { kind: 'territories' };
     default:
       return null;
   }

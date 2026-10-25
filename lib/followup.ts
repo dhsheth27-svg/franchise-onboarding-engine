@@ -121,7 +121,7 @@ export function parseRules(message: string, decisions: Decision[], territories: 
       return { kind: 'clarify', question: `There is no territory TER-${terr[1].padStart(2, '0')} in this run. Territories: ${territories.map((x) => x.id).join(', ')}.` };
     }
     if (city) return { kind: 'status', city };
-    if (/territor|slots? (left|open|free|available|remaining)|open slots?|free (pins?|slots?)|capacity|where can|unfilled|vacan/.test(t)) return { kind: 'territories' };
+    if (/territor|slots? (left|open|free|available|remaining)|open slots?|free (pins?|slots?)|capacity|where can|unfilled|vacan|new stores?|still (open|room)|have room|which (places|areas|cities)/.test(t)) return { kind: 'territories' };
     if (/summary|overview|how many|overall|results|approved|who got|slots/.test(t)) return { kind: 'overview' };
     return {
       kind: 'clarify',

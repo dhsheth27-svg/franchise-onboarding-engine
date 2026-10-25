@@ -58,7 +58,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     let parsedBy: Reply['parsedBy'] = 'rules';
     if (llmEnabled()) {
       const keys = r.decisions.map((d) => d.key);
-      const llm = await parseIntentLLM(message, keys);
+      const directory = r.decisions.map((d) => `${d.key} | ${d.applicantName} | ${d.city ?? '—'} | ${d.application.business || '—'}`);
+      const llm = await parseIntentLLM(message, directory);
       if (llm) {
         intent = llmToIntent(llm.raw, (id) => keys.find((k) => k.toUpperCase() === id.trim().toUpperCase()) ?? null);
         if (intent) parsedBy = 'llm';

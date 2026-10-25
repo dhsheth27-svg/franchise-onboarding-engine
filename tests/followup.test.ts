@@ -88,3 +88,7 @@ describe('phrasings judges are likely to use', () => {
     expect(p('APP-014 has moved to Belagavi').kind).toBe('clarify');
   });
 });
+
+test('"which places can we still put new stores in" lists territories', () => {
+  expect(p('Which places can we still put new stores in?')).toEqual({ kind: 'territories' });
+});
