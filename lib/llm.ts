@@ -181,29 +181,38 @@ const SIGNALS_JSON_SCHEMA = {
 
 const SIGNALS_SYSTEM = `You read franchise applicants' free-text answers and extract signals. Relevance of the business background to running a retail store: high (footwear, apparel, garments, mobile, electronics, accessories, eyewear/optical, grocery/kirana, pharmacy, cosmetics, general retail, franchise owner), medium (restaurant, cafe, salon, distributor, wholesale, sales job), low (IT/office job, student, homemaker, none), unknown (blank or unclear). commitment is partial for part-time, side business, or a hired manager running the store. statedYears = years of shop experience claimed in the text, else null. Return one item per input key.`;
 
-/** Returns LLM signals keyed by application key, or null to use the deterministic extractor. */
+/**
+ * Returns LLM signals keyed by application key (only for the rows the model answered), or null.
+ * Rows are sent in small parallel batches with a short timeout so an upload stays fast; any batch that is
+ * slow or fails simply keeps the deterministic keyword signals for its rows.
+ */
 export async function extractSignalsLLM(rows: { key: string; business: string; notes: string }[], deterministic: Record<string, Signals>): Promise<Record<string, Signals> | null> {
   if (!llmEnabled() || !rows.length || rows.length > 150) return null;
-  const out = await jsonCall(SIGNALS_SYSTEM, JSON.stringify(rows), SIGNALS_JSON_SCHEMA, 20000, 'applicant_signals');
-  const parsed = z.object({ items: z.array(SignalsItem) }).safeParse(out);
-  if (!parsed.success) return null;
+  const withText = rows.filter((r) => (r.business + r.notes).trim());
+  const batches: (typeof withText)[] = [];
+  for (let i = 0; i < withText.length; i += 8) batches.push(withText.slice(i, i + 8));
+  const outs = await Promise.all(batches.map((b) => jsonCall(SIGNALS_SYSTEM, JSON.stringify(b), SIGNALS_JSON_SCHEMA, 6000, 'applicant_signals')));
   const result: Record<string, Signals> = {};
-  for (const it of parsed.data.items) {
-    const base = deterministic[it.key];
-    if (!base) continue;
-    // Deadlines and preferred cities stay deterministic (they are date/config maths, not reading).
-    result[it.key] = {
-      ...base,
-      businessCategory: it.businessCategory,
-      relevance: it.relevance,
-      commitment: it.commitment,
-      hiresManager: it.hiresManager,
-      loanPending: it.loanPending,
-      flexibleOnLocation: it.flexibleOnLocation || base.flexibleOnLocation,
-      sideBusiness: it.sideBusiness,
-      statedYears: it.statedYears ?? undefined,
-      method: 'llm',
-    };
+  for (const out of outs) {
+    const parsed = z.object({ items: z.array(SignalsItem) }).safeParse(out);
+    if (!parsed.success) continue;
+    for (const it of parsed.data.items) {
+      const base = deterministic[it.key];
+      if (!base) continue;
+      // Deadlines and preferred cities stay deterministic (they are date/config maths, not reading).
+      result[it.key] = {
+        ...base,
+        businessCategory: it.businessCategory,
+        relevance: it.relevance,
+        commitment: it.commitment,
+        hiresManager: it.hiresManager,
+        loanPending: it.loanPending,
+        flexibleOnLocation: it.flexibleOnLocation || base.flexibleOnLocation,
+        sideBusiness: it.sideBusiness,
+        statedYears: it.statedYears ?? undefined,
+        method: 'llm',
+      };
+    }
   }
   return Object.keys(result).length ? result : null;
 }
