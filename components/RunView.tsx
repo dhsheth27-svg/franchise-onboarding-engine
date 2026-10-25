@@ -158,6 +158,9 @@ function RunViewInner({ id }: { id: string }) {
           <a className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-stone-700 hover:bg-stone-100 sm:inline-flex" href={`/api/runs/${id}/export`}>
             Export Excel
           </a>
+          <a className="hidden rounded-md px-2 py-1.5 text-sm font-medium text-stone-500 hover:bg-stone-100 lg:inline-flex" href={`/api/runs/${id}/export?format=csv`}>
+            CSV
+          </a>
           <Button variant="primary" className="xl:hidden" onClick={() => setAskOpen(true)}>
             Ask
           </Button>
@@ -205,7 +208,7 @@ function RunViewInner({ id }: { id: string }) {
                 As of <span className="font-medium text-stone-800">{fmtDate(r.asOf)}</span>
               </span>
               <span>
-                {r.decisions.length} decided in {(r.durationMs / 1000).toFixed(2)}s
+                {r.decisions.length} decided in {r.durationMs < 1000 ? `${Math.max(1, r.durationMs)} ms` : `${(r.durationMs / 1000).toFixed(1)} s`}
               </span>
             </div>
           </div>
