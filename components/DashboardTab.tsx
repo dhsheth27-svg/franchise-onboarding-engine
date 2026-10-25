@@ -10,7 +10,7 @@ import { CountUp, GrowBar, OUTCOME_DOT, OUTCOME_LABEL, fmtDate } from './ui';
 function Tile({ title, children, className = '', delay = 0, action }: { title: string; children: ReactNode; className?: string; delay?: number; action?: ReactNode }) {
   return (
     <section
-      className={`group animate-fade-up rounded-3xl border border-slate-200 bg-surface p-5 shadow-card transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lift ${className}`}
+      className={`group animate-fade-up rounded-3xl border border-slate-200 bg-surface/75 p-5 shadow-card backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lift ${className}`}
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -25,7 +25,7 @@ function Tile({ title, children, className = '', delay = 0, action }: { title: s
 function Kpi({ label, value, of, accent, delay, sub }: { label: string; value: number; of?: number; accent?: boolean; delay: number; sub?: string }) {
   return (
     <div
-      className={`animate-fade-up rounded-3xl border p-5 shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-lift ${accent ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-200 bg-surface hover:border-slate-300'}`}
+      className={`animate-fade-up rounded-3xl border p-5 shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-lift ${accent ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-200 bg-surface/75 backdrop-blur-xl hover:border-slate-300'}`}
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className={`text-xs font-semibold uppercase tracking-[0.14em] ${accent ? 'text-white/80' : 'text-slate-500'}`}>{label}</div>

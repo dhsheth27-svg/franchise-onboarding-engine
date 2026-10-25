@@ -144,7 +144,7 @@ function RunViewInner({ id }: { id: string }) {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-surface/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-canvas/60 backdrop-blur-xl">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6">
           <Link href="/" aria-label="Home" className="flex items-center">
             <span className="sm:hidden">
@@ -212,7 +212,7 @@ function RunViewInner({ id }: { id: string }) {
           {params.get('changed') && data.parentRunId && <DiffBanner runId={id} onOpen={(k) => setQuery({ a: k })} onClose={() => setQuery({ changed: null })} />}
 
           {/* Tabs: segmented control */}
-          <nav className="mt-6 flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-slate-200 bg-surface p-1 shadow-card" aria-label="Sections">
+          <nav className="mt-6 flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-slate-200 bg-surface/75 p-1 shadow-card backdrop-blur-xl" aria-label="Sections">
             {TABS.map((t) => (
               <button
                 key={t.id}

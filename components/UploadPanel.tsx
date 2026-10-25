@@ -98,7 +98,7 @@ export default function UploadPanel() {
       </div>
 
       {/* "Search bar" row with the red action button */}
-      <div className="mt-2.5 flex items-center gap-2 rounded-full border border-slate-200 bg-canvas py-1.5 pl-5 pr-1.5 transition focus-within:border-slate-400">
+      <div className="mt-2.5 flex items-center gap-2 rounded-full border border-slate-200 bg-canvas/70 py-1.5 pl-5 pr-1.5 transition focus-within:border-slate-400">
         <button
           type="button"
           onClick={() => mode === 'upload' && !busy && input.current?.click()}

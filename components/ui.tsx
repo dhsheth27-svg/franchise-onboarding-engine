@@ -79,7 +79,7 @@ export function Card({ children, className = '', hover = false, style }: { child
   return (
     <div
       style={style}
-      className={`rounded-3xl border border-slate-200 bg-surface shadow-card ${hover ? 'transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lift' : ''} ${className}`}
+      className={`rounded-3xl border border-slate-200 bg-surface/75 shadow-card backdrop-blur-xl ${hover ? 'transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lift' : ''} ${className}`}
     >
       {children}
     </div>

@@ -114,7 +114,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
   }
 
   const panel = (
-    <div className="flex h-full flex-col bg-surface">
+    <div className="flex h-full flex-col bg-surface/70 backdrop-blur-xl">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <div>
           <h2 className="text-sm font-semibold text-slate-900">Ask or update</h2>

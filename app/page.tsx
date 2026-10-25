@@ -29,9 +29,9 @@ const STATS = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen">
       {/* Nav */}
-      <header className="sticky top-0 z-30 border-b border-slate-200/60 bg-canvas/80 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-slate-200/60 bg-canvas/50 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Logo />
           <nav className="hidden items-center gap-8 text-xs font-medium uppercase tracking-[0.12em] text-slate-600 md:flex">
@@ -78,7 +78,7 @@ export default function Home() {
 
           {/* Product preview */}
           <Reveal delay={340} className="mx-auto mt-14 max-w-5xl">
-            <div className="group relative overflow-hidden rounded-[32px] border border-slate-200 bg-surface p-3 text-left shadow-card transition duration-500 hover:border-slate-300 hover:shadow-lift sm:p-4">
+            <div className="group relative overflow-hidden rounded-[32px] border border-slate-200 bg-surface/75 p-3 text-left shadow-card backdrop-blur-xl transition duration-500 hover:border-slate-300 hover:shadow-lift sm:p-4">
               <div className="flex items-center justify-between px-2 pb-3 pt-1">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
@@ -87,7 +87,7 @@ export default function Home() {
                 </div>
                 <span className="text-xs uppercase tracking-[0.14em] text-slate-500">Decisions · live preview</span>
               </div>
-              <ul className="divide-y divide-slate-200 rounded-3xl border border-slate-200 bg-canvas">
+              <ul className="divide-y divide-slate-200 rounded-3xl border border-slate-200 bg-canvas/60">
                 {PREVIEW.map((p, i) => (
                   <li key={p.id} className="grid animate-fade-up grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3 transition hover:bg-slate-50 sm:grid-cols-[6rem_9rem_12rem_1fr_auto]" style={{ animationDelay: `${500 + i * 90}ms` }}>
                     <span className="font-mono text-[13px] font-semibold text-slate-900">{p.id}</span>
@@ -180,7 +180,7 @@ export default function Home() {
               ['Allocate', 'Rank order, one store per pin, waitlists and redirects'],
               ['Plan', 'Onboarding, reservations, risk, messages and actions'],
             ].map(([t, d], i) => (
-              <li key={t} className="group rounded-3xl border border-slate-200 bg-surface p-5 shadow-card transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lift">
+              <li key={t} className="group rounded-3xl border border-slate-200 bg-surface/75 p-5 shadow-card backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lift">
                 <span className="font-mono text-xs text-slate-500">0{i + 1}</span>
                 <h3 className="mt-6 text-xl font-semibold uppercase tracking-tight text-slate-900 transition group-hover:text-brand-700">{t}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600">{d}</p>

@@ -16,10 +16,10 @@ const config: Config = {
       colors: {
         // Neutral (inverted): 50 = darkest panel, 900 = primary text.
         slate: {
-          50: '#0C0C0E',
-          100: '#151518',
-          200: '#25252A',
-          300: '#36363D',
+          50: '#121433',
+          100: '#1A1D40',
+          200: '#2A2E58',
+          300: '#3B4073',
           400: '#70707B',
           500: '#9A9AA4',
           600: '#B8B8C1',
@@ -49,8 +49,8 @@ const config: Config = {
           800: '#C2B4FF',
           900: '#DFD7FF',
         },
-        surface: '#0F0F11',
-        canvas: '#060606',
+        surface: '#14163A',
+        canvas: '#0B0C24',
         ink: '#FAFAFA',
       },
       fontFamily: {
@@ -69,6 +69,11 @@ const config: Config = {
         'grow-x': { from: { transform: 'scaleX(0)' }, to: { transform: 'scaleX(1)' } },
         shimmer: { '0%': { backgroundPosition: '-400px 0' }, '100%': { backgroundPosition: '400px 0' } },
         'pulse-dot': { '0%,100%': { opacity: '1' }, '50%': { opacity: '0.35' } },
+        drift: {
+          '0%,100%': { transform: 'translate3d(0,0,0) scale(1)' },
+          '33%': { transform: 'translate3d(6%,4%,0) scale(1.08)' },
+          '66%': { transform: 'translate3d(-5%,6%,0) scale(0.95)' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.55s cubic-bezier(0.22,1,0.36,1) both',
@@ -78,6 +83,8 @@ const config: Config = {
         'grow-x': 'grow-x 0.9s cubic-bezier(0.22,1,0.36,1) both',
         shimmer: 'shimmer 1.4s linear infinite',
         'pulse-dot': 'pulse-dot 1.6s ease-in-out infinite',
+        drift: 'drift 26s ease-in-out infinite',
+        'drift-slow': 'drift 38s ease-in-out infinite reverse',
       },
     },
   },

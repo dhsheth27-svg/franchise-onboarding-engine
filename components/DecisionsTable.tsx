@@ -113,7 +113,7 @@ export default function DecisionsTable({
       {rows.length === 0 ? (
         <Empty>No applications match these filters.</Empty>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200/70 bg-surface shadow-card">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200/70 bg-surface/75 shadow-card backdrop-blur-xl">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50/70">
               <tr>
