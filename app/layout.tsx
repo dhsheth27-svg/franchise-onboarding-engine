@@ -5,7 +5,7 @@ import './globals.css';
 const sans = Inter_Tight({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
 
 export const metadata: Metadata = {
-  title: 'FranchiseFlow · Franchise Onboarding Engine',
+  title: 'Opsmith · Franchise Partner Onboarding',
   description: 'Screens franchise applications, allocates territory slots and plans onboarding, with every decision explained.',
 };
 

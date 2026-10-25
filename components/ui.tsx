@@ -141,10 +141,10 @@ export function Logo({ compact = false }: { compact?: boolean }) {
     <span className="inline-flex items-center gap-2">
       <svg aria-hidden viewBox="0 0 32 32" className="h-7 w-7 flex-none">
         <rect width="32" height="32" rx="10" fill="#7C5CFF" />
-        <path d="M9 22V10h12M9 16h8" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        <circle cx="23" cy="22" r="2.4" fill="white" />
+        <circle cx="16" cy="16" r="7.2" stroke="white" strokeWidth="3.2" fill="none" />
+        <circle cx="23.2" cy="8.8" r="2.4" fill="white" />
       </svg>
-      {!compact && <span className="text-[16px] font-bold uppercase tracking-tight text-ink">Franchise<span className="text-slate-500">Flow</span></span>}
+      {!compact && <span className="text-[16px] font-bold uppercase tracking-tight text-ink">Op<span className="text-slate-500">smith</span></span>}
     </span>
   );
 }

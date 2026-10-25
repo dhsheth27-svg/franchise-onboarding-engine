@@ -1,4 +1,4 @@
-# Franchise Partner Onboarding Engine
+# Opsmith: franchise partner onboarding engine
 
 Ops Hackathon, Case 1. A public, login-free web app that takes a franchise brand's **Applications** and
 **Territories** (Excel), decides what should happen to every applicant, explains why in plain language,

@@ -1,4 +1,4 @@
-# Franchise Onboarding Engine (Ops Hackathon, Case 1)
+# Opsmith: franchise partner onboarding engine (Ops Hackathon, Case 1)
 
 Public, login-free web app: upload Applications + Territories (Excel) -> an explained decision for every
 franchise applicant, onboarding plans, a daily action queue, and a follow-up chat. Full brief: `SPEC.md`.

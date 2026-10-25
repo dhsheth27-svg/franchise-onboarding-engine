@@ -41,7 +41,7 @@ export function messageState(d: Decision): MessageState {
   return d.message.sent.current ? 'sent' : 'stale';
 }
 
-const KEY = 'ff-sender-name';
+const KEY = 'opsmith-sender-name';
 export function getSender(): string {
   try {
     return localStorage.getItem(KEY) ?? '';
