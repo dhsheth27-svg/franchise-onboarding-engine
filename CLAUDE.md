@@ -7,7 +7,7 @@ Judgement calls: `DECISIONS.md`.
 ## Stack
 Next.js 14 (App Router) + TypeScript + Tailwind, Vercel. Neon Postgres via `@neondatabase/serverless`
 (plain SQL, `db/schema.sql`; in-memory fallback when `DATABASE_URL` is unset). SheetJS (`xlsx`), zod,
-vitest. Optional Anthropic API (`ANTHROPIC_API_KEY`) only for text extraction, intent parsing and
+vitest. Optional OpenAI API (`OPENAI_API_KEY`) only for text extraction, intent parsing and
 wording; the app must work fully without it.
 
 ## Commands

@@ -45,7 +45,7 @@ ground-floor space"), re-deciding and showing what changed.
 
 Every follow-up, override, checklist change or date move is stored as an **event**, so a run is fully replayable; each change saves a **new run version** with a before/after diff across all applicants.
 
-The optional LLM (Anthropic API) only reads free text and parses follow-up messages into a validated structure. **It never decides an outcome**, and the app works fully without it (keyword/regex rules).
+The optional LLM (OpenAI API) only reads free text and parses follow-up messages into a validated structure. **It never decides an outcome**, and the app works fully without it (keyword/regex rules).
 
 ## Assumptions (all in `lib/config.ts`, shown in the app under "Rules in use")
 
@@ -94,8 +94,8 @@ Environment variables (`.env.local`):
 | Variable | Required | Purpose |
 |---|---|---|
 | `DATABASE_URL` | No | Neon Postgres connection string. Without it runs are kept in memory (fine locally; on serverless hosts runs may disappear between requests). The schema (`db/schema.sql`) is applied automatically on first use. |
-| `ANTHROPIC_API_KEY` | No | Enables AI reading of free text and follow-up messages. Every call has a timeout and falls back to rules. |
-| `ANTHROPIC_MODEL` | No | Defaults to `claude-opus-5-5`. |
+| `OPENAI_API_KEY` | No | Enables AI reading of free text and follow-up messages (structured JSON output, validated). Every call has a timeout and falls back to rules. |
+| `OPENAI_MODEL` | No | Defaults to `gpt-4o-mini`. |
 
 ## Input format
 

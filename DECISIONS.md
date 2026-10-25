@@ -53,3 +53,7 @@ Judgement calls made where the spec was ambiguous. Each is the simplest reasonab
 19. **Follow-up wording.** "APP-x confirmed the store is in <city>" updates the city when it matches the pin (clearing
     a pin/city mismatch). "Can APP-x open in <city> instead?" is a what-if on the first free pin in that city, assuming
     a new space is needed there. "APP-x has moved to <city>" without a pin asks which pin, rather than guessing.
+20. **AI provider.** The spec names the Anthropic API for the optional AI layer; at the team's request it uses the
+    OpenAI API instead (`OPENAI_API_KEY`, model `gpt-4o-mini` by default, strict JSON-schema output validated with zod).
+    Its role is unchanged: it only reads free text and parses follow-up messages; it never decides an outcome, and any
+    failure falls back to the keyword rules.

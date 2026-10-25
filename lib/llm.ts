@@ -1,35 +1,38 @@
-// Optional LLM helpers. Used only when ANTHROPIC_API_KEY is set; every call has a short timeout
+// Optional LLM helpers (OpenAI). Used only when OPENAI_API_KEY is set; every call has a short timeout
 // and any failure (network, refusal, invalid JSON, schema mismatch) falls back to the rules.
 // The model only parses text into structured data. It never decides an outcome.
 
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { z } from 'zod';
 import type { Signals } from './engine/types';
 import type { Intent, Patch } from './followup';
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-5-5';
+const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
-export const llmEnabled = () => !!process.env.ANTHROPIC_API_KEY;
+export const llmEnabled = () => !!process.env.OPENAI_API_KEY;
 
 function client(timeoutMs: number) {
-  return new Anthropic({ timeout: timeoutMs, maxRetries: 0 });
+  return new OpenAI({ timeout: timeoutMs, maxRetries: 0 });
 }
 
-async function jsonCall(system: string, user: string, schema: Record<string, unknown>, timeoutMs: number): Promise<unknown | null> {
+/** One structured-output call: the response must match the JSON schema (strict mode), else null. */
+async function jsonCall(system: string, user: string, schema: Record<string, unknown>, timeoutMs: number, name: string): Promise<unknown | null> {
   if (!llmEnabled()) return null;
   try {
-    const res = await client(timeoutMs).messages.create({
+    const res = await client(timeoutMs).chat.completions.create({
       model: MODEL,
-      max_tokens: 4000,
-      system,
-      output_config: { effort: 'low', format: { type: 'json_schema', schema } },
-      messages: [{ role: 'user', content: user }],
+      temperature: 0,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+      response_format: { type: 'json_schema', json_schema: { name, strict: true, schema } },
     });
-    if (res.stop_reason === 'refusal' || res.stop_reason === 'max_tokens') return null;
-    const text = res.content.map((b) => (b.type === 'text' ? b.text : '')).join('');
-    return JSON.parse(text);
+    const choice = res.choices[0];
+    if (!choice || choice.message.refusal || choice.finish_reason !== 'stop' || !choice.message.content) return null;
+    return JSON.parse(choice.message.content);
   } catch (e) {
-    if (e instanceof Anthropic.APIError) console.warn(`LLM call failed (${e.status}); using rules.`);
+    if (e instanceof OpenAI.APIError) console.warn(`LLM call failed (${e.status}); using rules.`);
     else console.warn('LLM call failed; using rules.', e instanceof Error ? e.message : e);
     return null;
   }
@@ -93,7 +96,7 @@ Intents: explain (why an application got its decision), compare (two application
 Only fill patch fields the message actually states; leave others null. Investment is in lakh rupees, size in sq ft, experience in years, target launch in months. Use application IDs exactly as written (e.g. APP-007).`;
 
 export async function parseIntentLLM(message: string, knownIds: string[]): Promise<{ raw: z.infer<typeof IntentSchema> } | null> {
-  const out = await jsonCall(INTENT_SYSTEM, `Known application IDs: ${knownIds.slice(0, 400).join(', ')}\n\nMessage: ${message}`, INTENT_JSON_SCHEMA, 8000);
+  const out = await jsonCall(INTENT_SYSTEM, `Known application IDs: ${knownIds.slice(0, 400).join(', ')}\n\nMessage: ${message}`, INTENT_JSON_SCHEMA, 8000, 'followup_intent');
   const parsed = IntentSchema.safeParse(out);
   return parsed.success ? { raw: parsed.data } : null;
 }
@@ -177,7 +180,7 @@ const SIGNALS_SYSTEM = `You read franchise applicants' free-text answers and ext
 /** Returns LLM signals keyed by application key, or null to use the deterministic extractor. */
 export async function extractSignalsLLM(rows: { key: string; business: string; notes: string }[], deterministic: Record<string, Signals>): Promise<Record<string, Signals> | null> {
   if (!llmEnabled() || !rows.length || rows.length > 150) return null;
-  const out = await jsonCall(SIGNALS_SYSTEM, JSON.stringify(rows), SIGNALS_JSON_SCHEMA, 20000);
+  const out = await jsonCall(SIGNALS_SYSTEM, JSON.stringify(rows), SIGNALS_JSON_SCHEMA, 20000, 'applicant_signals');
   const parsed = z.object({ items: z.array(SignalsItem) }).safeParse(out);
   if (!parsed.success) return null;
   const result: Record<string, Signals> = {};
