@@ -34,7 +34,7 @@ export default function Home() {
       <header className="sticky top-0 z-30 border-b border-slate-200/60 bg-canvas/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Logo />
-          <nav className="hidden items-center gap-8 text-[11px] font-medium uppercase tracking-[0.12em] text-slate-600 md:flex">
+          <nav className="hidden items-center gap-8 text-xs font-medium uppercase tracking-[0.12em] text-slate-600 md:flex">
             {[
               ['#how', 'How it works'],
               ['#services', 'What you get'],
@@ -46,7 +46,7 @@ export default function Home() {
               </a>
             ))}
           </nav>
-          <a href="#start" className="rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-900 ring-1 ring-slate-400 transition duration-200 hover:bg-[#F4F4F6] hover:text-black hover:ring-[#F4F4F6]">
+          <a href="#start" className="rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-900 ring-1 ring-slate-400 transition duration-200 hover:bg-[#F4F4F6] hover:text-black hover:ring-[#F4F4F6]">
             Get started
           </a>
         </div>
@@ -85,7 +85,7 @@ export default function Home() {
                   <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
                   <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
                 </div>
-                <span className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Decisions · live preview</span>
+                <span className="text-xs uppercase tracking-[0.14em] text-slate-500">Decisions · live preview</span>
               </div>
               <ul className="divide-y divide-slate-200 rounded-3xl border border-slate-200 bg-canvas">
                 {PREVIEW.map((p, i) => (
@@ -117,7 +117,7 @@ export default function Home() {
                   <div className="text-4xl font-semibold italic tracking-tight text-ink">
                     <CountUp value={s.n} suffix={<span className="text-brand-600">+</span>} />
                   </div>
-                  <div className="mt-1 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-500">{s.label}</div>
+                  <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -148,7 +148,7 @@ export default function Home() {
                   {s.icon}
                 </span>
                 <h3 className="text-lg font-semibold uppercase leading-tight tracking-tight text-slate-900 sm:text-xl">
-                  {s.lead} <span className="text-slate-400 transition group-hover:text-slate-600">{s.rest}</span>
+                  {s.lead} <span className="text-slate-500 transition group-hover:text-slate-700">{s.rest}</span>
                 </h3>
                 <p className="col-span-3 text-sm text-slate-600 sm:col-span-1">{s.text}</p>
                 <span className="hidden h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-slate-600 transition duration-300 group-hover:translate-x-1 group-hover:border-brand-600 group-hover:bg-brand-600 group-hover:text-white sm:inline-flex">

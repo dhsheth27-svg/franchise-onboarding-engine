@@ -142,7 +142,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
             </div>
           ) : (
             <div key={i} className={`mr-2 rounded-lg border px-3 py-2 text-sm ${m.kind === 'error' ? 'border-rose-200 bg-rose-50 text-rose-900' : m.kind === 'update' ? 'border-brand-200 bg-brand-50/50 text-slate-800' : 'border-slate-200 bg-slate-50 text-slate-800'}`}>
-              {m.kind === 'update' && <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-brand-700">Update saved as a new version</div>}
+              {m.kind === 'update' && <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-brand-700">Update saved as a new version</div>}
               <div className="whitespace-pre-wrap leading-relaxed">{linkify(m.text, keys, onOpen)}</div>
               {m.diff && m.diff.length > 0 && m.kind === 'answer' && (
                 <details className="mt-2">
@@ -161,7 +161,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
                   ))}
                 </div>
               )}
-              {m.parsedBy === 'llm' && <div className="mt-1 text-[10px] text-slate-400">Message understood with AI; answer built from the engine&apos;s trace.</div>}
+              {m.parsedBy === 'llm' && <div className="mt-1 text-[11px] text-slate-400">Message understood with AI; answer built from the engine&apos;s trace.</div>}
             </div>
           ),
         )}

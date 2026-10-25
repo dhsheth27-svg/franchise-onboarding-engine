@@ -14,7 +14,7 @@ function Tile({ title, children, className = '', delay = 0, action }: { title: s
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</h3>
         {action}
       </div>
       {children}
@@ -28,7 +28,7 @@ function Kpi({ label, value, of, accent, delay, sub }: { label: string; value: n
       className={`animate-fade-up rounded-3xl border p-5 shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-lift ${accent ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-200 bg-surface hover:border-slate-300'}`}
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${accent ? 'text-white/80' : 'text-slate-500'}`}>{label}</div>
+      <div className={`text-xs font-semibold uppercase tracking-[0.14em] ${accent ? 'text-white/80' : 'text-slate-500'}`}>{label}</div>
       <div className="mt-3 flex items-baseline gap-1.5">
         <span className={`text-4xl font-semibold italic tracking-tight sm:text-5xl ${accent ? 'text-white' : 'text-ink'}`}>
           <CountUp value={value} />
@@ -102,7 +102,7 @@ export default function DashboardTab({
                     {OUTCOME_LABEL[o]}
                   </div>
                   <div className="mt-1 text-2xl font-semibold tabular-nums text-ink">{r.counts[o]}</div>
-                  <div className="text-[11px] text-slate-500">{Math.round((r.counts[o] / total) * 100)}%</div>
+                  <div className="text-xs text-slate-500">{Math.round((r.counts[o] / total) * 100)}%</div>
                 </button>
               </li>
             ))}
@@ -131,19 +131,19 @@ export default function DashboardTab({
               <li key={t.id} className="grid grid-cols-[5.5rem_1fr_auto] items-center gap-3 rounded-xl px-1 py-0.5 transition hover:bg-slate-100" title={`${t.id}: ${t.approved.length} approved of ${t.realCapacity} usable slots; ${t.waitlisted.length} waitlisted`}>
                 <div>
                   <div className="text-sm font-medium text-slate-900">{t.id}</div>
-                  <div className="text-[11px] text-slate-500">
+                  <div className="text-xs text-slate-500">
                     {t.city} · {t.priority}
                   </div>
                 </div>
                 <GrowBar pct={t.realCapacity ? (t.approved.length / t.realCapacity) * 100 : 0} className={t.priority === 'High' && t.unfilled > 0 ? 'bg-brand-600' : 'bg-slate-600'} delay={400 + i * 60} height="h-2.5" />
                 <div className="w-24 text-right text-xs tabular-nums text-slate-600">
                   <span className="text-sm text-slate-900">{t.approved.length}</span> / {t.realCapacity}
-                  {t.waitlisted.length > 0 && <span className="block text-[11px] text-slate-500">+{t.waitlisted.length} waiting</span>}
+                  {t.waitlisted.length > 0 && <span className="block text-xs text-slate-500">+{t.waitlisted.length} waiting</span>}
                 </div>
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-[11px] text-slate-500">Red bars: high-priority territories that still have empty slots.</p>
+          <p className="mt-3 text-xs text-slate-500">Violet bars: high-priority territories that still have empty slots.</p>
         </Tile>
 
         {/* Top actions */}
@@ -181,7 +181,7 @@ export default function DashboardTab({
                 <div key={o.month} className="flex w-full max-w-[72px] flex-1 flex-col items-center gap-1.5" title={`${monthLabel(o.month)}: ${o.n}`}>
                   <span className="text-xs tabular-nums text-slate-700">{o.n}</span>
                   <span className="w-full animate-fade-up rounded-xl bg-brand-600 transition hover:bg-brand-500" style={{ height: `${(o.n / maxOpen) * 96}px`, animationDelay: `${520 + i * 80}ms` }} />
-                  <span className="text-[10px] uppercase tracking-wide text-slate-500">{monthLabel(o.month).split(' ')[0]}</span>
+                  <span className="text-[11px] uppercase tracking-wide text-slate-500">{monthLabel(o.month).split(' ')[0]}</span>
                 </div>
               ))}
             </div>
@@ -203,7 +203,7 @@ export default function DashboardTab({
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-[11px] text-slate-500">Trainers needed per language for approved partners.</p>
+          <p className="mt-3 text-xs text-slate-500">Trainers needed per language for approved partners.</p>
         </Tile>
 
         {/* Risk */}
@@ -214,7 +214,7 @@ export default function DashboardTab({
                 <div className={`text-2xl font-semibold tabular-nums ${lvl === 'High' ? 'text-rose-800' : lvl === 'Medium' ? 'text-amber-800' : 'text-slate-900'}`}>
                   <CountUp value={risks[lvl]} />
                 </div>
-                <div className="text-[11px] uppercase tracking-wide text-slate-500">{lvl}</div>
+                <div className="text-xs uppercase tracking-wide text-slate-500">{lvl}</div>
               </div>
             ))}
           </div>

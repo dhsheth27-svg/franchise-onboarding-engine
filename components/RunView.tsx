@@ -192,11 +192,11 @@ function RunViewInner({ id }: { id: string }) {
           {/* Title */}
           <div className="flex flex-wrap items-end justify-between gap-4 pt-4">
             <div className="animate-fade-up">
-              <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">
+              <div className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">
                 {data.source ?? data.label} · as of {fmtDate(r.asOf)}
               </div>
               <h1 className="mt-2 text-3xl font-bold uppercase leading-none tracking-tight text-ink sm:text-4xl">
-                Expansion <span className="text-slate-400">control room</span>
+                Expansion <span className="text-slate-500">control room</span>
               </h1>
             </div>
             <div className="flex animate-fade-up flex-wrap items-center gap-2 text-xs text-slate-500" style={{ animationDelay: '80ms' }}>

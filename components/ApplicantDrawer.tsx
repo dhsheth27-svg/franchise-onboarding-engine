@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { ChecklistStatus, Decision, PlanStep, TraceStep } from '@/lib/engine/types';
-import { Button, ConfidenceLabel, fmtDate, OUTCOME_LABEL, OutcomeChip, RiskLabel, Section, Tag } from './ui';
+import { Button, Collapsible, ConfidenceLabel, fmtDate, OUTCOME_LABEL, OutcomeChip, RiskLabel, Section, Tag } from './ui';
 
 export interface DrawerActions {
   onClose: () => void;
@@ -24,7 +24,7 @@ const RESULT_ICON: Record<TraceStep['result'], { sym: string; cls: string; label
 function ResultIcon({ r }: { r: TraceStep['result'] }) {
   const x = RESULT_ICON[r];
   return (
-    <span title={x.label} aria-label={x.label} className={`mt-0.5 inline-flex h-5 w-5 flex-none items-center justify-center rounded-full text-[11px] font-bold ${x.cls}`}>
+    <span title={x.label} aria-label={x.label} className={`mt-0.5 inline-flex h-5 w-5 flex-none items-center justify-center rounded-full text-xs font-bold ${x.cls}`}>
       {x.sym}
     </span>
   );
@@ -47,7 +47,6 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
   const panel = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
-  const [showTrace, setShowTrace] = useState(false);
 
   useEffect(() => {
     panel.current?.focus();
@@ -98,44 +97,42 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
               </Button>
             </div>
           </div>
+          <p className="mt-2 text-sm font-medium text-slate-900">{d.oneLine}</p>
+          <div className="mt-2.5 flex flex-wrap gap-1.5 text-xs">
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600">
+              Score <span className="font-semibold tabular-nums text-slate-900">{d.score === null ? '—' : d.score.toFixed(1)}</span>
+              {d.score !== null && d.provisionalScore && ' (provisional)'}
+            </span>
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600">
+              Confidence <ConfidenceLabel value={d.confidence} />
+            </span>
+            {d.risk && (
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600">
+                Risk <RiskLabel level={d.risk.level} />
+              </span>
+            )}
+            {d.slotRank && (
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">
+                Slot #{d.slotRank} of {d.territorySlots}
+              </span>
+            )}
+            {d.provisionalRank && (
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">
+                Would rank #{d.provisionalRank} of {d.territorySlots}
+              </span>
+            )}
+            {d.waitlistPosition && <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">Waitlist #{d.waitlistPosition}</span>}
+            {d.estimatedPaybackMonths && (
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600" title="Illustrative: based on the payback assumptions in Rules in use">
+                Payback ~{d.estimatedPaybackMonths} mo
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Summary */}
         <div className="px-5 py-4 sm:px-6">
           <p className="text-[15px] leading-relaxed text-slate-800">{d.summary}</p>
-          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-            <span>
-              <span className="text-slate-500">Score </span>
-              <span className="font-semibold tabular-nums text-slate-900">{d.score === null ? '—' : d.score.toFixed(1)}</span>
-              {d.score !== null && d.provisionalScore && <span className="text-slate-500"> (provisional)</span>}
-            </span>
-            <span>
-              <span className="text-slate-500">Confidence </span>
-              <ConfidenceLabel value={d.confidence} />
-            </span>
-            {d.risk && (
-              <span>
-                <span className="text-slate-500">Drop-off risk </span>
-                <RiskLabel level={d.risk.level} />
-              </span>
-            )}
-            {d.slotRank && (
-              <span className="text-slate-600">
-                Slot #{d.slotRank} of {d.territorySlots}
-              </span>
-            )}
-            {d.provisionalRank && (
-              <span className="text-slate-600">
-                Would rank #{d.provisionalRank} of {d.territorySlots} slots
-              </span>
-            )}
-            {d.waitlistPosition && <span className="text-slate-600">Waitlist #{d.waitlistPosition}</span>}
-            {d.estimatedPaybackMonths && (
-              <span className="text-slate-600" title="Illustrative: based on the payback assumptions in Rules in use">
-                Est. payback ~{d.estimatedPaybackMonths} months
-              </span>
-            )}
-          </div>
           <div className="mt-2 flex flex-wrap gap-1">
             {d.reasons.map((r) => (
               <Tag key={r}>{r}</Tag>
@@ -183,6 +180,34 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
           </Section>
         )}
 
+        {/* Message */}
+        {d.message.text && (
+          <Section
+            title={`Message to applicant · ${showEnglish ? 'English' : d.message.language}`}
+            right={
+              <div className="flex gap-1.5">
+                {d.message.language !== 'English' && (
+                  <Button variant="ghost" className="!py-0.5 text-xs" onClick={() => setShowEnglish((v) => !v)}>
+                    {showEnglish ? `Show ${d.message.language}` : 'Show English'}
+                  </Button>
+                )}
+                <Button
+                  variant="secondary"
+                  className="!py-0.5 text-xs"
+                  onClick={() => {
+                    navigator.clipboard?.writeText(msg).then(() => setCopied(true));
+                  }}
+                >
+                  {copied ? 'Copied' : 'Copy'}
+                </Button>
+              </div>
+            }
+          >
+            <pre className="whitespace-pre-wrap rounded-md bg-slate-50 p-3 font-sans text-sm leading-relaxed text-slate-800">{msg}</pre>
+            {d.message.language !== 'English' && <p className="mt-1.5 text-xs text-slate-500">Kannada and Hindi templates should be reviewed by a native speaker.</p>}
+          </Section>
+        )}
+
         {/* Conditions and reservation */}
         {(d.conditions.length > 0 || d.reservation) && (
           <Section title="Reservation and conditions">
@@ -221,7 +246,7 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
 
         {/* Risk */}
         {d.risk && d.risk.reasons.length > 0 && (
-          <Section title={`Drop-off risk: ${d.risk.level}`}>
+          <Collapsible title="Drop-off risk" summary={`${d.risk.level} · ${d.risk.reasons[0]}`}>
             <ul className="list-disc space-y-1 pl-5 text-sm text-slate-700">
               {d.risk.reasons.map((r) => (
                 <li key={r}>{r}</li>
@@ -233,80 +258,12 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
                 {d.risk.actions.join('; ')}.
               </p>
             )}
-          </Section>
-        )}
-
-        {/* Score */}
-        {p && (
-          <Section title={`Score ${d.score?.toFixed(1)} / 100${d.provisionalScore ? ' (provisional)' : ''}`}>
-            {d.scoreNote && <p className="mb-2 text-xs text-slate-500">{d.scoreNote}</p>}
-            <div className="space-y-2.5">
-              {[p.financial, p.operator, p.site, p.launch, p.territory].map((x) => (
-                <div key={x.key}>
-                  <div className="flex items-baseline justify-between text-sm">
-                    <span className="font-medium text-slate-800">{x.label}</span>
-                    <span className="tabular-nums text-slate-600">
-                      {x.points.toFixed(1)} <span className="text-slate-400">/ {x.weight}</span>
-                    </span>
-                  </div>
-                  <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100" role="img" aria-label={`${x.label}: ${x.raw} out of 100`}>
-                    <div className={`h-full rounded-full ${x.raw >= 70 ? 'bg-brand-600' : x.raw >= 45 ? 'bg-brand-400' : 'bg-slate-400'}`} style={{ width: `${x.raw}%` }} />
-                  </div>
-                  <p className="mt-1 text-xs text-slate-500">{x.explanation}</p>
-                </div>
-              ))}
-              <div className="flex items-baseline justify-between border-t border-slate-100 pt-2 text-sm">
-                <span className="font-medium text-slate-800">Cannibalisation deduction</span>
-                <span className="tabular-nums text-rose-700">−{p.cannibalisationDeduction.points.toFixed(1)}</span>
-              </div>
-              <p className="text-xs text-slate-500">{p.cannibalisationDeduction.explanation}</p>
-            </div>
-          </Section>
-        )}
-
-        {/* Gates */}
-        <Section title="Hard gates">
-          <ul className="space-y-1.5">
-            {gates.map((g) => (
-              <li key={g.check} className="flex gap-2.5 text-sm">
-                <ResultIcon r={g.result} />
-                <div>
-                  <span className="font-medium text-slate-800">{g.check.replace(/^G\d /, '')}</span>
-                  <span className="text-slate-600"> — {g.sentence}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Section>
-
-        {/* Flags */}
-        {d.flags.length > 0 && (
-          <Section title="Data checks">
-            <ul className="space-y-1.5">
-              {d.flags.map((f, i) => (
-                <li key={`${f.code}${i}`} className="flex gap-2.5 text-sm">
-                  <span
-                    className={`mt-0.5 flex-none rounded px-1.5 py-0.5 text-[10px] font-semibold ${f.severity === 'BLOCKING' ? 'bg-rose-100 text-rose-800' : f.severity === 'WARNING' ? 'bg-amber-100 text-amber-900' : 'bg-slate-100 text-slate-600'}`}
-                  >
-                    {f.severity === 'BLOCKING' ? 'Blocking' : f.severity === 'WARNING' ? 'Warning' : 'Info'}
-                  </span>
-                  <span className="text-slate-700">{f.message}</span>
-                </li>
-              ))}
-            </ul>
-            {d.cleaning.length > 0 && (
-              <p className="mt-2 text-xs text-slate-500">Cleaned: {d.cleaning.map((c) => c.note).join('; ')}.</p>
-            )}
-            <p className="mt-1 text-xs text-slate-500">
-              Free text read {d.signals.method === 'llm' ? 'by AI (validated)' : 'by keyword rules'}: background &ldquo;{d.signals.businessCategory}&rdquo; ({d.signals.relevance} relevance), commitment {d.signals.commitment}
-              {d.signals.flexibleOnLocation ? ', flexible on location' : ''}.
-            </p>
-          </Section>
+          </Collapsible>
         )}
 
         {/* Onboarding */}
         {d.onboarding && (
-          <Section title="Onboarding plan">
+          <Collapsible title="Onboarding plan" summary={`${d.onboarding.trainingTrack} training · opens ${fmtDate(d.onboarding.earliestOpening)}`}>
             <div className="mb-3 grid gap-2 text-sm sm:grid-cols-3">
               <div className="rounded-md bg-slate-50 p-2.5">
                 <div className="text-xs text-slate-500">Training</div>
@@ -358,11 +315,11 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
                 </li>
               ))}
             </ol>
-          </Section>
+          </Collapsible>
         )}
 
         {d.documents && d.documents.length > 0 && (
-          <Section title="Documents (typical requirements, to be confirmed by the brand's legal team)">
+          <Collapsible title="Documents" summary={`${d.documents.filter((x) => x.status === 'Done').length}/${d.documents.length} received`}>
             <ul className="grid gap-1.5 sm:grid-cols-2">
               {d.documents.map((doc) => (
                 <li key={doc.id} className="flex items-center justify-between gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-sm">
@@ -371,11 +328,11 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
                 </li>
               ))}
             </ul>
-          </Section>
+          </Collapsible>
         )}
 
         {d.readiness && (
-          <Section title={`Readiness to open: ${d.readiness.percent}%`}>
+          <Collapsible title="Readiness to open" summary={`${d.readiness.percent}%`}>
             <div className="mb-2 h-2 overflow-hidden rounded-full bg-slate-100">
               <div className="h-full rounded-full bg-emerald-600" style={{ width: `${d.readiness.percent}%` }} />
             </div>
@@ -388,67 +345,101 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
               ))}
             </ul>
             <p className="mt-2 text-xs text-slate-500">{d.readiness.readyToOpen ? 'Ready to open.' : 'The opening stage cannot be marked done until every item is done.'}</p>
-          </Section>
+          </Collapsible>
         )}
 
-        {/* Message */}
-        {d.message.text && (
-          <Section
-            title={`Message to applicant · ${showEnglish ? 'English' : d.message.language}`}
-            right={
-              <div className="flex gap-1.5">
-                {d.message.language !== 'English' && (
-                  <Button variant="ghost" className="!py-0.5 text-xs" onClick={() => setShowEnglish((v) => !v)}>
-                    {showEnglish ? `Show ${d.message.language}` : 'Show English'}
-                  </Button>
-                )}
-                <Button
-                  variant="secondary"
-                  className="!py-0.5 text-xs"
-                  onClick={() => {
-                    navigator.clipboard?.writeText(msg).then(() => setCopied(true));
-                  }}
-                >
-                  {copied ? 'Copied' : 'Copy'}
-                </Button>
+        {/* Score */}
+        {p && (
+          <Collapsible title="Score breakdown" summary={`${d.score?.toFixed(1)} / 100${d.provisionalScore ? ' (provisional)' : ''}`}>
+            {d.scoreNote && <p className="mb-2 text-xs text-slate-500">{d.scoreNote}</p>}
+            <div className="space-y-2.5">
+              {[p.financial, p.operator, p.site, p.launch, p.territory].map((x) => (
+                <div key={x.key}>
+                  <div className="flex items-baseline justify-between text-sm">
+                    <span className="font-medium text-slate-800">{x.label}</span>
+                    <span className="tabular-nums text-slate-600">
+                      {x.points.toFixed(1)} <span className="text-slate-400">/ {x.weight}</span>
+                    </span>
+                  </div>
+                  <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100" role="img" aria-label={`${x.label}: ${x.raw} out of 100`}>
+                    <div className={`h-full rounded-full ${x.raw >= 70 ? 'bg-brand-600' : x.raw >= 45 ? 'bg-brand-400' : 'bg-slate-400'}`} style={{ width: `${x.raw}%` }} />
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">{x.explanation}</p>
+                </div>
+              ))}
+              <div className="flex items-baseline justify-between border-t border-slate-100 pt-2 text-sm">
+                <span className="font-medium text-slate-800">Cannibalisation deduction</span>
+                <span className="tabular-nums text-rose-700">−{p.cannibalisationDeduction.points.toFixed(1)}</span>
               </div>
-            }
-          >
-            <pre className="whitespace-pre-wrap rounded-md bg-slate-50 p-3 font-sans text-sm leading-relaxed text-slate-800">{msg}</pre>
-            {d.message.language !== 'English' && <p className="mt-1.5 text-xs text-slate-500">Kannada and Hindi templates should be reviewed by a native speaker.</p>}
-          </Section>
+              <p className="text-xs text-slate-500">{p.cannibalisationDeduction.explanation}</p>
+            </div>
+          </Collapsible>
+        )}
+
+        {/* Gates */}
+        <Collapsible title="Hard gates" summary={`${gates.filter((g) => g.result === 'pass').length} passed · ${gates.filter((g) => g.result === 'fail').length} failed`}>
+          <ul className="space-y-1.5">
+            {gates.map((g) => (
+              <li key={g.check} className="flex gap-2.5 text-sm">
+                <ResultIcon r={g.result} />
+                <div>
+                  <span className="font-medium text-slate-800">{g.check.replace(/^G\d /, '')}</span>
+                  <span className="text-slate-600"> — {g.sentence}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Collapsible>
+
+        {/* Flags */}
+        {d.flags.length > 0 && (
+          <Collapsible title="Data checks" summary={`${d.flags.length} note${d.flags.length === 1 ? '' : 's'}`}>
+            <ul className="space-y-1.5">
+              {d.flags.map((f, i) => (
+                <li key={`${f.code}${i}`} className="flex gap-2.5 text-sm">
+                  <span
+                    className={`mt-0.5 flex-none rounded px-1.5 py-0.5 text-[11px] font-semibold ${f.severity === 'BLOCKING' ? 'bg-rose-100 text-rose-800' : f.severity === 'WARNING' ? 'bg-amber-100 text-amber-900' : 'bg-slate-100 text-slate-600'}`}
+                  >
+                    {f.severity === 'BLOCKING' ? 'Blocking' : f.severity === 'WARNING' ? 'Warning' : 'Info'}
+                  </span>
+                  <span className="text-slate-700">{f.message}</span>
+                </li>
+              ))}
+            </ul>
+            {d.cleaning.length > 0 && (
+              <p className="mt-2 text-xs text-slate-500">Cleaned: {d.cleaning.map((c) => c.note).join('; ')}.</p>
+            )}
+            <p className="mt-1 text-xs text-slate-500">
+              Free text read {d.signals.method === 'llm' ? 'by AI (validated)' : 'by keyword rules'}: background &ldquo;{d.signals.businessCategory}&rdquo; ({d.signals.relevance} relevance), commitment {d.signals.commitment}
+              {d.signals.flexibleOnLocation ? ', flexible on location' : ''}.
+            </p>
+          </Collapsible>
         )}
 
         {actions.history}
-
         {/* Full trace */}
-        <Section
-          title="Full decision trace"
-          right={
-            <Button variant="ghost" className="!py-0.5 text-xs" onClick={() => setShowTrace((v) => !v)}>
-              {showTrace ? 'Hide' : `Show ${d.trace.length} steps`}
-            </Button>
-          }
-        >
-          {showTrace ? (
-            <ol className="space-y-1.5">
-              {d.trace.map((t, i) => (
-                <li key={i} className="flex gap-2.5 text-sm">
-                  <ResultIcon r={t.result} />
-                  <div className="min-w-0">
-                    <div className="text-slate-800">
-                      <span className="text-xs uppercase tracking-wide text-slate-400">{t.step}</span> <span className="font-medium">{t.check}</span>
-                      {t.code && <span className="ml-1.5 align-middle"><Tag>{t.code}</Tag></span>}
-                    </div>
-                    <div className="text-slate-600">{t.sentence}</div>
+        <Collapsible title="Full decision trace" summary={`${d.trace.length} steps`}>
+          <p className="mb-3 text-xs text-slate-500">Every check the engine ran, in order, with the values it used. The summary above is generated from these steps.</p>
+          <ol className="space-y-1.5">
+            {d.trace.map((t, i) => (
+              <li key={i} className="flex gap-2.5 text-sm">
+                <ResultIcon r={t.result} />
+                <div className="min-w-0">
+                  <div className="text-slate-800">
+                    <span className="text-xs uppercase tracking-wide text-slate-500">{t.step}</span> <span className="font-medium">{t.check}</span>
+                    {t.code && (
+                      <span className="ml-1.5 align-middle">
+                        <Tag>{t.code}</Tag>
+                      </span>
+                    )}
                   </div>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="text-sm text-slate-500">Every check the engine ran, in order, with the values it used. The summary above is generated from these steps.</p>
-          )}
-        </Section>
+                  <div className="text-slate-600">{t.sentence}</div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Collapsible>
+
         <div className="h-8" />
       </div>
     </div>

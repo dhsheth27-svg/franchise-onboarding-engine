@@ -10,12 +10,12 @@ body {
   color: #f4f4f6;
 }
 ::selection {
-  background: rgba(255, 65, 34, 0.45);
+  background: rgba(124, 92, 255, 0.5);
   color: #fff;
 }
 /* Dotted texture used behind hero areas */
 .bg-dots {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.11) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 /* Skeleton shimmer */

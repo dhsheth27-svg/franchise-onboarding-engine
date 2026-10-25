@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { VersionSummary } from '@/lib/client-types';
 import type { ApplicantVersion } from '@/lib/store';
-import { Button, OUTCOME_LABEL, Section } from './ui';
+import { Button, Collapsible, OUTCOME_LABEL } from './ui';
 import type { Outcome } from '@/lib/engine/types';
 
 export default function HistoryPanel({ runId, currentId, onClose }: { runId: string; currentId: string; onClose: () => void }) {
@@ -67,7 +67,7 @@ export function ApplicantHistory({ runId, rootKey }: { runId: string; rootKey: s
   }, [runId, rootKey]);
   if (!rows || rows.length < 2) return null;
   return (
-    <Section title="History across versions">
+    <Collapsible title="History" summary={`${rows.length} versions`}>
       <ol className="space-y-1 text-sm">
         {rows.map((r, i) => {
           const changed = i > 0 && rows[i - 1].outcome !== r.outcome;
@@ -83,6 +83,6 @@ export function ApplicantHistory({ runId, rootKey }: { runId: string; rootKey: s
           );
         })}
       </ol>
-    </Section>
+    </Collapsible>
   );
 }

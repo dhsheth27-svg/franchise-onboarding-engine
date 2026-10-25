@@ -38,13 +38,13 @@ export default function DataQualityTab({ result, importNotes, onOpen }: { result
           <ul className="mt-2 space-y-1.5 text-sm">
             {importNotes.map((n) => (
               <li key={n} className="flex gap-2">
-                <span className={`mt-0.5 h-fit rounded px-1.5 py-0.5 text-[10px] font-semibold ${SEV.INFO}`}>Info</span>
+                <span className={`mt-0.5 h-fit rounded px-1.5 py-0.5 text-[11px] font-semibold ${SEV.INFO}`}>Info</span>
                 <span className="text-slate-700">{n}</span>
               </li>
             ))}
             {fileIssues.map((i, idx) => (
               <li key={idx} className="flex gap-2">
-                <span className={`mt-0.5 h-fit rounded px-1.5 py-0.5 text-[10px] font-semibold ${SEV[i.severity]}`}>{i.severity === 'WARNING' ? 'Warning' : i.severity === 'BLOCKING' ? 'Blocking' : 'Info'}</span>
+                <span className={`mt-0.5 h-fit rounded px-1.5 py-0.5 text-[11px] font-semibold ${SEV[i.severity]}`}>{i.severity === 'WARNING' ? 'Warning' : i.severity === 'BLOCKING' ? 'Blocking' : 'Info'}</span>
                 <span className="text-slate-700">
                   <span className="font-mono text-xs text-slate-500">{i.ref}</span> {i.message}
                 </span>
@@ -73,13 +73,13 @@ export default function DataQualityTab({ result, importNotes, onOpen }: { result
                 <ul className="mt-1 space-y-1 text-sm">
                   {d.flags.map((f, i) => (
                     <li key={i} className="flex gap-2">
-                      <span className={`mt-0.5 h-fit flex-none rounded px-1.5 py-0.5 text-[10px] font-semibold ${SEV[f.severity]}`}>{f.severity === 'WARNING' ? 'Warning' : f.severity === 'BLOCKING' ? 'Blocking' : 'Info'}</span>
+                      <span className={`mt-0.5 h-fit flex-none rounded px-1.5 py-0.5 text-[11px] font-semibold ${SEV[f.severity]}`}>{f.severity === 'WARNING' ? 'Warning' : f.severity === 'BLOCKING' ? 'Blocking' : 'Info'}</span>
                       <span className="text-slate-700">{f.message}</span>
                     </li>
                   ))}
                   {d.cleaning.map((c, i) => (
                     <li key={`c${i}`} className="flex gap-2">
-                      <span className="mt-0.5 h-fit flex-none rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold text-sky-800">Cleaned</span>
+                      <span className="mt-0.5 h-fit flex-none rounded bg-sky-100 px-1.5 py-0.5 text-[11px] font-semibold text-sky-800">Cleaned</span>
                       <span className="text-slate-700">
                         {c.field}: {c.note}
                       </span>

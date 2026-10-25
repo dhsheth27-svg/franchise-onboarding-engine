@@ -69,7 +69,7 @@ export default function DecisionsTable({
     <th scope="col" className={`whitespace-nowrap px-3 py-2.5 text-left text-xs font-semibold text-slate-500 ${cls}`} aria-sort={sort.key === key ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'}>
       <button className="inline-flex items-center gap-1 hover:text-slate-900" onClick={() => setSort((s) => ({ key, dir: s.key === key ? ((-s.dir) as 1 | -1) : key === 'score' ? -1 : 1 }))}>
         {label}
-        <span aria-hidden className="text-[10px]">{sort.key === key ? (sort.dir === 1 ? '▲' : '▼') : ''}</span>
+        <span aria-hidden className="text-[11px]">{sort.key === key ? (sort.dir === 1 ? '▲' : '▼') : ''}</span>
       </button>
     </th>
   );
@@ -150,7 +150,7 @@ export default function DecisionsTable({
                   <td className="hidden whitespace-nowrap px-3 py-2.5 text-slate-600 sm:table-cell">{d.territoryId ?? '—'}</td>
                   <td className="whitespace-nowrap px-3 py-2.5">
                     <OutcomeChip outcome={d.outcome} withdrawn={d.withdrawn} size="sm" />
-                    {d.override?.status === 'applied' && <span className="ml-1 text-[11px] font-medium text-brand-700">overridden</span>}
+                    {d.override?.status === 'applied' && <span className="ml-1 text-xs font-medium text-brand-700">overridden</span>}
                   </td>
                   <td className="whitespace-nowrap px-3 py-2.5 tabular-nums text-slate-800">
                     {d.score === null ? '—' : d.score.toFixed(1)}

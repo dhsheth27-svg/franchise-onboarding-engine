@@ -46,7 +46,7 @@ export function Tag({ children, tone = 'neutral', title }: { children: ReactNode
     info: 'bg-sky-100 text-sky-800',
   };
   return (
-    <span title={title} className={`inline-flex items-center rounded px-1.5 py-0.5 font-mono text-[10.5px] font-medium tracking-tight ${tones[tone]}`}>
+    <span title={title} className={`inline-flex items-center rounded px-1.5 py-0.5 font-mono text-[11px] font-medium tracking-tight ${tones[tone]}`}>
       {children}
     </span>
   );
@@ -67,7 +67,7 @@ export function Section({ title, children, right, id }: { title: string; childre
   return (
     <section id={id} className="border-t border-slate-200/70 px-5 py-5 sm:px-6">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</h3>
         {right}
       </div>
       {children}
@@ -140,7 +140,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <span className="inline-flex items-center gap-2">
       <svg aria-hidden viewBox="0 0 32 32" className="h-7 w-7 flex-none">
-        <rect width="32" height="32" rx="10" fill="#FF4122" />
+        <rect width="32" height="32" rx="10" fill="#7C5CFF" />
         <path d="M9 22V10h12M9 16h8" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         <circle cx="23" cy="22" r="2.4" fill="white" />
       </svg>
@@ -158,7 +158,7 @@ export function IconTile({ children, tone = 'brand' }: { children: ReactNode; to
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {
-  return <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-[11px] font-medium uppercase italic tracking-wide text-slate-700">{children}</span>;
+  return <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-xs font-medium uppercase italic tracking-wide text-slate-700">{children}</span>;
 }
 
 /** Two-tone uppercase headline: first part white, second part grey. */
@@ -166,7 +166,7 @@ export function Headline({ lead, rest, as = 'h2', className = '' }: { lead: Reac
   const Tag = as;
   return (
     <Tag className={`font-bold uppercase leading-[0.98] tracking-[-0.02em] text-ink ${className}`}>
-      {lead} {rest && <span className="text-slate-400">{rest}</span>}
+      {lead} {rest && <span className="text-slate-500">{rest}</span>}
     </Tag>
   );
 }
@@ -229,5 +229,21 @@ export function Reveal({ children, delay = 0, className = '' }: { children: Reac
     <div className={`animate-fade-up ${className}`} style={{ animationDelay: `${delay}ms` }}>
       {children}
     </div>
+  );
+}
+
+/** Collapsible drawer section: title on the left, a one-line summary on the right, content on demand. */
+export function Collapsible({ title, summary, children, defaultOpen = false }: { title: string; summary?: ReactNode; children: ReactNode; defaultOpen?: boolean }) {
+  return (
+    <details open={defaultOpen} className="group/c border-t border-slate-200/70">
+      <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 transition hover:bg-slate-50 sm:px-6 [&::-webkit-details-marker]:hidden">
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">{title}</span>
+        <span className="ml-auto truncate text-right text-sm text-slate-700">{summary}</span>
+        <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4 flex-none text-slate-500 transition-transform duration-200 group-open/c:rotate-180" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </summary>
+      <div className="animate-fade-in px-5 pb-5 sm:px-6">{children}</div>
+    </details>
   );
 }
