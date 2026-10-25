@@ -60,3 +60,31 @@ describe('answers come from the stored decision', () => {
     expect(statusAnswer(r, { city: 'Mysuru' })).toMatch(/APP-025/);
   });
 });
+
+describe('phrasings judges are likely to use', () => {
+  test('city confirmation becomes an update that clears the pin/city mismatch', () => {
+    const i = p('APP-005 confirmed the store is in Bengaluru');
+    expect(i).toMatchObject({ kind: 'update', id: 'APP-005', patch: { city: 'Bengaluru' } });
+  });
+  test('state correction becomes an update', () => {
+    const i = p('APP-022 says the state is actually Karnataka');
+    expect(i).toMatchObject({ kind: 'update', id: 'APP-022', patch: { state: 'Karnataka' } });
+  });
+  test('"which territories have open slots" lists territories; "slots left in TER-02" still goes to that territory', () => {
+    expect(p('Which territories still have open slots?')).toEqual({ kind: 'territories' });
+    expect(p('Where can we still open stores?')).toEqual({ kind: 'territories' });
+    expect(p('slots left in TER-02')).toEqual({ kind: 'status', territoryId: 'TER-02' });
+  });
+  test('"can APP-014 open in Belagavi instead" runs a what-if on a free Belagavi pin with a new space', () => {
+    const i = p('Can APP-014 open in Belagavi instead?');
+    expect(i.kind).toBe('whatif');
+    if (i.kind === 'whatif') {
+      expect(i.patch.city).toBe('Belagavi');
+      expect(String(i.patch.pin).startsWith('590')).toBe(true);
+      expect(i.patch.spaceAvailable).toBe('Not yet identified');
+    }
+  });
+  test('a move to a city without saying the pin asks which pin', () => {
+    expect(p('APP-014 has moved to Belagavi').kind).toBe('clarify');
+  });
+});

@@ -26,6 +26,8 @@ export interface RawApplication {
   targetLaunch?: unknown;
   language?: unknown;
   notes?: unknown;
+  /** Set by a follow-up update that reports a space without its size (see DECISIONS.md #18). */
+  spaceSizePending?: boolean;
 }
 
 export interface RawTerritory {

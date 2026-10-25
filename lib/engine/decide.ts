@@ -117,13 +117,21 @@ const CONDITION_TEXT: Record<string, (f: Flag, cfg: ConfigValues) => string> = {
   CITY_UNRECOGNISED: (f) => `Confirm the city (written as "${f.params?.raw}").`,
   UNPARSEABLE_VALUE: (f) => `Re-send the ${f.params?.field} value, which could not be read.`,
   SPACE_SIZE_WITHOUT_SPACE: () => 'Confirm whether a space has actually been found.',
+  SPACE_SIZE_UNCONFIRMED: () => 'Confirm the size of the new space (it must meet the minimum for this city tier).',
 };
 
-export function conditionsFor(app: Application, cfg: ConfigValues, approvedOn: string): Condition[] {
+export function conditionsFor(app: Application, cfg: ConfigValues, approvedOn: string, tier?: Tier | null): Condition[] {
   const deadline = addDays(approvedOn, cfg.conditionDays);
   return app.flags
     .filter((f) => f.severity === 'WARNING' || f.severity === 'BLOCKING')
-    .map((f) => ({ code: f.code, text: CONDITION_TEXT[f.code]?.(f, cfg) ?? `Resolve: ${f.message}`, deadline }));
+    .map((f) => {
+      if (f.code === 'SPACE_SIZE_UNCONFIRMED' && tier) f.params = { ...(f.params ?? {}), min: cfg.minSpaceSqft[tier] };
+      const text =
+        f.code === 'SPACE_SIZE_UNCONFIRMED' && tier
+          ? `Confirm the size of the new space: it must be at least ${cfg.minSpaceSqft[tier]} sq ft for ${tier}.`
+          : CONDITION_TEXT[f.code]?.(f, cfg) ?? `Resolve: ${f.message}`;
+      return { code: f.code, text, deadline };
+    });
 }
 
 // ---------- Gates ----------
@@ -664,7 +672,7 @@ export function decide(input: EngineInput, cfg: ConfigValues, todayInput: string
         territoryId: w.territory.id,
         status: fulfilled ? 'Fulfilled' : daysLeft <= cfg.dueSoonDays ? 'Due soon' : 'Active',
       };
-      w.conditions = conditionsFor(w.app, cfg, approvedOn);
+      w.conditions = conditionsFor(w.app, cfg, approvedOn, w.tier);
       step(w, {
         step: 'allocate',
         check: 'Slot allocated',
@@ -730,6 +738,7 @@ export function describePatch(p: Record<string, unknown>): string {
     targetLaunch: 'target launch (months)',
     pin: 'pin',
     city: 'city',
+    state: 'state',
     language: 'language',
     notes: 'notes',
     business: 'business',

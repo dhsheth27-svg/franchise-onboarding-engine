@@ -84,6 +84,7 @@ const EN: Dict = {
   ask: {
     SPACE_NOT_IDENTIFIED: (p) => `A shop space of at least ${p.min} sq ft in or near pin ${p.pin}: send its address, size, floor, and whether it is owned or rented.`,
     SPACE_SIZE_MISSING: () => 'The size of your shop space in sq ft.',
+    SPACE_SIZE_UNCONFIRMED: (p) => `The size of your new shop space in sq ft (it must be at least ${p.min} sq ft).`,
     SPACE_TOO_SMALL: (p) => `A larger space: yours is ${p.size} sq ft and the minimum is ${p.min} sq ft.`,
     CAPITAL_SHORTFALL_SMALL: (p) => `Proof of investment capacity of ₹${p.min} lakh (you mentioned ₹${p.inv} lakh, a gap of ₹${p.gap} lakh), for example a bank statement or a loan sanction letter.`,
     PIN_CITY_MISMATCH: (p) => `Confirmation of the store location: pin ${p.pin} is in ${p.pinCity}, but the application says ${p.statedCity}.`,
@@ -147,6 +148,7 @@ const KN: Dict = {
   ask: {
     SPACE_NOT_IDENTIFIED: (p) => `ಪಿನ್ ${p.pin} ನಲ್ಲಿ ಅಥವಾ ಹತ್ತಿರ ಕನಿಷ್ಠ ${p.min} ಚದರ ಅಡಿ ಅಂಗಡಿ ಜಾಗ: ಅದರ ವಿಳಾಸ, ಅಳತೆ, ಮಹಡಿ, ಮತ್ತು ಅದು ಸ್ವಂತವೇ ಅಥವಾ ಬಾಡಿಗೆಯೇ ಎಂದು ತಿಳಿಸಿ.`,
     SPACE_SIZE_MISSING: () => 'ನಿಮ್ಮ ಅಂಗಡಿ ಜಾಗದ ಅಳತೆ (ಚದರ ಅಡಿಗಳಲ್ಲಿ).',
+    SPACE_SIZE_UNCONFIRMED: (p) => `ನಿಮ್ಮ ಹೊಸ ಅಂಗಡಿ ಜಾಗದ ಅಳತೆ (ಕನಿಷ್ಠ ${p.min} ಚದರ ಅಡಿ ಇರಬೇಕು).`,
     SPACE_TOO_SMALL: (p) => `ದೊಡ್ಡ ಜಾಗ: ನಿಮ್ಮ ಜಾಗ ${p.size} ಚದರ ಅಡಿ, ಕನಿಷ್ಠ ${p.min} ಚದರ ಅಡಿ ಬೇಕು.`,
     CAPITAL_SHORTFALL_SMALL: (p) => `₹${p.min} ಲಕ್ಷ ಹೂಡಿಕೆ ಸಾಮರ್ಥ್ಯದ ಪುರಾವೆ (ನೀವು ₹${p.inv} ಲಕ್ಷ ಎಂದು ತಿಳಿಸಿದ್ದೀರಿ, ₹${p.gap} ಲಕ್ಷ ಕೊರತೆ), ಉದಾಹರಣೆಗೆ ಬ್ಯಾಂಕ್ ಸ್ಟೇಟ್‌ಮೆಂಟ್ ಅಥವಾ ಸಾಲ ಮಂಜೂರಾತಿ ಪತ್ರ.`,
     PIN_CITY_MISMATCH: (p) => `ಮಳಿಗೆಯ ಸ್ಥಳದ ದೃಢೀಕರಣ: ಪಿನ್ ${p.pin} ${p.pinCity} ನಲ್ಲಿದೆ, ಆದರೆ ಅರ್ಜಿಯಲ್ಲಿ ${p.statedCity} ಎಂದಿದೆ.`,
@@ -210,6 +212,7 @@ const HI: Dict = {
   ask: {
     SPACE_NOT_IDENTIFIED: (p) => `पिन ${p.pin} में या उसके पास कम से कम ${p.min} वर्ग फुट की दुकान: उसका पता, आकार, मंज़िल, और वह अपनी है या किराये की, यह बताएँ।`,
     SPACE_SIZE_MISSING: () => 'आपकी दुकान की जगह का आकार (वर्ग फुट में)।',
+    SPACE_SIZE_UNCONFIRMED: (p) => `आपकी नई दुकान की जगह का आकार (कम से कम ${p.min} वर्ग फुट होना चाहिए)।`,
     SPACE_TOO_SMALL: (p) => `बड़ी जगह: आपकी जगह ${p.size} वर्ग फुट है और न्यूनतम ${p.min} वर्ग फुट चाहिए।`,
     CAPITAL_SHORTFALL_SMALL: (p) => `₹${p.min} लाख निवेश क्षमता का प्रमाण (आपने ₹${p.inv} लाख बताया है, ₹${p.gap} लाख की कमी), जैसे बैंक स्टेटमेंट या ऋण स्वीकृति पत्र।`,
     PIN_CITY_MISMATCH: (p) => `स्टोर के स्थान की पुष्टि: पिन ${p.pin} ${p.pinCity} में है, लेकिन आवेदन में ${p.statedCity} लिखा है।`,

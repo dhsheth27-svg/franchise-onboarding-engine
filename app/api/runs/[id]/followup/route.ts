@@ -10,6 +10,7 @@ import {
   explainAnswer,
   intentToEvents,
   overviewAnswer,
+  territoriesAnswer,
   parseRules,
   statusAnswer,
   type Intent,
@@ -85,12 +86,16 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       case 'overview':
         reply = { kind: 'answer', answerText: overviewAnswer(r), parsedBy, intent: intent.kind };
         break;
+      case 'territories':
+        reply = { kind: 'answer', answerText: territoriesAnswer(r), parsedBy, intent: intent.kind };
+        break;
       case 'actions':
         reply = { kind: 'answer', answerText: actionsAnswer(r), parsedBy, intent: intent.kind };
         break;
       case 'whatif': {
         const { result, diff } = whatIf(run, [{ type: 'update', applicationId: intent.id, payload: intent.patch }]);
-        const lead = `Hypothetical only, nothing saved: if ${idOf(intent.id)} had ${describeIntentPatch(intent.patch)}.`;
+        const desc = describeIntentPatch(intent.patch);
+        const lead = `Hypothetical only, nothing saved: if ${idOf(intent.id)} ${desc.startsWith('opened') ? desc : `had ${desc}`}.`;
         reply = { kind: 'answer', answerText: changeAnswer(r, result, intent.id, diff, lead, intent.notes), diff, focus: [intent.id], parsedBy, intent: intent.kind };
         break;
       }

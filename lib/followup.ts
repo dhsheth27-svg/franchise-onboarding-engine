@@ -9,7 +9,7 @@ import { fmtDate } from './engine/normalize';
 import type { Decision, RunResult, TerritorySummary } from './engine/types';
 import type { NewEvent } from './runs';
 
-export type Patch = Partial<Record<'spaceAvailable' | 'spaceSize' | 'floor' | 'investment' | 'experience' | 'targetLaunch' | 'pin' | 'language' | 'notes', string | number>>;
+export type Patch = Partial<Record<'spaceAvailable' | 'spaceSize' | 'floor' | 'investment' | 'experience' | 'targetLaunch' | 'pin' | 'city' | 'state' | 'language' | 'notes', string | number>>;
 
 export type Intent =
   | { kind: 'explain'; id: string }
@@ -23,6 +23,7 @@ export type Intent =
   | { kind: 'dateAdvance'; days: number }
   | { kind: 'actions' }
   | { kind: 'overview' }
+  | { kind: 'territories' }
   | { kind: 'clarify'; question: string };
 
 // ---------- Rule-based parsing ----------
@@ -82,6 +83,22 @@ export function extractPatch(text: string): { patch: Patch; notes: string[] } {
   return { patch, notes };
 }
 
+/** Allowed city named in the text (accepts old spellings such as Bangalore, Mysore, Belgaum, Hubli). */
+export function findCity(t: string): string | null {
+  const c = CITIES.find(
+    (c) =>
+      t.includes(c.city.toLowerCase()) ||
+      (c.city === 'Bengaluru' && /bangalore/.test(t)) ||
+      (c.city === 'Mysuru' && /mysore/.test(t)) ||
+      (c.city === 'Mangaluru' && /mangalore/.test(t)) ||
+      (c.city === 'Belagavi' && /belgaum/.test(t)) ||
+      (c.city === 'Hubballi-Dharwad' && /hubli|hubballi|dharwad/.test(t)) ||
+      (c.city === 'Tumakuru' && /tumkur/.test(t)) ||
+      (c.city === 'Davanagere' && /davangere/.test(t)),
+  );
+  return c?.city ?? null;
+}
+
 export function parseRules(message: string, decisions: Decision[], territories: TerritorySummary[]): Intent {
   const text = message.trim();
   const t = text.toLowerCase();
@@ -97,13 +114,14 @@ export function parseRules(message: string, decisions: Decision[], territories: 
   if (!found.length) {
     if (/what should|to-?do|today|action|priorit|chase|follow up|next steps for the team/.test(t)) return { kind: 'actions' };
     const terr = t.match(/\bter[\s-]?0*(\d+)\b/);
-    const city = CITIES.find((c) => t.includes(c.city.toLowerCase()) || (c.city === 'Bengaluru' && /bangalore/.test(t)) || (c.city === 'Mysuru' && /mysore/.test(t)) || (c.city === 'Mangaluru' && /mangalore/.test(t)) || (c.city === 'Belagavi' && /belgaum/.test(t)) || (c.city === 'Hubballi-Dharwad' && /hubli|hubballi|dharwad/.test(t)));
+    const city = findCity(t);
     if (terr) {
       const id = territories.find((x) => parseInt(x.id.replace(/\D/g, ''), 10) === parseInt(terr[1], 10))?.id;
       if (id) return { kind: 'status', territoryId: id };
       return { kind: 'clarify', question: `There is no territory TER-${terr[1].padStart(2, '0')} in this run. Territories: ${territories.map((x) => x.id).join(', ')}.` };
     }
-    if (city) return { kind: 'status', city: city.city };
+    if (city) return { kind: 'status', city };
+    if (/territor|slots? (left|open|free|available|remaining)|open slots?|free (pins?|slots?)|capacity|where can|unfilled|vacan/.test(t)) return { kind: 'territories' };
     if (/summary|overview|how many|overall|results|approved|who got|slots/.test(t)) return { kind: 'overview' };
     return {
       kind: 'clarify',
@@ -118,7 +136,36 @@ export function parseRules(message: string, decisions: Decision[], territories: 
   if (/signed (the )?(franchise )?agreement|agreement (is |has been |was )?signed|signs? the agreement/.test(t)) return { kind: 'milestone', id, stage: 'agreement' };
 
   const { patch, notes } = extractPatch(text);
-  const hypothetical = /what if|what would|would .* (be|get|happen)|suppose|hypothetical|imagine|if (they|he|she|app)/.test(t);
+  const hypothetical = /what if|what would|would .* (be|get|happen)|suppose|hypothetical|imagine|if (they|he|she|app)|^can |^could |\bcan (app|they|he|she)\b|\bcould (app|they|he|she)\b/.test(t);
+  const d = decisions.find((x) => x.key === id)!;
+
+  // State correction ("the state is actually Karnataka")
+  if (/\bstate\b/.test(t) && /karnataka/.test(t)) patch.state = 'Karnataka';
+
+  // City named for this applicant: either confirming the city its pin already points to, or a move.
+  const city = findCity(t);
+  if (city && patch.pin === undefined) {
+    const pinCity = d.application.pinCity;
+    if (pinCity === city && city !== d.city) {
+      patch.city = city; // confirms the pin's city, clearing a pin/city mismatch
+    } else if (city !== pinCity) {
+      const free = territories.filter((x) => x.city === city && x.slotsLeft > 0 && x.freePinsNow.length > 0);
+      if (!free.length)
+        return { kind: 'clarify', question: `${city} has no territory with a free slot and pin right now, so ${d.applicationId} cannot be placed there. Ask "Which territories still have open slots?" to see where there is room.` };
+      const statesFact = /\b(has|have|is|was|had)\s+(moved|moving|relocated|relocating|shifted|shifting)\b|\bmoved to\b/.test(t);
+      if (!statesFact && (hypothetical || /instead|relocat|open in|switch|move to/.test(t))) {
+        const target = free[0];
+        // A new city needs a new shop space; the current one is in the old city.
+        return {
+          kind: 'whatif',
+          id,
+          patch: { pin: target.freePinsNow[0], city, spaceAvailable: 'Not yet identified', spaceSize: '', floor: '' },
+          notes: [`Assumed free pin ${target.freePinsNow[0]} in ${target.id} and that a new shop space would be needed there. To record a real move, say e.g. "${d.applicationId} moved to pin ${target.freePinsNow[0]}".`],
+        };
+      }
+      return { kind: 'clarify', question: `Which pin code in ${city} should ${d.applicationId} move to? Free pins with open slots: ${free.flatMap((x) => x.freePinsNow.slice(0, 4).map((p) => `${p} (${x.id})`)).join(', ')}.` };
+    }
+  }
   if (Object.keys(patch).length) return hypothetical ? { kind: 'whatif', id, patch, notes } : { kind: 'update', id, patch, notes };
   if (hypothetical) return { kind: 'clarify', question: `What would change for ${decisions.find((d) => d.key === id)?.applicationId}? For example: "What if APP-007 found a ground-floor space of 300 sq ft?"` };
   return { kind: 'explain', id };
@@ -183,6 +230,15 @@ export function statusAnswer(r: RunResult, q: { territoryId?: string; city?: str
     .join('\n\n');
 }
 
+export function territoriesAnswer(r: RunResult): string {
+  const open = r.territories.filter((t) => t.unfilled > 0);
+  const lines = r.territories.map(
+    (t) =>
+      `• ${t.id} (${t.city}, ${t.priority}): ${t.slotsLeft} of ${t.openSlots} slot(s) left${t.freePinsNow.length ? `, free pins ${t.freePinsNow.slice(0, 4).join(', ')}` : ', no free pins'}${t.realCapacity < t.openSlots ? ` (only ${t.realCapacity} usable: other pins already have stores)` : ''}${t.waitlisted.length ? `; ${t.waitlisted.length} waitlisted` : ''}`,
+  );
+  return `${open.length ? `${open.length} territor${open.length === 1 ? 'y has' : 'ies have'} room right now: ${open.map((t) => `${t.id} (${t.city}, ${t.unfilled} slot${t.unfilled === 1 ? '' : 's'})`).join(', ')}.` : 'Every usable slot is filled right now.'}\n\n${lines.join('\n')}`;
+}
+
 export function overviewAnswer(r: RunResult): string {
   const c = r.counts;
   const slots = r.territories.reduce((n, t) => n + t.realCapacity, 0);
@@ -227,9 +283,11 @@ export function changeAnswer(before: RunResult, after: RunResult, key: string | 
 }
 
 export function describeIntentPatch(p: Patch): string {
-  const names: Record<string, string> = { spaceAvailable: 'space', spaceSize: 'size', floor: 'floor', investment: 'investment', experience: 'experience', targetLaunch: 'target launch', pin: 'pin', language: 'language', notes: 'notes' };
+  const names: Record<string, string> = { spaceAvailable: 'space', spaceSize: 'size', floor: 'floor', investment: 'investment', experience: 'experience', targetLaunch: 'target launch', pin: 'pin', city: 'city', state: 'state', language: 'language', notes: 'notes' };
   const unit: Record<string, string> = { spaceSize: ' sq ft', investment: ' lakh', experience: ' years', targetLaunch: ' months' };
+  if (p.pin && p.city && p.spaceAvailable === 'Not yet identified') return `opened in ${p.city} at pin ${p.pin} instead (with a new shop space to find there)`;
   return Object.entries(p)
+    .filter(([, v]) => v !== '' && v !== undefined && v !== null)
     .map(([k, v]) => `${names[k] ?? k} ${v}${unit[k] ?? ''}`)
     .join(', ');
 }

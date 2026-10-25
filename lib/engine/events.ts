@@ -73,6 +73,13 @@ export function applyEvents(input: EngineInput, today: string): EventState {
         for (const f of PATCHABLE_FIELDS) {
           if (f in ev.payload) (row as Record<string, unknown>)[f] = ev.payload[f];
         }
+        // A space reported in a follow-up without its size: size becomes a condition, not a hold.
+        if ('spaceSize' in ev.payload) row.spaceSizePending = false;
+        else if ('spaceAvailable' in ev.payload) {
+          const t = String(ev.payload.spaceAvailable).toLowerCase();
+          const blankSize = row.spaceSize === undefined || row.spaceSize === null || String(row.spaceSize).trim() === '';
+          row.spaceSizePending = (t.startsWith('own') || t.startsWith('rent')) && blankSize;
+        }
         // Moving to a new pin in another city: follow the pin's city unless a city was given too.
         if ('pin' in ev.payload && !('city' in ev.payload)) {
           const c = cityForPin(String(ev.payload.pin).replace(/\D/g, ''));

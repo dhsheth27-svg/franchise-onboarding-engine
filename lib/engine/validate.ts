@@ -33,6 +33,7 @@ export const FLAG_SEVERITY: Record<string, Flag['severity']> = {
   DUPLICATE_ID: 'BLOCKING',
   DUPLICATE_APPLICANT: 'BLOCKING',
   SPACE_SIZE_WITHOUT_SPACE: 'WARNING',
+  SPACE_SIZE_UNCONFIRMED: 'WARNING',
   LAUNCH_UNREALISTIC: 'WARNING',
   NOTE_TIMELINE_CONFLICT: 'WARNING',
   NOTE_EXPERIENCE_CONFLICT: 'WARNING',
@@ -172,7 +173,13 @@ export function cleanApplication(
     note('Space size', spaceSqft, '', 'ignored because no space has been identified');
     spaceSqft = null;
   }
-  if ((space === 'Owned' || space === 'Rented') && spaceSqft === null && !impossible.some((x) => x.startsWith('space')))
+  if ((space === 'Owned' || space === 'Rented') && spaceSqft === null && raw.spaceSizePending)
+    flags.push(
+      flag('SPACE_SIZE_UNCONFIRMED', `A ${space.toLowerCase()} space was reported in a follow-up, but its size is not confirmed yet. Approval is conditional on the size meeting the minimum.`, 'spaceSize', {
+        tenure: space,
+      }),
+    );
+  else if ((space === 'Owned' || space === 'Rented') && spaceSqft === null && !impossible.some((x) => x.startsWith('space')))
     flags.push(flag('SPACE_SIZE_MISSING', `The space is ${space.toLowerCase()} but its size is blank, so it cannot be checked against the minimum.`, 'spaceSize', { tenure: space }));
 
   const floorP = parseFloor(raw.floor);

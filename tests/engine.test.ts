@@ -416,3 +416,23 @@ describe('post-decision layer', () => {
     expect(d(after, 'APP-001').onboarding!.steps.find((s) => s.id === 'opening')!.status).toBe('Blocked');
   });
 });
+
+describe('follow-up space without a size', () => {
+  test('"found a ground-floor space" (no size) gives a conditional approval asking for the size, not a hold', () => {
+    const after = run(withEvents([ev('update', 'APP-012', { spaceAvailable: 'Rented', floor: 'Ground' })], base));
+    const x = d(after, 'APP-012');
+    expect(x.outcome).toBe('APPROVED_WITH_CONDITIONS');
+    expect(x.conditions.map((c) => c.code)).toContain('SPACE_SIZE_UNCONFIRMED');
+    expect(x.conditions.find((c) => c.code === 'SPACE_SIZE_UNCONFIRMED')!.text).toMatch(/250 sq ft/);
+    expect(x.message.text).toMatch(/250/);
+    expect(after.assertions.ok).toBe(true);
+  });
+  test('then sending the size clears the condition', () => {
+    const after = run(withEvents([ev('update', 'APP-012', { spaceAvailable: 'Rented', floor: 'Ground' }), ev('update', 'APP-012', { spaceSize: 400 })], base));
+    expect(d(after, 'APP-012').outcome).toBe('APPROVED');
+  });
+  test('an uploaded row with Rented and a blank size is still held (case 5)', () => {
+    expect(d(base, 'APP-006').outcome).toBe('HOLD');
+    expect(d(base, 'APP-006').primaryReason).toBe('SPACE_SIZE_MISSING');
+  });
+});

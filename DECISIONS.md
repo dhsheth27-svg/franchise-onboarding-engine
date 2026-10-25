@@ -45,3 +45,11 @@ Judgement calls made where the spec was ambiguous. Each is the simplest reasonab
     never be overridden. Forced HOLD / REJECT / WAITLIST simply remove the applicant from allocation.
 17. **Redirect order**: same territory (if it still has a free slot and pin), then same city, then cities named in
     the notes, then other cities by priority (only if the notes show flexibility or name the city).
+18. **A space reported in a follow-up without its size** ("APP-012 has now found a ground-floor space") is a real
+    change of circumstance, so it clears the "no space" hold and the applicant is approved *with a condition*:
+    confirm the size meets the tier minimum within the condition window. Nothing is invented: if the confirmed size
+    is too small, the next update puts them back on hold. An *uploaded* row that says Owned/Rented with a blank size
+    is still held (SPEC case 5), because there the size was simply left out of the application.
+19. **Follow-up wording.** "APP-x confirmed the store is in <city>" updates the city when it matches the pin (clearing
+    a pin/city mismatch). "Can APP-x open in <city> instead?" is a what-if on the first free pin in that city, assuming
+    a new space is needed there. "APP-x has moved to <city>" without a pin asks which pin, rather than guessing.
