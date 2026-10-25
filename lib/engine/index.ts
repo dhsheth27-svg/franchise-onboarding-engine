@@ -3,6 +3,7 @@
 // (5) post-decision layer: redirects, counterfactuals, onboarding, reservations, risk, messages, actions.
 
 import { config as defaultConfig, configValues, type Config } from '../config';
+import { buildActions } from './actions';
 import { decide, type CoreResult, type Work } from './decide';
 import { oneLine, summarise } from './explain';
 import { buildPost } from './post';
@@ -48,6 +49,7 @@ export function runEngine(input: EngineInput, config: Config = defaultConfig, to
     counts: countOutcomes(decisions),
     durationMs: 0,
   };
+  result.actions = buildActions(decisions, result.territories, result.dataIssues, cfg, core.asOf, core.events.actionsDone);
   result.durationMs = Date.now() - started;
   return result;
 }
@@ -86,6 +88,7 @@ function toDecision(w: Work, core: CoreResult, post: PostParts): Decision {
     rankInTerritory: w.rank,
     slotRank: w.slotRank,
     provisionalRank: w.provisionalRank,
+    pinTakenBy: w.pinTakenBy,
     territorySlots: w.territory?.openSlots,
     waitlistPosition: w.waitlistPosition,
     reasons: w.reasons,

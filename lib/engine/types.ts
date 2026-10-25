@@ -291,6 +291,7 @@ export interface Decision {
   rankInTerritory: number | null;
   slotRank?: number;
   provisionalRank?: number;
+  pinTakenBy?: string;
   territorySlots?: number;
   waitlistPosition?: number;
   reasons: string[];

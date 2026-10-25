@@ -95,7 +95,7 @@ export function oneLine(w: Work, cfg: ConfigValues): string {
     PIN_HAS_STORE: `Existing store ${v.store} in pin ${a.pin}`,
     CAPITAL_INSUFFICIENT: `₹${fmtNum(Number(v.investment))}L vs ₹${v.minimum}L minimum (short ${v.shortfallPct}%)`,
     CAPITAL_SHORTFALL_SMALL: `Short ₹${fmtNum(Number(v.shortfall))}L of the ₹${v.minimum}L minimum`,
-    SPACE_NOT_IDENTIFIED: `No shop space yet${w.provisionalRank ? `; would rank #${w.provisionalRank}` : ''}`,
+    SPACE_NOT_IDENTIFIED: 'No shop space yet',
     SPACE_TOO_SMALL: `${fmtNum(Number(v.sqft))} sq ft < ${v.minimum} sq ft minimum`,
     SCORE_NEAR_MISS: `Score ${w.sr?.score}, just under the bar of ${cfg.MIN_SCORE_TO_APPROVE}`,
     SCORE_BELOW_BAR: `Score ${w.sr?.score} below the bar of ${cfg.MIN_SCORE_TO_APPROVE}`,
