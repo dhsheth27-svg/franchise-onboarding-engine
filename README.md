@@ -6,7 +6,7 @@ builds onboarding plans for those who move forward, tells the expansion team wha
 answers follow-up questions and updates ("Why is APP-007 on hold?", "APP-012 has now found a
 ground-floor space"), re-deciding and showing what changed.
 
-**Live demo:** https://franchiseflow-karnataka.vercel.app · Click **Try with sample data** for a 29-row messy dataset that covers every tricky case.
+**Live demo:** https://opsmith-app.vercel.app · Click **Try with sample data** for a 29-row messy dataset that covers every tricky case.
 
 ## What it does
 
