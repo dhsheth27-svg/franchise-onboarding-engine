@@ -42,7 +42,7 @@ export default function TodayTab({ result, onOpen, onDone, busy }: { result: Run
               {items.map((a) => {
                 const d = a.applicationKey ? byKey.get(a.applicationKey) : undefined;
                 return (
-                  <li key={a.id} className="rounded-2xl border border-slate-200/70 bg-white shadow-card p-3 sm:p-4">
+                  <li key={a.id} className="rounded-2xl border border-slate-200/70 bg-surface shadow-card p-3 sm:p-4">
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <div className="font-medium text-slate-900">{a.what}</div>

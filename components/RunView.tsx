@@ -8,6 +8,7 @@ import type { ChecklistStatus, Decision, Outcome } from '@/lib/engine/types';
 import type { NewEvent } from '@/lib/runs';
 import ApplicantDrawer from './ApplicantDrawer';
 import AskPanel from './AskPanel';
+import DashboardTab from './DashboardTab';
 import DataQualityTab from './DataQualityTab';
 import DecisionsTable from './DecisionsTable';
 import DiffBanner from './DiffBanner';
@@ -20,6 +21,7 @@ import TodayTab from './TodayTab';
 import { Button, fmtDate, Logo, OUTCOME_DOT, OUTCOME_LABEL, Spinner } from './ui';
 
 const TABS = [
+  { id: 'overview', label: 'Overview' },
   { id: 'today', label: 'Today' },
   { id: 'decisions', label: 'Decisions' },
   { id: 'territories', label: 'Territories' },
@@ -39,14 +41,15 @@ export default function RunView({ id }: { id: string }) {
 
 function Skeleton() {
   return (
-    <div className="mx-auto max-w-7xl animate-pulse px-4 py-6">
-      <div className="h-6 w-64 rounded bg-slate-200" />
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-16 rounded-lg bg-slate-200" />
+    <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="skeleton h-4 w-48 animate-shimmer rounded-full" />
+      <div className="skeleton mt-3 h-10 w-80 animate-shimmer rounded-2xl" />
+      <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="skeleton h-32 animate-shimmer rounded-3xl" />
         ))}
       </div>
-      <div className="mt-6 h-96 rounded-lg bg-slate-200" />
+      <div className="skeleton mt-4 h-80 animate-shimmer rounded-3xl" />
     </div>
   );
 }
@@ -63,7 +66,7 @@ function RunViewInner({ id }: { id: string }) {
   const [showHistory, setShowHistory] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
 
-  const tab = (params.get('tab') as TabId) || 'today';
+  const tab = (params.get('tab') as TabId) || 'overview';
   const selectedKey = params.get('a');
 
   const setQuery = useCallback(
@@ -141,7 +144,7 @@ function RunViewInner({ id }: { id: string }) {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-surface/90 backdrop-blur">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6">
           <Link href="/" aria-label="Home" className="flex items-center">
             <span className="sm:hidden">
@@ -157,7 +160,7 @@ function RunViewInner({ id }: { id: string }) {
             {data.version > 1 && <span className="hidden md:inline"> · {data.label}</span>}
           </div>
           <SimulateDate asOf={r.asOf} today={data.today} busy={!!busy} onApply={(days) => postEvents([{ type: 'dateAdvance', payload: { days } }], `Moved the date forward ${days} days`)} />
-          <Button variant="ghost" onClick={() => setShowHistory(true)}>
+          <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => setShowHistory(true)}>
             History
           </Button>
           <a className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 sm:inline-flex" href={`/api/runs/${id}/export`}>
@@ -173,7 +176,7 @@ function RunViewInner({ id }: { id: string }) {
       </header>
 
       {busy && (
-        <div className="fixed left-1/2 top-16 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm text-white shadow-lg" role="status">
+        <div className="fixed left-1/2 top-16 z-50 flex -translate-x-1/2 items-center gap-2 animate-scale-in rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-btn" role="status">
           <Spinner /> Re-deciding: {busy}
         </div>
       )}
@@ -184,38 +187,23 @@ function RunViewInner({ id }: { id: string }) {
       )}
 
       <div className="flex flex-1">
-        <main className="min-w-0 flex-1 px-4 pb-16 pt-4 sm:px-6">
-          {/* Stats strip */}
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-8">
-            {outcomes.map((o) => (
-              <button
-                key={o}
-                onClick={() => {
-                  setOutcomeFilter(outcomeFilter === o ? null : o);
-                  setQuery({ tab: 'decisions' });
-                }}
-                className={`rounded-2xl border bg-white px-3.5 py-3 text-left shadow-card transition hover:shadow-lift ${outcomeFilter === o ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-slate-200/70'}`}
-              >
-                <div className="text-xl font-extrabold tabular-nums text-ink sm:text-2xl">{r.counts[o]}</div>
-                <div className="mt-0.5 flex items-center gap-1.5 text-xs font-semibold text-slate-600">
-                  <span aria-hidden className={`h-2 w-2 rounded-full ${OUTCOME_DOT[o]}`} />
-                  {OUTCOME_LABEL[o]}
-                </div>
-              </button>
-            ))}
-            <button onClick={() => setQuery({ tab: 'today' })} className="rounded-2xl border border-brand-600 bg-brand-600 px-3.5 py-3 text-left text-white shadow-lift transition hover:bg-brand-700">
-              <div className="text-xl font-extrabold tabular-nums sm:text-2xl">{openActions}</div>
-              <div className="mt-0.5 text-xs font-semibold text-brand-50">Open actions</div>
-            </button>
-            <button onClick={() => setQuery({ tab: 'data' })} className="rounded-2xl border border-slate-200/70 bg-white px-3.5 py-3 text-left shadow-card transition hover:shadow-lift">
-              <div className="text-xl font-extrabold tabular-nums text-ink sm:text-2xl">{issues}</div>
-              <div className="mt-0.5 text-xs font-semibold text-slate-600">Data issues</div>
-            </button>
-            <div className="hidden flex-col justify-center rounded-2xl border border-slate-200/70 bg-white px-3.5 py-3 text-xs text-slate-500 shadow-card sm:col-span-4 sm:flex lg:col-span-1">
-              <span>
-                As of <span className="font-medium text-slate-800">{fmtDate(r.asOf)}</span>
+        <main className="relative isolate min-w-0 flex-1 px-4 pb-16 pt-4 sm:px-6">
+          <div className="bg-dots pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 [mask-image:linear-gradient(to_bottom,black,transparent)]" aria-hidden />
+          {/* Title */}
+          <div className="flex flex-wrap items-end justify-between gap-4 pt-4">
+            <div className="animate-fade-up">
+              <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">
+                {data.source ?? data.label} · as of {fmtDate(r.asOf)}
+              </div>
+              <h1 className="mt-2 text-3xl font-bold uppercase leading-none tracking-tight text-ink sm:text-4xl">
+                Expansion <span className="text-slate-400">control room</span>
+              </h1>
+            </div>
+            <div className="flex animate-fade-up flex-wrap items-center gap-2 text-xs text-slate-500" style={{ animationDelay: '80ms' }}>
+              <span className="rounded-full border border-slate-200 px-3 py-1">
+                v{data.version} {data.version > 1 ? `· ${data.label}` : ''}
               </span>
-              <span>
+              <span className="rounded-full border border-slate-200 px-3 py-1">
                 {r.decisions.length} decided in {r.durationMs < 1000 ? `${Math.max(1, r.durationMs)} ms` : `${(r.durationMs / 1000).toFixed(1)} s`}
               </span>
             </div>
@@ -223,22 +211,45 @@ function RunViewInner({ id }: { id: string }) {
 
           {params.get('changed') && data.parentRunId && <DiffBanner runId={id} onOpen={(k) => setQuery({ a: k })} onClose={() => setQuery({ changed: null })} />}
 
-          {/* Tabs */}
-          <nav className="mt-6 flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-slate-200/70 bg-white p-1 shadow-card" aria-label="Sections">
+          {/* Tabs: segmented control */}
+          <nav className="mt-6 flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-slate-200 bg-surface p-1 shadow-card" aria-label="Sections">
             {TABS.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setQuery({ tab: t.id })}
                 aria-current={tab === t.id ? 'page' : undefined}
-                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-semibold transition ${tab === t.id ? 'bg-brand-600 text-white shadow-btn' : 'text-slate-600 hover:bg-brand-50 hover:text-brand-700'}`}
+                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-medium transition duration-200 ${tab === t.id ? 'bg-[#F4F4F6] text-black shadow' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
               >
                 {t.label}
-                {t.id === 'today' && openActions > 0 && <span className={`ml-1.5 rounded-full px-1.5 text-xs ${tab === t.id ? 'bg-white/20 text-white' : 'bg-brand-100 text-brand-800'}`}>{openActions}</span>}
+                {t.id === 'today' && openActions > 0 && <span className={`ml-1.5 rounded-full px-1.5 text-xs ${tab === t.id ? 'bg-brand-600 text-white' : 'bg-brand-200 text-brand-800'}`}>{openActions}</span>}
               </button>
             ))}
           </nav>
 
-          <div className="pt-5">
+          {/* Outcome chips (filters) on every tab except the dashboard */}
+          {tab !== 'overview' && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {outcomes.map((o) => (
+                <button
+                  key={o}
+                  onClick={() => {
+                    setOutcomeFilter(outcomeFilter === o ? null : o);
+                    setQuery({ tab: 'decisions' });
+                  }}
+                  className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition duration-200 hover:border-slate-400 hover:bg-slate-100 ${outcomeFilter === o ? 'border-brand-600 bg-brand-50 text-slate-900' : 'border-slate-200 text-slate-600'}`}
+                >
+                  <span aria-hidden className={`h-2 w-2 rounded-full ${OUTCOME_DOT[o]}`} />
+                  {OUTCOME_LABEL[o]} <span className="font-semibold tabular-nums text-slate-900">{r.counts[o]}</span>
+                </button>
+              ))}
+              <button onClick={() => setQuery({ tab: 'data' })} className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:border-slate-400 hover:bg-slate-100">
+                Data issues <span className="font-semibold tabular-nums text-slate-900">{issues}</span>
+              </button>
+            </div>
+          )}
+
+          <div key={tab} className="animate-fade-up pt-5">
+            {tab === 'overview' && <DashboardTab result={r} config={data.config} events={data.events} onOpen={(k) => setQuery({ a: k })} onTab={(t) => setQuery({ tab: t })} />}
             {tab === 'today' && <TodayTab result={r} onOpen={(k) => setQuery({ a: k })} onDone={(itemId, label) => postEvents([{ type: 'checklist', payload: { kind: 'action', item: itemId, status: 'Done' } }], `Done: ${label}`)} busy={!!busy} />}
             {tab === 'decisions' && <DecisionsTable decisions={r.decisions} outcomeFilter={outcomeFilter} onOutcomeFilter={setOutcomeFilter} onOpen={(k) => setQuery({ a: k })} selectedKey={selectedKey} />}
             {tab === 'territories' && <TerritoriesTab result={r} onOpen={(k) => setQuery({ a: k })} />}
@@ -298,7 +309,7 @@ function SimulateDate({ asOf, today, busy, onApply }: { asOf: string; today: str
         min={asOf}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="rounded-md border border-slate-300 px-2 py-1 text-sm"
+        className="w-[8.25rem] rounded-full border border-slate-300 bg-surface px-3 py-1 text-xs text-slate-800 transition hover:border-slate-400 sm:w-auto sm:text-sm"
         title={asOf !== today ? `Simulated: real date is ${fmtDate(today)}` : 'Move the date forward to see reservations expire and the waitlist promote'}
       />
       {days > 0 && (

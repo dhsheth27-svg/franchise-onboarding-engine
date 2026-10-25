@@ -82,13 +82,13 @@ export default function DecisionsTable({
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search ID, name, pin, reason…"
           aria-label="Search decisions"
-          className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 sm:w-64"
+          className="w-full rounded-md border border-slate-300 bg-surface px-3 py-1.5 text-sm placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 sm:w-64"
         />
         <select
           value={outcomeFilter ?? ''}
           onChange={(e) => onOutcomeFilter((e.target.value || null) as Outcome | null)}
           aria-label="Filter by outcome"
-          className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm"
+          className="rounded-md border border-slate-300 bg-surface px-2 py-1.5 text-sm"
         >
           <option value="">All outcomes</option>
           {(Object.keys(OUTCOME_LABEL) as Outcome[]).map((o) => (
@@ -97,7 +97,7 @@ export default function DecisionsTable({
             </option>
           ))}
         </select>
-        <select value={territory} onChange={(e) => setTerritory(e.target.value)} aria-label="Filter by territory" className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm">
+        <select value={territory} onChange={(e) => setTerritory(e.target.value)} aria-label="Filter by territory" className="rounded-md border border-slate-300 bg-surface px-2 py-1.5 text-sm">
           <option value="">All territories</option>
           {territories.map((t) => (
             <option key={t} value={t}>
@@ -113,7 +113,7 @@ export default function DecisionsTable({
       {rows.length === 0 ? (
         <Empty>No applications match these filters.</Empty>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200/70 bg-white shadow-card">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200/70 bg-surface shadow-card">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50/70">
               <tr>

@@ -17,8 +17,8 @@ export default function HistoryPanel({ runId, currentId, onClose }: { runId: str
   }, [runId]);
   return (
     <div className="fixed inset-0 z-40 flex justify-end" role="dialog" aria-modal="true" aria-label="Run history">
-      <button aria-label="Close" className="absolute inset-0 bg-slate-900/30" onClick={onClose} />
-      <div className="relative h-full w-full max-w-md overflow-y-auto bg-white p-5 shadow-2xl">
+      <button aria-label="Close" className="absolute inset-0 animate-fade-in bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative h-full w-full max-w-md animate-slide-in overflow-y-auto border-l border-slate-200 bg-surface p-5 shadow-2xl">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Run history</h2>
           <Button variant="ghost" onClick={onClose}>

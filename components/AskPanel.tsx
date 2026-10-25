@@ -114,7 +114,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
   }
 
   const panel = (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-surface">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <div>
           <h2 className="text-sm font-semibold text-slate-900">Ask or update</h2>
@@ -155,7 +155,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
               {m.focus && m.focus.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {m.focus.map((k) => (
-                    <button key={k} onClick={() => onOpen(k)} className="rounded border border-slate-300 bg-white px-2 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-100">
+                    <button key={k} onClick={() => onOpen(k)} className="rounded border border-slate-300 bg-surface px-2 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-100">
                       Open {decisions.find((d) => d.key === k)?.applicationId ?? k}
                     </button>
                   ))}
@@ -210,8 +210,8 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
       <aside className="sticky top-[49px] hidden h-[calc(100vh-49px)] w-[380px] flex-none border-l border-slate-200 xl:block">{panel}</aside>
       {open && (
         <div className="fixed inset-0 z-40 flex justify-end xl:hidden" role="dialog" aria-modal="true" aria-label="Ask panel">
-          <button aria-label="Close" className="absolute inset-0 bg-slate-900/30" onClick={onClose} />
-          <div className="relative h-full w-full max-w-md shadow-2xl">{panel}</div>
+          <button aria-label="Close" className="absolute inset-0 animate-fade-in bg-black/70 backdrop-blur-sm" onClick={onClose} />
+          <div className="relative h-full w-full max-w-md animate-slide-in shadow-2xl">{panel}</div>
         </div>
       )}
     </>

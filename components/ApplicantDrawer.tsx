@@ -33,7 +33,7 @@ function ResultIcon({ r }: { r: TraceStep['result'] }) {
 const STATUSES: ChecklistStatus[] = ['Not started', 'In progress', 'Done', 'Blocked'];
 
 function StatusSelect({ value, onChange, disabled, label }: { value: ChecklistStatus; onChange: (s: ChecklistStatus) => void; disabled?: boolean; label: string }) {
-  const tone = value === 'Done' ? 'text-emerald-800 bg-emerald-50' : value === 'Blocked' ? 'text-rose-800 bg-rose-50' : value === 'In progress' ? 'text-sky-800 bg-sky-50' : 'text-slate-600 bg-white';
+  const tone = value === 'Done' ? 'text-emerald-800 bg-emerald-50' : value === 'Blocked' ? 'text-rose-800 bg-rose-50' : value === 'In progress' ? 'text-sky-800 bg-sky-50' : 'text-slate-600 bg-surface';
   return (
     <select aria-label={label} disabled={disabled} value={value} onChange={(e) => onChange(e.target.value as ChecklistStatus)} className={`rounded border border-slate-300 px-1.5 py-0.5 text-xs ${tone}`}>
       {STATUSES.map((s) => (
@@ -67,10 +67,10 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
 
   return (
     <div className="fixed inset-0 z-40 flex justify-end" role="dialog" aria-modal="true" aria-label={`Application ${d.applicationId}`}>
-      <button aria-label="Close" className="absolute inset-0 bg-slate-900/30" onClick={actions.onClose} />
-      <div ref={panel} tabIndex={-1} className="relative h-full w-full max-w-2xl overflow-y-auto bg-white shadow-2xl focus:outline-none">
+      <button aria-label="Close" className="absolute inset-0 animate-fade-in bg-black/70 backdrop-blur-sm" onClick={actions.onClose} />
+      <div ref={panel} tabIndex={-1} className="relative h-full w-full max-w-2xl animate-slide-in overflow-y-auto border-l border-slate-200 bg-surface shadow-2xl focus:outline-none">
         {/* Header */}
-        <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-6">
+        <div className="sticky top-0 z-10 border-b border-slate-200 bg-surface/90 px-5 py-4 backdrop-blur sm:px-6">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">

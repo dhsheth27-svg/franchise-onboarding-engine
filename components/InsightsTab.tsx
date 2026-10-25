@@ -39,7 +39,7 @@ function Bars({ rows, max, unit = '' }: { rows: { label: ReactNode; n: number; h
 
 function Stat({ value, label, sub }: { value: ReactNode; label: string; sub?: string }) {
   return (
-    <div className="rounded-2xl border border-slate-200/70 bg-white shadow-card px-4 py-3">
+    <div className="rounded-2xl border border-slate-200/70 bg-surface shadow-card px-4 py-3">
       <div className="text-2xl font-semibold tabular-nums text-slate-900">{value}</div>
       <div className="text-xs font-medium text-slate-600">{label}</div>
       {sub && <div className="mt-0.5 text-xs text-slate-400">{sub}</div>}

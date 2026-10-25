@@ -2,14 +2,24 @@
 
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import { IconDownload, IconList, IconUpload } from './icons';
 import { Spinner } from './ui';
 
 type Status = { kind: 'idle' } | { kind: 'busy'; text: string } | { kind: 'error'; text: string; details: string[] };
+type Mode = 'upload' | 'sample' | 'template';
+
+const MODES: { id: Mode; label: string; icon: JSX.Element }[] = [
+  { id: 'upload', label: 'Upload', icon: <IconUpload className="h-4 w-4" /> },
+  { id: 'sample', label: 'Sample data', icon: <IconList className="h-4 w-4" /> },
+  { id: 'template', label: 'Template', icon: <IconDownload className="h-4 w-4" /> },
+];
 
 export default function UploadPanel() {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<Mode>('upload');
   const [drag, setDrag] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const busy = status.kind === 'busy';
 
@@ -23,10 +33,11 @@ export default function UploadPanel() {
     router.push(`/run/${body.runId}`);
   }
 
-  async function upload(file: File) {
-    setStatus({ kind: 'busy', text: `Reading ${file.name} and deciding every application…` });
+  async function upload(f: File) {
+    setFile(f);
+    setStatus({ kind: 'busy', text: `Reading ${f.name} and deciding every application…` });
     const fd = new FormData();
-    fd.append('file', file);
+    fd.append('file', f);
     try {
       await go(await fetch('/api/upload', { method: 'POST', body: fd }));
     } catch {
@@ -35,7 +46,7 @@ export default function UploadPanel() {
   }
 
   async function sample() {
-    setStatus({ kind: 'busy', text: 'Running the sample dataset (29 messy applications, 7 territories)…' });
+    setStatus({ kind: 'busy', text: 'Running 29 messy applications across 7 territories…' });
     try {
       await go(await fetch('/api/sample', { method: 'POST' }));
     } catch {
@@ -43,43 +54,79 @@ export default function UploadPanel() {
     }
   }
 
+  const action = () => {
+    if (busy) return;
+    if (mode === 'upload') {
+      if (file) upload(file);
+      else input.current?.click();
+    } else if (mode === 'sample') sample();
+    else window.location.href = '/api/template';
+  };
+
   return (
-    <div className="rounded-3xl border border-slate-200/70 bg-white p-5 shadow-lift sm:p-7">
-      <div
-        role="button"
-        tabIndex={0}
-        aria-label="Upload Excel file"
-        onClick={() => !busy && input.current?.click()}
-        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && !busy && input.current?.click()}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDrag(true);
-        }}
-        onDragLeave={() => setDrag(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDrag(false);
-          const f = e.dataTransfer.files?.[0];
-          if (f && !busy) upload(f);
-        }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-10 text-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-          drag ? 'border-brand-500 bg-brand-50' : 'border-brand-200 bg-brand-50/40 hover:border-brand-400 hover:bg-brand-50'
-        }`}
-      >
-        {busy ? (
-          <>
-            <Spinner className="h-6 w-6 text-brand-700" />
-            <p className="mt-3 text-sm font-medium text-slate-700">{status.text}</p>
-          </>
-        ) : (
-          <>
-            <svg aria-hidden viewBox="0 0 24 24" className="h-11 w-11 rounded-xl bg-brand-600 p-2.5 text-white shadow-btn" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <p className="mt-4 text-base font-bold text-ink">Drop your Excel file here</p>
-            <p className="mt-1 text-sm text-slate-500">or click to choose · .xlsx with Applications and Territories sheets</p>
-          </>
-        )}
+    <div
+      className={`rounded-[28px] border bg-surface/90 p-2.5 shadow-card backdrop-blur transition duration-300 ${drag ? 'border-brand-600 shadow-lift' : 'border-slate-200 hover:border-slate-300'}`}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDrag(true);
+        setMode('upload');
+      }}
+      onDragLeave={() => setDrag(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDrag(false);
+        const f = e.dataTransfer.files?.[0];
+        if (f && !busy) upload(f);
+      }}
+    >
+      {/* Segmented control */}
+      <div role="tablist" aria-label="How to start" className="grid grid-cols-3 gap-1 rounded-full bg-slate-100 p-1">
+        {MODES.map((m) => (
+          <button
+            key={m.id}
+            role="tab"
+            aria-selected={mode === m.id}
+            onClick={() => setMode(m.id)}
+            className={`inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[13px] font-medium transition duration-200 ${
+              mode === m.id ? 'bg-[#F4F4F6] text-black shadow' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+            }`}
+          >
+            {m.icon}
+            {m.label}
+          </button>
+        ))}
+      </div>
+
+      {/* "Search bar" row with the red action button */}
+      <div className="mt-2.5 flex items-center gap-2 rounded-full border border-slate-200 bg-canvas py-1.5 pl-5 pr-1.5 transition focus-within:border-slate-400">
+        <button
+          type="button"
+          onClick={() => mode === 'upload' && !busy && input.current?.click()}
+          className={`min-w-0 flex-1 truncate text-left text-sm ${mode === 'upload' ? 'cursor-pointer text-slate-500 hover:text-slate-800' : 'cursor-default text-slate-500'}`}
+        >
+          {busy ? (
+            <span className="inline-flex items-center gap-2 text-slate-800">
+              <Spinner className="h-3.5 w-3.5 text-brand-600" /> {status.text}
+            </span>
+          ) : mode === 'upload' ? (
+            file ? (
+              <span className="text-slate-900">{file.name}</span>
+            ) : (
+              'Drop an Excel file here, or click to browse'
+            )
+          ) : mode === 'sample' ? (
+            '29 deliberately messy applications covering every tricky case'
+          ) : (
+            'Blank workbook in the exact case format'
+          )}
+        </button>
+        <button
+          onClick={action}
+          disabled={busy}
+          className="inline-flex flex-none items-center gap-1.5 rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white shadow-btn transition duration-200 hover:-translate-y-px hover:bg-brand-500 disabled:opacity-60"
+        >
+          {mode === 'upload' ? (file ? 'Decide' : 'Browse') : mode === 'sample' ? 'Run sample' : 'Download'}
+        </button>
         <input
           ref={input}
           type="file"
@@ -94,37 +141,21 @@ export default function UploadPanel() {
       </div>
 
       {status.kind === 'error' && (
-        <div role="alert" className="mt-4 rounded-md border border-rose-200 bg-rose-50 p-3 text-sm text-rose-900">
+        <div role="alert" className="mx-2 mt-2.5 animate-fade-up rounded-2xl border border-rose-300 bg-rose-50 p-3 text-left text-sm text-rose-800">
           <p className="font-medium">{status.text}</p>
           {status.details.map((d) => (
-            <p key={d} className="mt-1 text-rose-800">
+            <p key={d} className="mt-1 text-rose-700">
               {d}
             </p>
           ))}
         </div>
       )}
-
-      <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
-        <span className="h-px flex-1 bg-slate-200" /> or <span className="h-px flex-1 bg-slate-200" />
-      </div>
-
-      <button
-        onClick={sample}
-        disabled={busy}
-        className="w-full rounded-full bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-btn transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:bg-brand-300"
-      >
-        Try with sample data
-      </button>
-      <p className="mt-2 text-center text-xs text-slate-500">29 deliberately messy applications covering every tricky case.</p>
-
-      <div className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm">
-        <a className="font-medium text-brand-700 underline-offset-2 hover:underline" href="/api/template">
-          Download blank template
+      <p className="px-4 pb-1 pt-2.5 text-center text-[11px] uppercase tracking-wider text-slate-500">
+        Applications + Territories sheets ·{' '}
+        <a className="text-slate-700 underline-offset-2 transition hover:text-brand-700 hover:underline" href="/api/sample-file">
+          sample as Excel
         </a>
-        <a className="font-medium text-brand-700 underline-offset-2 hover:underline" href="/api/sample-file">
-          Download sample as Excel
-        </a>
-      </div>
+      </p>
     </div>
   );
 }

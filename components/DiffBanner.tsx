@@ -40,7 +40,7 @@ export default function DiffBanner({ runId, onOpen, onClose }: { runId: string; 
   }, [runId]);
   if (!state?.from) return null;
   return (
-    <div className="mt-4 rounded-lg border border-brand-200 bg-brand-50/60 p-4">
+    <div className="mt-5 animate-fade-up rounded-3xl border border-brand-300 bg-brand-50 p-5">
       <div className="flex items-start justify-between gap-3">
         <h2 className="text-sm font-semibold text-brand-950">
           What changed since v{state.from.version} ({state.diff.filter((d) => d.outcomeFrom !== d.outcomeTo).length} decision{state.diff.filter((d) => d.outcomeFrom !== d.outcomeTo).length === 1 ? '' : 's'} moved)

@@ -3,16 +3,42 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 body {
-  background: #f4f7fc;
-  color: #0b1638;
+  background: #060606;
+  color: #f4f4f6;
 }
-/* Faint blueprint grid used behind hero areas */
-.bg-grid {
-  background-image:
-    linear-gradient(to right, rgba(23, 69, 214, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(23, 69, 214, 0.06) 1px, transparent 1px);
-  background-size: 48px 48px;
+::selection {
+  background: rgba(255, 65, 34, 0.45);
+  color: #fff;
+}
+/* Dotted texture used behind hero areas */
+.bg-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.11) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #151518 0%, #222227 50%, #151518 100%);
+  background-size: 800px 100%;
+}
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+}
+select,
+input,
+textarea {
+  background-color: #0f0f11;
+  color: #f4f4f6;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

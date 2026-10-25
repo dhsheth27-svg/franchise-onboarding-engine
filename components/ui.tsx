@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { Confidence, Outcome } from '@/lib/engine/types';
 
 export const OUTCOME_LABEL: Record<Outcome, string> = {
@@ -65,9 +65,9 @@ export function RiskLabel({ level }: { level?: 'Low' | 'Medium' | 'High' }) {
 
 export function Section({ title, children, right, id }: { title: string; children: ReactNode; right?: ReactNode; id?: string }) {
   return (
-    <section id={id} className="border-t border-slate-100 px-5 py-5 sm:px-6">
+    <section id={id} className="border-t border-slate-200/70 px-5 py-5 sm:px-6">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h3 className="text-[12px] font-bold uppercase tracking-[0.08em] text-brand-700">{title}</h3>
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</h3>
         {right}
       </div>
       {children}
@@ -75,8 +75,15 @@ export function Section({ title, children, right, id }: { title: string; childre
   );
 }
 
-export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-2xl border border-slate-200/70 bg-white shadow-card ${className}`}>{children}</div>;
+export function Card({ children, className = '', hover = false, style }: { children: ReactNode; className?: string; hover?: boolean; style?: CSSProperties }) {
+  return (
+    <div
+      style={style}
+      className={`rounded-3xl border border-slate-200 bg-surface shadow-card ${hover ? 'transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lift' : ''} ${className}`}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function Button({
@@ -97,10 +104,10 @@ export function Button({
   title?: string;
 }) {
   const styles = {
-    primary: 'bg-brand-600 text-white shadow-btn hover:bg-brand-700 disabled:bg-brand-300 disabled:shadow-none',
-    secondary: 'bg-white text-ink ring-1 ring-inset ring-slate-200 hover:ring-brand-300 hover:text-brand-700 disabled:text-slate-400',
-    ghost: 'text-slate-600 hover:bg-brand-50 hover:text-brand-700 disabled:text-slate-400',
-    danger: 'bg-rose-600 text-white hover:bg-rose-700 disabled:bg-rose-300',
+    primary: 'bg-brand-600 text-white shadow-btn hover:-translate-y-px hover:bg-brand-500 active:translate-y-0 disabled:bg-brand-300 disabled:shadow-none',
+    secondary: 'bg-transparent text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-900 hover:text-black hover:ring-slate-900 disabled:text-slate-400',
+    ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:text-slate-400',
+    danger: 'bg-rose-500 text-white hover:bg-rose-400 disabled:bg-rose-800',
   };
   return (
     <button
@@ -108,7 +115,7 @@ export function Button({
       title={title}
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1 ${styles[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas ${styles[variant]} ${className}`}
     >
       {children}
     </button>
@@ -122,7 +129,7 @@ export function fmtDate(iso?: string | null): string {
 }
 
 export function Empty({ children }: { children: ReactNode }) {
-  return <p className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-4 py-6 text-center text-sm text-slate-500">{children}</p>;
+  return <p className="rounded-2xl border border-dashed border-slate-300 bg-surface/60 px-4 py-6 text-center text-sm text-slate-500">{children}</p>;
 }
 
 export function Spinner({ className = 'h-4 w-4' }: { className?: string }) {
@@ -133,11 +140,11 @@ export function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <span className="inline-flex items-center gap-2">
       <svg aria-hidden viewBox="0 0 32 32" className="h-7 w-7 flex-none">
-        <rect width="32" height="32" rx="8" fill="#1F55F5" />
+        <rect width="32" height="32" rx="10" fill="#FF4122" />
         <path d="M9 22V10h12M9 16h8" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         <circle cx="23" cy="22" r="2.4" fill="white" />
       </svg>
-      {!compact && <span className="text-[17px] font-extrabold tracking-tight text-ink">Franchise<span className="text-brand-600">Flow</span></span>}
+      {!compact && <span className="text-[16px] font-bold uppercase tracking-tight text-ink">Franchise<span className="text-slate-500">Flow</span></span>}
     </span>
   );
 }
@@ -151,5 +158,76 @@ export function IconTile({ children, tone = 'brand' }: { children: ReactNode; to
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {
-  return <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-100 bg-white px-3 py-1 text-xs font-semibold text-brand-700 shadow-card">{children}</span>;
+  return <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-[11px] font-medium uppercase italic tracking-wide text-slate-700">{children}</span>;
+}
+
+/** Two-tone uppercase headline: first part white, second part grey. */
+export function Headline({ lead, rest, as = 'h2', className = '' }: { lead: ReactNode; rest?: ReactNode; as?: 'h1' | 'h2' | 'h3'; className?: string }) {
+  const Tag = as;
+  return (
+    <Tag className={`font-bold uppercase leading-[0.98] tracking-[-0.02em] text-ink ${className}`}>
+      {lead} {rest && <span className="text-slate-400">{rest}</span>}
+    </Tag>
+  );
+}
+
+/** Counts up to a number when it scrolls into view. */
+export function CountUp({ value, decimals = 0, duration = 900, suffix }: { value: number; decimals?: number; duration?: number; suffix?: ReactNode }) {
+  const [n, setN] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setN(value);
+      return;
+    }
+    let raf = 0;
+    const start = (t0: number) => {
+      const tick = (t: number) => {
+        const p = Math.min(1, (t - t0) / duration);
+        setN(value * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          start(performance.now());
+        }
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [value, duration]);
+  return (
+    <span ref={ref} className="tabular-nums">
+      {Math.max(0, n).toFixed(decimals)}
+      {suffix}
+    </span>
+  );
+}
+
+/** Horizontal bar that grows in from the left. */
+export function GrowBar({ pct, className = 'bg-brand-600', delay = 0, height = 'h-2' }: { pct: number; className?: string; delay?: number; height?: string }) {
+  return (
+    <span className={`block overflow-hidden rounded-full bg-slate-100 ${height}`}>
+      <span className={`block h-full origin-left animate-grow-x rounded-full ${className}`} style={{ width: `${Math.max(0, Math.min(100, pct))}%`, animationDelay: `${delay}ms` }} />
+    </span>
+  );
+}
+
+/** Staggered fade-up wrapper. */
+export function Reveal({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) {
+  return (
+    <div className={`animate-fade-up ${className}`} style={{ animationDelay: `${delay}ms` }}>
+      {children}
+    </div>
+  );
 }

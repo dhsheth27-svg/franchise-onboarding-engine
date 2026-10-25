@@ -57,7 +57,7 @@ export default function TerritoriesTab({ result, onOpen }: { result: RunResult; 
                     <span
                       key={p}
                       title={store ? 'Existing store' : used ? `Approved: ${used}` : 'Free'}
-                      className={`rounded px-1.5 py-0.5 font-mono text-xs ${store ? 'bg-slate-200 text-slate-500 line-through' : used ? 'bg-emerald-100 text-emerald-900' : 'bg-white text-slate-700 ring-1 ring-inset ring-slate-300'}`}
+                      className={`rounded px-1.5 py-0.5 font-mono text-xs ${store ? 'bg-slate-200 text-slate-500 line-through' : used ? 'bg-emerald-100 text-emerald-900' : 'bg-surface text-slate-700 ring-1 ring-inset ring-slate-300'}`}
                     >
                       {p}
                       {used ? ` · ${used}` : ''}
