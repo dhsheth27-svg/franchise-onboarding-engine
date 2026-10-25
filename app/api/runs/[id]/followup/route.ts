@@ -6,6 +6,7 @@ import {
   actionsAnswer,
   changeAnswer,
   compareAnswer,
+  confirmEventWording,
   describeIntentPatch,
   explainAnswer,
   intentToEvents,
@@ -61,7 +62,14 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       const directory = r.decisions.map((d) => `${d.key} | ${d.applicantName} | ${d.city ?? '—'} | ${d.application.business || '—'}`);
       const llm = await parseIntentLLM(message, directory);
       if (llm) {
-        intent = llmToIntent(llm.raw, (id) => keys.find((k) => k.toUpperCase() === id.trim().toUpperCase()) ?? null);
+        const resolve = (id: string) => keys.find((k) => k.toUpperCase() === id.trim().toUpperCase()) ?? null;
+        intent = llmToIntent(llm.raw, resolve);
+        // Safety: an AI reading that would record a withdrawal, signed agreement, missed deadline or date move
+        // must be backed by the message's own words. Otherwise treat stated facts as an update, or use the rules.
+        if (intent && !confirmEventWording(intent, message)) {
+          const asUpdate = llmToIntent({ ...llm.raw, intent: 'update' }, resolve);
+          intent = asUpdate && asUpdate.kind === 'update' ? asUpdate : null;
+        }
         if (intent) parsedBy = 'llm';
       }
     }

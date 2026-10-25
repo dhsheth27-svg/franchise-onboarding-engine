@@ -92,3 +92,12 @@ describe('phrasings judges are likely to use', () => {
 test('"which places can we still put new stores in" lists territories', () => {
   expect(p('Which places can we still put new stores in?')).toEqual({ kind: 'territories' });
 });
+
+test('event-creating readings must be backed by the message wording', async () => {
+  const { confirmEventWording } = await import('@/lib/followup');
+  const msg = 'Good news: Imran (APP-012) finally got a shop on the ground floor, about four hundred square feet';
+  expect(confirmEventWording({ kind: 'milestone', id: 'APP-012', stage: 'agreement' }, msg)).toBe(false);
+  expect(confirmEventWording({ kind: 'withdraw', id: 'APP-012' }, msg)).toBe(false);
+  expect(confirmEventWording({ kind: 'milestone', id: 'APP-001', stage: 'agreement' }, 'APP-001 signed the agreement today')).toBe(true);
+  expect(confirmEventWording({ kind: 'update', id: 'APP-012', patch: {}, notes: [] }, msg)).toBe(true);
+});

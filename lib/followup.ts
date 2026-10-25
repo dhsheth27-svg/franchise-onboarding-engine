@@ -99,12 +99,27 @@ export function findCity(t: string): string | null {
   return c?.city ?? null;
 }
 
+/** Wording that must be present before a message may record these events (also used to check the AI's reading). */
+export const EVENT_WORDING = {
+  withdraw: /withdr[ae]w|dropped out|drop out|backed out|pulled out|no longer interested|not interested|cancel(l)?ed|quit/,
+  reservationMissed: /missed (the |their )?(deadline|reservation)|did ?n[o']t sign|reservation (has )?(lapsed|expired)|failed to sign/,
+  milestone: /signed (the )?(franchise )?agreement|agreement (is |has been |was )?signed|signs? the agreement/,
+  dateAdvance: /(?:move|go|jump|fast[\s-]?forward|advance|skip|simulate)\s+(?:the date\s+)?(?:forward\s+|ahead\s+)?(?:by\s+)?(\d{1,3})\s*days?|(\d{1,3})\s*days?\s+(?:later|forward|ahead|pass)/,
+};
+
+/** Reject an AI reading that would record an event the message does not actually describe. */
+export function confirmEventWording(intent: Intent, message: string): boolean {
+  const t = message.toLowerCase();
+  if (intent.kind === 'withdraw' || intent.kind === 'reservationMissed' || intent.kind === 'milestone' || intent.kind === 'dateAdvance') return EVENT_WORDING[intent.kind].test(t);
+  return true;
+}
+
 export function parseRules(message: string, decisions: Decision[], territories: TerritorySummary[]): Intent {
   const text = message.trim();
   const t = text.toLowerCase();
   const { found, unknown } = findIds(text, decisions);
 
-  const days = t.match(/(?:move|go|jump|fast[\s-]?forward|advance|skip|simulate)\s+(?:the date\s+)?(?:forward\s+|ahead\s+)?(?:by\s+)?(\d{1,3})\s*days?|(\d{1,3})\s*days?\s+(?:later|forward|ahead|pass)/);
+  const days = t.match(EVENT_WORDING.dateAdvance);
   if (days) return { kind: 'dateAdvance', days: parseInt(days[1] ?? days[2], 10) };
 
   if (unknown.length && !found.length) {
@@ -131,9 +146,9 @@ export function parseRules(message: string, decisions: Decision[], territories: 
 
   if (found.length >= 2 && /beat|vs\.?|versus|compare|over|instead|ahead|better|lose|lost|why did|difference/.test(t)) return { kind: 'compare', a: found[0], b: found[1] };
   const id = found[0];
-  if (/withdr[ae]w|dropped out|drop out|backed out|pulled out|no longer interested|not interested|cancel(l)?ed|quit/.test(t)) return { kind: 'withdraw', id };
-  if (/missed (the |their )?(deadline|reservation)|did ?n[o']t sign|reservation (has )?(lapsed|expired)|failed to sign/.test(t)) return { kind: 'reservationMissed', id };
-  if (/signed (the )?(franchise )?agreement|agreement (is |has been |was )?signed|signs? the agreement/.test(t)) return { kind: 'milestone', id, stage: 'agreement' };
+  if (EVENT_WORDING.withdraw.test(t)) return { kind: 'withdraw', id };
+  if (EVENT_WORDING.reservationMissed.test(t)) return { kind: 'reservationMissed', id };
+  if (EVENT_WORDING.milestone.test(t)) return { kind: 'milestone', id, stage: 'agreement' };
 
   const { patch, notes } = extractPatch(text);
   const hypothetical = /what if|what would|would .* (be|get|happen)|suppose|hypothetical|imagine|if (they|he|she|app)|^can |^could |\bcan (app|they|he|she)\b|\bcould (app|they|he|she)\b/.test(t);
