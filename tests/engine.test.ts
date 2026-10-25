@@ -436,3 +436,24 @@ describe('follow-up space without a size', () => {
     expect(d(base, 'APP-006').primaryReason).toBe('SPACE_SIZE_MISSING');
   });
 });
+
+describe('duplicate applicant detection', () => {
+  const mk = (id: string, name: string) => ({ ...sampleInput().applications[0], rowNumber: 100, applicationId: id, applicantName: name, pin: '560103' });
+  const runWith = (rows: ReturnType<typeof mk>[]) => run({ ...sampleInput(), applications: [...sampleInput().applications, ...rows] });
+  test('names differing only by digits are different people', () => {
+    const r = runWith([mk('APP-901', 'Person 1'), mk('APP-902', 'Person 321')]);
+    expect(d(r, 'APP-901').flags.map((f) => f.code)).not.toContain('DUPLICATE_APPLICANT');
+    expect(d(r, 'APP-902').flags.map((f) => f.code)).not.toContain('DUPLICATE_APPLICANT');
+  });
+  test('names in Kannada or Hindi script are compared properly', () => {
+    const r = runWith([mk('APP-903', 'ರವಿ ಕುಮಾರ್'), mk('APP-904', 'ಸುಮಾ ಭಟ್'), mk('APP-905', 'रवि  कुमार'), mk('APP-906', 'रवि कुमार')]);
+    expect(d(r, 'APP-903').flags.map((f) => f.code)).not.toContain('DUPLICATE_APPLICANT');
+    expect(d(r, 'APP-904').flags.map((f) => f.code)).not.toContain('DUPLICATE_APPLICANT');
+    const hindi = [d(r, 'APP-905'), d(r, 'APP-906')].filter((x) => x.flags.some((f) => f.code === 'DUPLICATE_APPLICANT'));
+    expect(hindi.length).toBe(1); // same Hindi name + same pin, spacing ignored
+  });
+  test('same name with different spacing/punctuation is still caught', () => {
+    const r = runWith([mk('APP-907', 'Ravi  K. Murthy'), mk('APP-908', 'ravi k murthy')]);
+    expect([d(r, 'APP-907'), d(r, 'APP-908')].filter((x) => x.flags.some((f) => f.code === 'DUPLICATE_APPLICANT')).length).toBe(1);
+  });
+});

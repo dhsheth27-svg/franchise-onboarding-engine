@@ -366,7 +366,10 @@ export function decide(input: EngineInput, cfg: ConfigValues, todayInput: string
   const groupsByPerson = new Map<string, Work[]>();
   for (const w of works) {
     if (!w.app.pin || w.app.name === '(name missing)' || w.app.key.includes('#')) continue;
-    const k = `${w.app.name.toLowerCase().replace(/[^a-z]/g, '')}|${w.app.pin}`;
+    // Compare names ignoring case, spaces and punctuation only: digits and non-Latin scripts (ಕನ್ನಡ, हिन्दी) must survive.
+    const norm = w.app.name.normalize('NFC').toLowerCase().replace(/[\s.,'’\-_]+/g, '');
+    if (!norm) continue;
+    const k = `${norm}|${w.app.pin}`;
     if (!groupsByPerson.has(k)) groupsByPerson.set(k, []);
     groupsByPerson.get(k)!.push(w);
   }
