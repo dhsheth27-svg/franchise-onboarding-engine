@@ -66,8 +66,8 @@ export default function DecisionsTable({
   }, [decisions, outcomeFilter, territory, q, sort]);
 
   const th = (key: SortKey, label: string, cls = '') => (
-    <th scope="col" className={`whitespace-nowrap px-3 py-2.5 text-left text-xs font-semibold text-stone-500 ${cls}`} aria-sort={sort.key === key ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'}>
-      <button className="inline-flex items-center gap-1 hover:text-stone-900" onClick={() => setSort((s) => ({ key, dir: s.key === key ? ((-s.dir) as 1 | -1) : key === 'score' ? -1 : 1 }))}>
+    <th scope="col" className={`whitespace-nowrap px-3 py-2.5 text-left text-xs font-semibold text-slate-500 ${cls}`} aria-sort={sort.key === key ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'}>
+      <button className="inline-flex items-center gap-1 hover:text-slate-900" onClick={() => setSort((s) => ({ key, dir: s.key === key ? ((-s.dir) as 1 | -1) : key === 'score' ? -1 : 1 }))}>
         {label}
         <span aria-hidden className="text-[10px]">{sort.key === key ? (sort.dir === 1 ? '▲' : '▼') : ''}</span>
       </button>
@@ -82,13 +82,13 @@ export default function DecisionsTable({
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search ID, name, pin, reason…"
           aria-label="Search decisions"
-          className="w-full rounded-md border border-stone-300 bg-white px-3 py-1.5 text-sm placeholder:text-stone-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:w-64"
+          className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 sm:w-64"
         />
         <select
           value={outcomeFilter ?? ''}
           onChange={(e) => onOutcomeFilter((e.target.value || null) as Outcome | null)}
           aria-label="Filter by outcome"
-          className="rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm"
+          className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm"
         >
           <option value="">All outcomes</option>
           {(Object.keys(OUTCOME_LABEL) as Outcome[]).map((o) => (
@@ -97,7 +97,7 @@ export default function DecisionsTable({
             </option>
           ))}
         </select>
-        <select value={territory} onChange={(e) => setTerritory(e.target.value)} aria-label="Filter by territory" className="rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm">
+        <select value={territory} onChange={(e) => setTerritory(e.target.value)} aria-label="Filter by territory" className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm">
           <option value="">All territories</option>
           {territories.map((t) => (
             <option key={t} value={t}>
@@ -105,7 +105,7 @@ export default function DecisionsTable({
             </option>
           ))}
         </select>
-        <span className="text-sm text-stone-500">
+        <span className="text-sm text-slate-500">
           {rows.length} of {decisions.length}
         </span>
       </div>
@@ -113,9 +113,9 @@ export default function DecisionsTable({
       {rows.length === 0 ? (
         <Empty>No applications match these filters.</Empty>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white">
-          <table className="min-w-full divide-y divide-stone-200 text-sm">
-            <thead className="bg-stone-50">
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+          <table className="min-w-full divide-y divide-slate-200 text-sm">
+            <thead className="bg-slate-50">
               <tr>
                 {th('id', 'ID')}
                 {th('name', 'Name')}
@@ -126,35 +126,35 @@ export default function DecisionsTable({
                 {th('score', 'Score')}
                 {th('confidence', 'Confidence', 'hidden lg:table-cell')}
                 {th('risk', 'Risk', 'hidden lg:table-cell')}
-                <th scope="col" className="px-3 py-2.5 text-left text-xs font-semibold text-stone-500">
+                <th scope="col" className="px-3 py-2.5 text-left text-xs font-semibold text-slate-500">
                   Why
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-slate-100">
               {rows.map((d) => (
                 <tr
                   key={d.key}
                   tabIndex={0}
                   onClick={() => onOpen(d.key)}
                   onKeyDown={(e) => e.key === 'Enter' && onOpen(d.key)}
-                  className={`cursor-pointer align-top transition hover:bg-indigo-50/50 focus:bg-indigo-50 focus:outline-none ${selectedKey === d.key ? 'bg-indigo-50' : ''}`}
+                  className={`cursor-pointer align-top transition hover:bg-brand-50/50 focus:bg-brand-50 focus:outline-none ${selectedKey === d.key ? 'bg-brand-50' : ''}`}
                 >
-                  <td className="whitespace-nowrap px-3 py-2.5 font-mono text-[13px] font-medium text-stone-900">
+                  <td className="whitespace-nowrap px-3 py-2.5 font-mono text-[13px] font-medium text-slate-900">
                     {d.applicationId}
                     {d.key.includes('#') && <span className="ml-1 text-xs text-rose-700">(dup)</span>}
                   </td>
-                  <td className="max-w-[10rem] truncate px-3 py-2.5 text-stone-800">{d.applicantName}</td>
-                  <td className="hidden whitespace-nowrap px-3 py-2.5 text-stone-600 md:table-cell">{d.city ?? '—'}</td>
-                  <td className="hidden whitespace-nowrap px-3 py-2.5 font-mono text-[13px] text-stone-600 md:table-cell">{d.pin ?? '—'}</td>
-                  <td className="hidden whitespace-nowrap px-3 py-2.5 text-stone-600 sm:table-cell">{d.territoryId ?? '—'}</td>
+                  <td className="max-w-[10rem] truncate px-3 py-2.5 text-slate-800">{d.applicantName}</td>
+                  <td className="hidden whitespace-nowrap px-3 py-2.5 text-slate-600 md:table-cell">{d.city ?? '—'}</td>
+                  <td className="hidden whitespace-nowrap px-3 py-2.5 font-mono text-[13px] text-slate-600 md:table-cell">{d.pin ?? '—'}</td>
+                  <td className="hidden whitespace-nowrap px-3 py-2.5 text-slate-600 sm:table-cell">{d.territoryId ?? '—'}</td>
                   <td className="whitespace-nowrap px-3 py-2.5">
                     <OutcomeChip outcome={d.outcome} withdrawn={d.withdrawn} size="sm" />
-                    {d.override?.status === 'applied' && <span className="ml-1 text-[11px] font-medium text-indigo-700">overridden</span>}
+                    {d.override?.status === 'applied' && <span className="ml-1 text-[11px] font-medium text-brand-700">overridden</span>}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-2.5 tabular-nums text-stone-800">
+                  <td className="whitespace-nowrap px-3 py-2.5 tabular-nums text-slate-800">
                     {d.score === null ? '—' : d.score.toFixed(1)}
-                    {d.score !== null && d.provisionalScore && <span className="ml-0.5 text-xs text-stone-400" title="Provisional score">*</span>}
+                    {d.score !== null && d.provisionalScore && <span className="ml-0.5 text-xs text-slate-400" title="Provisional score">*</span>}
                   </td>
                   <td className="hidden px-3 py-2.5 lg:table-cell">
                     <ConfidenceLabel value={d.confidence} />
@@ -162,14 +162,14 @@ export default function DecisionsTable({
                   <td className="hidden px-3 py-2.5 lg:table-cell">
                     <RiskLabel level={d.risk?.level} />
                   </td>
-                  <td className="min-w-[14rem] px-3 py-2.5 text-stone-600">{d.oneLine}</td>
+                  <td className="min-w-[14rem] px-3 py-2.5 text-slate-600">{d.oneLine}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-      <p className="mt-2 text-xs text-stone-500">* Provisional score: the applicant is on hold, so the score shows where they would stand once the hold clears.</p>
+      <p className="mt-2 text-xs text-slate-500">* Provisional score: the applicant is on hold, so the score shows where they would stand once the hold clears.</p>
     </div>
   );
 }

@@ -7,15 +7,15 @@ import { Button } from './ui';
 export function DiffList({ diff, onOpen, max = 12 }: { diff: DiffEntry[]; onOpen?: (key: string) => void; max?: number }) {
   const moved = diff.filter((d) => d.outcomeFrom !== d.outcomeTo);
   const other = diff.filter((d) => d.outcomeFrom === d.outcomeTo);
-  if (!diff.length) return <p className="text-sm text-stone-600">No decision changed.</p>;
+  if (!diff.length) return <p className="text-sm text-slate-600">No decision changed.</p>;
   return (
     <ul className="space-y-1 text-sm">
       {[...moved, ...other].slice(0, max).map((d) => (
         <li key={d.key} className="flex gap-2">
-          <span aria-hidden className={`mt-1.5 h-1.5 w-1.5 flex-none rounded-full ${d.outcomeFrom !== d.outcomeTo ? 'bg-indigo-600' : 'bg-stone-300'}`} />
-          <span className="text-stone-800">
+          <span aria-hidden className={`mt-1.5 h-1.5 w-1.5 flex-none rounded-full ${d.outcomeFrom !== d.outcomeTo ? 'bg-brand-600' : 'bg-slate-300'}`} />
+          <span className="text-slate-800">
             {onOpen ? (
-              <button className="font-mono font-medium text-indigo-700 hover:underline" onClick={() => onOpen(d.key)}>
+              <button className="font-mono font-medium text-brand-700 hover:underline" onClick={() => onOpen(d.key)}>
                 {d.applicationId}
               </button>
             ) : (
@@ -25,7 +25,7 @@ export function DiffList({ diff, onOpen, max = 12 }: { diff: DiffEntry[]; onOpen
           </span>
         </li>
       ))}
-      {diff.length > max && <li className="text-xs text-stone-500">…and {diff.length - max} more changes.</li>}
+      {diff.length > max && <li className="text-xs text-slate-500">…and {diff.length - max} more changes.</li>}
     </ul>
   );
 }
@@ -40,9 +40,9 @@ export default function DiffBanner({ runId, onOpen, onClose }: { runId: string; 
   }, [runId]);
   if (!state?.from) return null;
   return (
-    <div className="mt-4 rounded-lg border border-indigo-200 bg-indigo-50/60 p-4">
+    <div className="mt-4 rounded-lg border border-brand-200 bg-brand-50/60 p-4">
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-sm font-semibold text-indigo-950">
+        <h2 className="text-sm font-semibold text-brand-950">
           What changed since v{state.from.version} ({state.diff.filter((d) => d.outcomeFrom !== d.outcomeTo).length} decision{state.diff.filter((d) => d.outcomeFrom !== d.outcomeTo).length === 1 ? '' : 's'} moved)
         </h2>
         <Button variant="ghost" className="!py-0.5 text-xs" onClick={onClose}>

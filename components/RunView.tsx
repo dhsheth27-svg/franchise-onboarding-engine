@@ -40,13 +40,13 @@ export default function RunView({ id }: { id: string }) {
 function Skeleton() {
   return (
     <div className="mx-auto max-w-7xl animate-pulse px-4 py-6">
-      <div className="h-6 w-64 rounded bg-stone-200" />
+      <div className="h-6 w-64 rounded bg-slate-200" />
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-16 rounded-lg bg-stone-200" />
+          <div key={i} className="h-16 rounded-lg bg-slate-200" />
         ))}
       </div>
-      <div className="mt-6 h-96 rounded-lg bg-stone-200" />
+      <div className="mt-6 h-96 rounded-lg bg-slate-200" />
     </div>
   );
 }
@@ -126,9 +126,9 @@ function RunViewInner({ id }: { id: string }) {
   if (error)
     return (
       <div className="mx-auto max-w-xl px-4 py-24 text-center">
-        <h1 className="text-xl font-semibold text-stone-900">This run could not be opened</h1>
-        <p className="mt-2 text-stone-600">{error}</p>
-        <Link href="/" className="mt-6 inline-block text-indigo-700 underline">
+        <h1 className="text-xl font-semibold text-slate-900">This run could not be opened</h1>
+        <p className="mt-2 text-slate-600">{error}</p>
+        <Link href="/" className="mt-6 inline-block text-brand-700 underline">
           Start a new run
         </Link>
       </div>
@@ -141,24 +141,24 @@ function RunViewInner({ id }: { id: string }) {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6">
-          <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-stone-900">
-            <span className="inline-block h-2.5 w-2.5 rounded-sm bg-indigo-700" aria-hidden />
+          <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+            <span className="inline-block h-2.5 w-2.5 rounded-sm bg-brand-700" aria-hidden />
             <span className="hidden sm:inline">Franchise Onboarding Engine</span>
           </Link>
-          <div className="min-w-0 flex-1 truncate text-sm text-stone-500">
-            {data.source ?? data.label} · <span className="font-medium text-stone-700">v{data.version}</span>
+          <div className="min-w-0 flex-1 truncate text-sm text-slate-500">
+            {data.source ?? data.label} · <span className="font-medium text-slate-700">v{data.version}</span>
             {data.version > 1 && <span className="hidden md:inline"> · {data.label}</span>}
           </div>
           <SimulateDate asOf={r.asOf} today={data.today} busy={!!busy} onApply={(days) => postEvents([{ type: 'dateAdvance', payload: { days } }], `Moved the date forward ${days} days`)} />
           <Button variant="ghost" onClick={() => setShowHistory(true)}>
             History
           </Button>
-          <a className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-stone-700 hover:bg-stone-100 sm:inline-flex" href={`/api/runs/${id}/export`}>
+          <a className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 sm:inline-flex" href={`/api/runs/${id}/export`}>
             Export Excel
           </a>
-          <a className="hidden rounded-md px-2 py-1.5 text-sm font-medium text-stone-500 hover:bg-stone-100 lg:inline-flex" href={`/api/runs/${id}/export?format=csv`}>
+          <a className="hidden rounded-md px-2 py-1.5 text-sm font-medium text-slate-500 hover:bg-slate-100 lg:inline-flex" href={`/api/runs/${id}/export?format=csv`}>
             CSV
           </a>
           <Button variant="primary" className="xl:hidden" onClick={() => setAskOpen(true)}>
@@ -168,7 +168,7 @@ function RunViewInner({ id }: { id: string }) {
       </header>
 
       {busy && (
-        <div className="fixed left-1/2 top-16 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-stone-900 px-4 py-2 text-sm text-white shadow-lg" role="status">
+        <div className="fixed left-1/2 top-16 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm text-white shadow-lg" role="status">
           <Spinner /> Re-deciding: {busy}
         </div>
       )}
@@ -195,17 +195,17 @@ function RunViewInner({ id }: { id: string }) {
                 <div className="text-xs font-medium">{OUTCOME_LABEL[o]}</div>
               </button>
             ))}
-            <button onClick={() => setQuery({ tab: 'today' })} className="rounded-lg bg-white px-3 py-2 text-left ring-1 ring-inset ring-stone-200 hover:bg-stone-50">
-              <div className="text-2xl font-semibold tabular-nums text-stone-900">{openActions}</div>
-              <div className="text-xs font-medium text-stone-600">Open actions</div>
+            <button onClick={() => setQuery({ tab: 'today' })} className="rounded-lg bg-white px-3 py-2 text-left ring-1 ring-inset ring-slate-200 hover:bg-slate-50">
+              <div className="text-2xl font-semibold tabular-nums text-slate-900">{openActions}</div>
+              <div className="text-xs font-medium text-slate-600">Open actions</div>
             </button>
-            <button onClick={() => setQuery({ tab: 'data' })} className="rounded-lg bg-white px-3 py-2 text-left ring-1 ring-inset ring-stone-200 hover:bg-stone-50">
-              <div className="text-2xl font-semibold tabular-nums text-stone-900">{issues}</div>
-              <div className="text-xs font-medium text-stone-600">Data issues</div>
+            <button onClick={() => setQuery({ tab: 'data' })} className="rounded-lg bg-white px-3 py-2 text-left ring-1 ring-inset ring-slate-200 hover:bg-slate-50">
+              <div className="text-2xl font-semibold tabular-nums text-slate-900">{issues}</div>
+              <div className="text-xs font-medium text-slate-600">Data issues</div>
             </button>
-            <div className="hidden flex-col justify-center rounded-lg bg-white px-3 py-2 text-xs text-stone-500 ring-1 ring-inset ring-stone-200 sm:col-span-4 sm:flex lg:col-span-1">
+            <div className="hidden flex-col justify-center rounded-lg bg-white px-3 py-2 text-xs text-slate-500 ring-1 ring-inset ring-slate-200 sm:col-span-4 sm:flex lg:col-span-1">
               <span>
-                As of <span className="font-medium text-stone-800">{fmtDate(r.asOf)}</span>
+                As of <span className="font-medium text-slate-800">{fmtDate(r.asOf)}</span>
               </span>
               <span>
                 {r.decisions.length} decided in {r.durationMs < 1000 ? `${Math.max(1, r.durationMs)} ms` : `${(r.durationMs / 1000).toFixed(1)} s`}
@@ -216,16 +216,16 @@ function RunViewInner({ id }: { id: string }) {
           {params.get('changed') && data.parentRunId && <DiffBanner runId={id} onOpen={(k) => setQuery({ a: k })} onClose={() => setQuery({ changed: null })} />}
 
           {/* Tabs */}
-          <nav className="mt-5 flex gap-1 overflow-x-auto border-b border-stone-200" aria-label="Sections">
+          <nav className="mt-5 flex gap-1 overflow-x-auto border-b border-slate-200" aria-label="Sections">
             {TABS.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setQuery({ tab: t.id })}
                 aria-current={tab === t.id ? 'page' : undefined}
-                className={`-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition ${tab === t.id ? 'border-indigo-700 text-indigo-800' : 'border-transparent text-stone-500 hover:text-stone-800'}`}
+                className={`-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition ${tab === t.id ? 'border-brand-700 text-brand-800' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
               >
                 {t.label}
-                {t.id === 'today' && openActions > 0 && <span className="ml-1.5 rounded-full bg-indigo-100 px-1.5 text-xs text-indigo-800">{openActions}</span>}
+                {t.id === 'today' && openActions > 0 && <span className="ml-1.5 rounded-full bg-brand-100 px-1.5 text-xs text-brand-800">{openActions}</span>}
               </button>
             ))}
           </nav>
@@ -281,7 +281,7 @@ function SimulateDate({ asOf, today, busy, onApply }: { asOf: string; today: str
   const days = Math.round((Date.parse(value) - Date.parse(asOf)) / 86400000);
   return (
     <div className="flex items-center gap-1.5 text-sm">
-      <label htmlFor="simdate" className="hidden text-stone-500 lg:inline">
+      <label htmlFor="simdate" className="hidden text-slate-500 lg:inline">
         Simulate date
       </label>
       <input
@@ -290,7 +290,7 @@ function SimulateDate({ asOf, today, busy, onApply }: { asOf: string; today: str
         min={asOf}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="rounded-md border border-stone-300 px-2 py-1 text-sm"
+        className="rounded-md border border-slate-300 px-2 py-1 text-sm"
         title={asOf !== today ? `Simulated: real date is ${fmtDate(today)}` : 'Move the date forward to see reservations expire and the waitlist promote'}
       />
       {days > 0 && (

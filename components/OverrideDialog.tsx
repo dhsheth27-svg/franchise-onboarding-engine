@@ -77,20 +77,20 @@ export default function OverrideDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={`Override ${d.applicationId}`}>
-      <button aria-label="Cancel" className="absolute inset-0 bg-stone-900/40" onClick={onCancel} />
+      <button aria-label="Cancel" className="absolute inset-0 bg-slate-900/40" onClick={onCancel} />
       <div className="relative w-full max-w-lg rounded-t-xl bg-white p-5 shadow-2xl sm:rounded-xl">
-        <h2 className="text-lg font-semibold text-stone-900">Override {d.applicationId}</h2>
-        <p className="mt-1 text-sm text-stone-600">
+        <h2 className="text-lg font-semibold text-slate-900">Override {d.applicationId}</h2>
+        <p className="mt-1 text-sm text-slate-600">
           Engine decision: <strong>{OUTCOME_LABEL[d.engineOutcome]}</strong>. Your override is logged with your name and reason. The three hard rules still apply: one store per pin, never more approvals than slots, never outside the territories.
         </p>
 
         {!conflict ? (
           <div className="mt-4 space-y-3">
             <fieldset>
-              <legend className="text-sm font-medium text-stone-800">New decision</legend>
+              <legend className="text-sm font-medium text-slate-800">New decision</legend>
               <div className="mt-1.5 grid grid-cols-2 gap-1.5">
                 {CHOICES.filter((c) => c.value !== 'ENGINE' || d.override).map((c) => (
-                  <label key={c.value} className={`flex cursor-pointer items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm ${outcome === c.value ? 'border-indigo-500 bg-indigo-50' : 'border-stone-200'}`}>
+                  <label key={c.value} className={`flex cursor-pointer items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm ${outcome === c.value ? 'border-brand-500 bg-brand-50' : 'border-slate-200'}`}>
                     <input type="radio" name="outcome" checked={outcome === c.value} onChange={() => setOutcome(c.value)} />
                     {c.label}
                   </label>
@@ -98,12 +98,12 @@ export default function OverrideDialog({
               </div>
             </fieldset>
             <label className="block text-sm">
-              <span className="font-medium text-stone-800">Reason (at least 10 characters)</span>
-              <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3} className="mt-1 w-full rounded-md border border-stone-300 px-2.5 py-1.5 text-sm focus:border-indigo-500 focus:outline-none" placeholder="e.g. Met the applicant; strong local reputation" />
+              <span className="font-medium text-slate-800">Reason (at least 10 characters)</span>
+              <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3} className="mt-1 w-full rounded-md border border-slate-300 px-2.5 py-1.5 text-sm focus:border-brand-500 focus:outline-none" placeholder="e.g. Met the applicant; strong local reputation" />
             </label>
             <label className="block text-sm">
-              <span className="font-medium text-stone-800">Your name</span>
-              <input value={by} onChange={(e) => setBy(e.target.value)} className="mt-1 w-full rounded-md border border-stone-300 px-2.5 py-1.5 text-sm focus:border-indigo-500 focus:outline-none" placeholder="e.g. Asha (Expansion)" />
+              <span className="font-medium text-slate-800">Your name</span>
+              <input value={by} onChange={(e) => setBy(e.target.value)} className="mt-1 w-full rounded-md border border-slate-300 px-2.5 py-1.5 text-sm focus:border-brand-500 focus:outline-none" placeholder="e.g. Asha (Expansion)" />
             </label>
           </div>
         ) : (
@@ -113,10 +113,10 @@ export default function OverrideDialog({
             </div>
             {conflict.options.length > 0 ? (
               <fieldset>
-                <legend className="text-sm font-medium text-stone-800">To go ahead, release one approval (it is also logged):</legend>
+                <legend className="text-sm font-medium text-slate-800">To go ahead, release one approval (it is also logged):</legend>
                 <div className="mt-1.5 space-y-1.5">
                   {conflict.options.map((o) => (
-                    <label key={o.key} className={`flex cursor-pointer items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm ${release === o.key ? 'border-indigo-500 bg-indigo-50' : 'border-stone-200'}`}>
+                    <label key={o.key} className={`flex cursor-pointer items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm ${release === o.key ? 'border-brand-500 bg-brand-50' : 'border-slate-200'}`}>
                       <input type="radio" name="release" checked={release === o.key} onChange={() => setRelease(o.key)} />
                       <span>
                         Release <strong>{o.applicationId}</strong> (pin {o.pin}, score {o.score?.toFixed(1)}) — they move to the waitlist
@@ -126,7 +126,7 @@ export default function OverrideDialog({
                 </div>
               </fieldset>
             ) : (
-              <p className="text-sm text-stone-700">This conflict cannot be resolved by releasing another applicant. You can cancel, or log the refused attempt so the decision history shows it.</p>
+              <p className="text-sm text-slate-700">This conflict cannot be resolved by releasing another applicant. You can cancel, or log the refused attempt so the decision history shows it.</p>
             )}
           </div>
         )}

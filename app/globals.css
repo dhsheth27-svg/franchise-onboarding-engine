@@ -6,6 +6,13 @@
   color-scheme: light;
 }
 body {
-  background: #f7f7f5;
-  color: #1c1c1a;
+  background: #f4f7fc;
+  color: #0b1638;
+}
+/* Faint blueprint grid used behind hero areas */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(23, 69, 214, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 69, 214, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
 }

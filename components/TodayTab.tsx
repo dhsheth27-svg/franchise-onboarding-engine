@@ -24,8 +24,8 @@ export default function TodayTab({ result, onOpen, onDone, busy }: { result: Run
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-stone-600">
-        <span className="font-semibold text-stone-900">{open.length} open action{open.length === 1 ? '' : 's'}</span>, ranked by value. Each comes with the reason and, where relevant, a ready-to-send message.
+      <p className="text-sm text-slate-600">
+        <span className="font-semibold text-slate-900">{open.length} open action{open.length === 1 ? '' : 's'}</span>, ranked by value. Each comes with the reason and, where relevant, a ready-to-send message.
       </p>
       {CATEGORIES.map((c) => {
         const items = open.filter((a) => a.category === c.id);
@@ -33,21 +33,21 @@ export default function TodayTab({ result, onOpen, onDone, busy }: { result: Run
         return (
           <section key={c.id}>
             <div className="mb-2 flex items-baseline gap-2">
-              <h2 className="text-sm font-semibold text-stone-900">
-                {c.title} <span className="font-normal text-stone-500">({items.length})</span>
+              <h2 className="text-sm font-semibold text-slate-900">
+                {c.title} <span className="font-normal text-slate-500">({items.length})</span>
               </h2>
-              <span className="hidden text-xs text-stone-500 sm:inline">{c.hint}</span>
+              <span className="hidden text-xs text-slate-500 sm:inline">{c.hint}</span>
             </div>
             <ol className="space-y-2">
               {items.map((a) => {
                 const d = a.applicationKey ? byKey.get(a.applicationKey) : undefined;
                 return (
-                  <li key={a.id} className="rounded-lg border border-stone-200 bg-white p-3 sm:p-4">
+                  <li key={a.id} className="rounded-lg border border-slate-200 bg-white p-3 sm:p-4">
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
-                        <div className="font-medium text-stone-900">{a.what}</div>
-                        <p className="mt-0.5 text-sm text-stone-600">{a.why}</p>
-                        <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500">
+                        <div className="font-medium text-slate-900">{a.what}</div>
+                        <p className="mt-0.5 text-sm text-slate-600">{a.why}</p>
+                        <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
                           <span>Who: {a.who}</span>
                           <span className={a.deadline && a.deadline <= result.asOf ? 'font-medium text-rose-700' : ''}>By: {a.deadline ? fmtDate(a.deadline) : 'when possible'}</span>
                         </div>
@@ -82,11 +82,11 @@ export default function TodayTab({ result, onOpen, onDone, busy }: { result: Run
       })}
       {done.length > 0 && (
         <section>
-          <button className="text-sm font-medium text-stone-600 hover:text-stone-900" onClick={() => setShowDone((v) => !v)}>
+          <button className="text-sm font-medium text-slate-600 hover:text-slate-900" onClick={() => setShowDone((v) => !v)}>
             {showDone ? 'Hide' : 'Show'} {done.length} completed
           </button>
           {showDone && (
-            <ul className="mt-2 space-y-1 text-sm text-stone-500">
+            <ul className="mt-2 space-y-1 text-sm text-slate-500">
               {done.map((a) => (
                 <li key={a.id} className="line-through">
                   {a.what}

@@ -44,7 +44,7 @@ export default function UploadPanel() {
   }
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
       <div
         role="button"
         tabIndex={0}
@@ -62,22 +62,22 @@ export default function UploadPanel() {
           const f = e.dataTransfer.files?.[0];
           if (f && !busy) upload(f);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-12 text-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
-          drag ? 'border-indigo-500 bg-indigo-50' : 'border-stone-300 hover:border-stone-400 hover:bg-stone-50'
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-12 text-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+          drag ? 'border-brand-500 bg-brand-50' : 'border-slate-300 hover:border-slate-400 hover:bg-slate-50'
         }`}
       >
         {busy ? (
           <>
-            <Spinner className="h-6 w-6 text-indigo-700" />
-            <p className="mt-3 text-sm font-medium text-stone-700">{status.text}</p>
+            <Spinner className="h-6 w-6 text-brand-700" />
+            <p className="mt-3 text-sm font-medium text-slate-700">{status.text}</p>
           </>
         ) : (
           <>
-            <svg aria-hidden viewBox="0 0 24 24" className="h-8 w-8 text-stone-400" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg aria-hidden viewBox="0 0 24 24" className="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <p className="mt-3 text-base font-medium text-stone-900">Drop your Excel file here</p>
-            <p className="mt-1 text-sm text-stone-500">or click to choose · .xlsx with Applications and Territories sheets</p>
+            <p className="mt-3 text-base font-medium text-slate-900">Drop your Excel file here</p>
+            <p className="mt-1 text-sm text-slate-500">or click to choose · .xlsx with Applications and Territories sheets</p>
           </>
         )}
         <input
@@ -104,24 +104,24 @@ export default function UploadPanel() {
         </div>
       )}
 
-      <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-stone-400">
-        <span className="h-px flex-1 bg-stone-200" /> or <span className="h-px flex-1 bg-stone-200" />
+      <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
+        <span className="h-px flex-1 bg-slate-200" /> or <span className="h-px flex-1 bg-slate-200" />
       </div>
 
       <button
         onClick={sample}
         disabled={busy}
-        className="w-full rounded-md bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:bg-indigo-300"
+        className="w-full rounded-md bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:bg-brand-300"
       >
         Try with sample data
       </button>
-      <p className="mt-2 text-center text-xs text-stone-500">29 deliberately messy applications covering every tricky case.</p>
+      <p className="mt-2 text-center text-xs text-slate-500">29 deliberately messy applications covering every tricky case.</p>
 
       <div className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm">
-        <a className="text-indigo-700 underline-offset-2 hover:underline" href="/api/template">
+        <a className="text-brand-700 underline-offset-2 hover:underline" href="/api/template">
           Download blank template
         </a>
-        <a className="text-indigo-700 underline-offset-2 hover:underline" href="/api/sample-file">
+        <a className="text-brand-700 underline-offset-2 hover:underline" href="/api/sample-file">
           Download sample as Excel
         </a>
       </div>

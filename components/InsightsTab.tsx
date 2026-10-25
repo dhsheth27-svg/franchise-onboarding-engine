@@ -9,8 +9,8 @@ import { Card, Empty } from './ui';
 function Panel({ title, children, note, className = '' }: { title: string; children: ReactNode; note?: string; className?: string }) {
   return (
     <Card className={`p-4 ${className}`}>
-      <h3 className="text-sm font-semibold text-stone-900">{title}</h3>
-      {note && <p className="mt-0.5 text-xs text-stone-500">{note}</p>}
+      <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+      {note && <p className="mt-0.5 text-xs text-slate-500">{note}</p>}
       <div className="mt-3">{children}</div>
     </Card>
   );
@@ -23,11 +23,11 @@ function Bars({ rows, max, unit = '' }: { rows: { label: ReactNode; n: number; h
     <ul className="space-y-2">
       {rows.map((r, i) => (
         <li key={i} className="grid grid-cols-[minmax(7rem,40%)_1fr_auto] items-center gap-3 text-sm" title={`${typeof r.label === 'string' ? r.label : ''}: ${r.n}${unit}`}>
-          <span className="truncate text-stone-700">{r.label}</span>
-          <span className="h-2.5 rounded-r bg-stone-100">
-            <span className="block h-full rounded-r bg-indigo-600" style={{ width: `${(r.n / m) * 100}%` }} />
+          <span className="truncate text-slate-700">{r.label}</span>
+          <span className="h-2.5 rounded-r bg-slate-100">
+            <span className="block h-full rounded-r bg-brand-600" style={{ width: `${(r.n / m) * 100}%` }} />
           </span>
-          <span className="w-10 text-right tabular-nums text-stone-900">
+          <span className="w-10 text-right tabular-nums text-slate-900">
             {r.n}
             {unit}
           </span>
@@ -39,10 +39,10 @@ function Bars({ rows, max, unit = '' }: { rows: { label: ReactNode; n: number; h
 
 function Stat({ value, label, sub }: { value: ReactNode; label: string; sub?: string }) {
   return (
-    <div className="rounded-lg border border-stone-200 bg-white px-4 py-3">
-      <div className="text-2xl font-semibold tabular-nums text-stone-900">{value}</div>
-      <div className="text-xs font-medium text-stone-600">{label}</div>
-      {sub && <div className="mt-0.5 text-xs text-stone-400">{sub}</div>}
+    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3">
+      <div className="text-2xl font-semibold tabular-nums text-slate-900">{value}</div>
+      <div className="text-xs font-medium text-slate-600">{label}</div>
+      {sub && <div className="mt-0.5 text-xs text-slate-400">{sub}</div>}
     </div>
   );
 }
@@ -74,10 +74,10 @@ export default function InsightsTab({ result, config, events, onOpen }: { result
             <ul className="space-y-2 text-sm">
               {ins.nearMisses.map((n) => (
                 <li key={n.key}>
-                  <button onClick={() => onOpen(n.key)} className="font-mono font-medium text-indigo-700 hover:underline">
+                  <button onClick={() => onOpen(n.key)} className="font-mono font-medium text-brand-700 hover:underline">
                     {n.id}
                   </button>{' '}
-                  <span className="text-stone-500">({n.score ?? '—'})</span> <span className="text-stone-700">{n.fix}</span>
+                  <span className="text-slate-500">({n.score ?? '—'})</span> <span className="text-slate-700">{n.fix}</span>
                 </li>
               ))}
             </ul>
@@ -92,8 +92,8 @@ export default function InsightsTab({ result, config, events, onOpen }: { result
             <Panel key={l.outcome} title={OUTCOME_TITLE[l.outcome]} note={`${l.total} application${l.total === 1 ? '' : 's'}`}>
               <Bars rows={l.rows.map((x) => ({ label: x.label, n: x.n }))} />
               {l.rows[0] && (
-                <p className="mt-3 rounded-md bg-stone-50 px-3 py-2 text-sm text-stone-700">
-                  <span className="font-medium text-stone-900">So what: </span>
+                <p className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                  <span className="font-medium text-slate-900">So what: </span>
                   {Math.round(l.rows[0].share * 100)}% of these are &ldquo;{l.rows[0].label.toLowerCase()}&rdquo;: {l.rows[0].soWhat}.
                 </p>
               )}
@@ -105,10 +105,10 @@ export default function InsightsTab({ result, config, events, onOpen }: { result
             <ul className="space-y-1.5 text-sm">
               {ins.underserved.map((t) => (
                 <li key={t.id} className="flex justify-between gap-3">
-                  <span className="text-stone-800">
-                    {t.id} · {t.city} <span className="text-stone-500">({t.priority})</span>
+                  <span className="text-slate-800">
+                    {t.id} · {t.city} <span className="text-slate-500">({t.priority})</span>
                   </span>
-                  <span className="text-stone-600">
+                  <span className="text-slate-600">
                     {t.unfilled} open · pins {t.freePins.slice(0, 3).join(', ')}
                   </span>
                 </li>
@@ -124,7 +124,7 @@ export default function InsightsTab({ result, config, events, onOpen }: { result
             <ul className="space-y-1.5 text-sm">
               {ins.closeCalls.map((c) => (
                 <li key={c.key}>
-                  <button onClick={() => onOpen(c.key)} className="font-mono font-medium text-indigo-700 hover:underline">
+                  <button onClick={() => onOpen(c.key)} className="font-mono font-medium text-brand-700 hover:underline">
                     {c.id}
                   </button>{' '}
                   lost to {c.winner} by {c.margin.toFixed(1)} points in {c.territory}: worth a second look.
@@ -132,13 +132,13 @@ export default function InsightsTab({ result, config, events, onOpen }: { result
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-stone-600">No contested slot was decided by {config.closeCallMargin.value} points or less.</p>
+            <p className="text-sm text-slate-600">No contested slot was decided by {config.closeCallMargin.value} points or less.</p>
           )}
         </Panel>
 
         <Panel title="Where approvals land" note="Approvals by city.">
           {ins.concentration.length ? <Bars rows={ins.concentration.map((c) => ({ label: c.city, n: c.n }))} /> : <Empty>No approvals yet.</Empty>}
-          <p className={`mt-3 text-sm ${ins.concentrationWarning ? 'rounded-md bg-amber-50 px-3 py-2 text-amber-950' : 'text-stone-600'}`}>
+          <p className={`mt-3 text-sm ${ins.concentrationWarning ? 'rounded-md bg-amber-50 px-3 py-2 text-amber-950' : 'text-slate-600'}`}>
             {ins.concentrationWarning ? <>⚠ {ins.concentrationWarning}</> : `No city has more than ${Math.round(config.concentrationWarningShare.value * 100)}% of approvals.`}
           </p>
         </Panel>
@@ -148,7 +148,7 @@ export default function InsightsTab({ result, config, events, onOpen }: { result
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs text-stone-500">
+                  <tr className="text-left text-xs text-slate-500">
                     <th className="py-1 pr-4 font-medium">Month</th>
                     {langs.map((l) => (
                       <th key={l} className="py-1 pr-4 text-right font-medium">
@@ -157,12 +157,12 @@ export default function InsightsTab({ result, config, events, onOpen }: { result
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-100">
+                <tbody className="divide-y divide-slate-100">
                   {ins.trainingLoad.map((t) => (
                     <tr key={t.month}>
-                      <td className="py-1.5 pr-4 text-stone-800">{monthLabel(t.month)}</td>
+                      <td className="py-1.5 pr-4 text-slate-800">{monthLabel(t.month)}</td>
                       {langs.map((l) => (
-                        <td key={l} className="py-1.5 pr-4 text-right tabular-nums text-stone-800">
+                        <td key={l} className="py-1.5 pr-4 text-right tabular-nums text-slate-800">
                           {t.byLanguage[l] ?? 0}
                         </td>
                       ))}
@@ -184,13 +184,13 @@ export default function InsightsTab({ result, config, events, onOpen }: { result
           {ins.overrides.total ? (
             <>
               <Bars rows={ins.overrides.byReason.map((x) => ({ label: x.reason, n: x.n }))} />
-              <p className="mt-2 text-sm text-stone-600">
+              <p className="mt-2 text-sm text-slate-600">
                 {ins.overrides.total} override{ins.overrides.total === 1 ? '' : 's'} logged; {ins.overrides.refused} refused for breaking a hard rule.
               </p>
               {ins.overrides.warning && <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-950">⚠ {ins.overrides.warning}</p>}
             </>
           ) : (
-            <p className="text-sm text-stone-600">No overrides yet. Every override is logged with a name and reason; if one rule keeps being overridden, it is flagged here for review.</p>
+            <p className="text-sm text-slate-600">No overrides yet. Every override is logged with a name and reason; if one rule keeps being overridden, it is flagged here for review.</p>
           )}
         </Panel>
       </div>

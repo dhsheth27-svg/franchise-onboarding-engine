@@ -22,7 +22,7 @@ function linkify(text: string, keys: Map<string, string>, onOpen: (k: string) =>
   return parts.map((p, i) => {
     const key = keys.get(p.toUpperCase());
     return key ? (
-      <button key={i} onClick={() => onOpen(key)} className="font-mono font-medium text-indigo-700 underline-offset-2 hover:underline">
+      <button key={i} onClick={() => onOpen(key)} className="font-mono font-medium text-brand-700 underline-offset-2 hover:underline">
         {p}
       </button>
     ) : (
@@ -115,10 +115,10 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
 
   const panel = (
     <div className="flex h-full flex-col bg-white">
-      <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <div>
-          <h2 className="text-sm font-semibold text-stone-900">Ask or update</h2>
-          <p className="text-xs text-stone-500">Questions are answered from the decision traces. Updates re-decide everyone and show what changed.</p>
+          <h2 className="text-sm font-semibold text-slate-900">Ask or update</h2>
+          <p className="text-xs text-slate-500">Questions are answered from the decision traces. Updates re-decide everyone and show what changed.</p>
         </div>
         <Button variant="ghost" className="xl:hidden" onClick={onClose}>
           ✕<span className="sr-only">Close</span>
@@ -127,9 +127,9 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3" aria-live="polite">
         {msgs.length === 0 && (
           <div className="space-y-2">
-            <p className="text-sm text-stone-600">Try one of these:</p>
+            <p className="text-sm text-slate-600">Try one of these:</p>
             {prompts.map((p) => (
-              <button key={p} onClick={() => send(p)} className="block w-full rounded-md border border-stone-200 px-3 py-2 text-left text-sm text-stone-800 transition hover:border-indigo-300 hover:bg-indigo-50">
+              <button key={p} onClick={() => send(p)} className="block w-full rounded-md border border-slate-200 px-3 py-2 text-left text-sm text-slate-800 transition hover:border-brand-300 hover:bg-brand-50">
                 {p}
               </button>
             ))}
@@ -137,16 +137,16 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
         )}
         {msgs.map((m, i) =>
           m.role === 'user' ? (
-            <div key={i} className="ml-8 rounded-lg bg-indigo-700 px-3 py-2 text-sm text-white">
+            <div key={i} className="ml-8 rounded-lg bg-brand-700 px-3 py-2 text-sm text-white">
               {m.text}
             </div>
           ) : (
-            <div key={i} className={`mr-2 rounded-lg border px-3 py-2 text-sm ${m.kind === 'error' ? 'border-rose-200 bg-rose-50 text-rose-900' : m.kind === 'update' ? 'border-indigo-200 bg-indigo-50/50 text-stone-800' : 'border-stone-200 bg-stone-50 text-stone-800'}`}>
-              {m.kind === 'update' && <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-indigo-700">Update saved as a new version</div>}
+            <div key={i} className={`mr-2 rounded-lg border px-3 py-2 text-sm ${m.kind === 'error' ? 'border-rose-200 bg-rose-50 text-rose-900' : m.kind === 'update' ? 'border-brand-200 bg-brand-50/50 text-slate-800' : 'border-slate-200 bg-slate-50 text-slate-800'}`}>
+              {m.kind === 'update' && <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-brand-700">Update saved as a new version</div>}
               <div className="whitespace-pre-wrap leading-relaxed">{linkify(m.text, keys, onOpen)}</div>
               {m.diff && m.diff.length > 0 && m.kind === 'answer' && (
                 <details className="mt-2">
-                  <summary className="cursor-pointer text-xs font-medium text-stone-600">Would-be changes ({m.diff.length})</summary>
+                  <summary className="cursor-pointer text-xs font-medium text-slate-600">Would-be changes ({m.diff.length})</summary>
                   <div className="mt-1">
                     <DiffList diff={m.diff} onOpen={onOpen} max={8} />
                   </div>
@@ -155,34 +155,34 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
               {m.focus && m.focus.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {m.focus.map((k) => (
-                    <button key={k} onClick={() => onOpen(k)} className="rounded border border-stone-300 bg-white px-2 py-0.5 text-xs font-medium text-stone-700 hover:bg-stone-100">
+                    <button key={k} onClick={() => onOpen(k)} className="rounded border border-slate-300 bg-white px-2 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-100">
                       Open {decisions.find((d) => d.key === k)?.applicationId ?? k}
                     </button>
                   ))}
                 </div>
               )}
-              {m.parsedBy === 'llm' && <div className="mt-1 text-[10px] text-stone-400">Message understood with AI; answer built from the engine&apos;s trace.</div>}
+              {m.parsedBy === 'llm' && <div className="mt-1 text-[10px] text-slate-400">Message understood with AI; answer built from the engine&apos;s trace.</div>}
             </div>
           ),
         )}
         {pending && (
-          <div className="flex items-center gap-2 text-sm text-stone-500">
+          <div className="flex items-center gap-2 text-sm text-slate-500">
             <Spinner /> Working…
           </div>
         )}
         <div ref={end} />
       </div>
       {msgs.length > 0 && (
-        <div className="flex gap-1.5 overflow-x-auto border-t border-stone-100 px-4 py-2">
+        <div className="flex gap-1.5 overflow-x-auto border-t border-slate-100 px-4 py-2">
           {prompts.slice(0, 4).map((p) => (
-            <button key={p} onClick={() => send(p)} disabled={pending} className="whitespace-nowrap rounded-full border border-stone-200 px-2.5 py-1 text-xs text-stone-700 hover:bg-stone-50">
+            <button key={p} onClick={() => send(p)} disabled={pending} className="whitespace-nowrap rounded-full border border-slate-200 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50">
               {p}
             </button>
           ))}
         </div>
       )}
       <form
-        className="flex gap-2 border-t border-stone-200 p-3"
+        className="flex gap-2 border-t border-slate-200 p-3"
         onSubmit={(e) => {
           e.preventDefault();
           send(input);
@@ -196,7 +196,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder='e.g. "APP-012 found a ground-floor space"'
-          className="min-w-0 flex-1 rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="min-w-0 flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
         />
         <Button type="submit" variant="primary" disabled={pending || !input.trim()}>
           Send
@@ -207,10 +207,10 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
 
   return (
     <>
-      <aside className="sticky top-[49px] hidden h-[calc(100vh-49px)] w-[380px] flex-none border-l border-stone-200 xl:block">{panel}</aside>
+      <aside className="sticky top-[49px] hidden h-[calc(100vh-49px)] w-[380px] flex-none border-l border-slate-200 xl:block">{panel}</aside>
       {open && (
         <div className="fixed inset-0 z-40 flex justify-end xl:hidden" role="dialog" aria-modal="true" aria-label="Ask panel">
-          <button aria-label="Close" className="absolute inset-0 bg-stone-900/30" onClick={onClose} />
+          <button aria-label="Close" className="absolute inset-0 bg-slate-900/30" onClick={onClose} />
           <div className="relative h-full w-full max-w-md shadow-2xl">{panel}</div>
         </div>
       )}
