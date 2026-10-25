@@ -111,6 +111,16 @@ export const config = {
     'Impossible-value limits',
     'Values beyond these are almost certainly typing errors and are held for confirmation rather than scored.',
   ),
+  onboardingWeeks: a(
+    { agreement: 2, spaceVerification: 2, fitOut: 4, staffHiring: 3, inventorySetup: 2, readinessCheck: 1, softLaunch: 1 },
+    'Onboarding stage durations (weeks)',
+    'Typical small-format retail roll-out: legal and KYC in 2 weeks, fit-out in about a month, hiring and stock set-up in parallel.',
+  ),
+  trainingWeeks: a(
+    { Extended: 4, Standard: 2, Compressed: 1 },
+    'Training length by track (weeks)',
+    '0–1 years of experience: extended programme with a mentor and supervised pilot weeks; 2–4 years: standard; 5+ years: compressed, brand processes only.',
+  ),
   monthDays: a(30, 'Days per month (for date maths)', 'Simple 30-day months keep deadlines easy to explain.'),
 };
 

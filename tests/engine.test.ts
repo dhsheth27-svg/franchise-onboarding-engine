@@ -374,3 +374,45 @@ describe('property: hard rules hold for random inputs, events and overrides', ()
     expect(Date.now() - t).toBeLessThan(5000);
   });
 });
+
+describe('post-decision layer', () => {
+  test('every applicant gets a message in their language, with no reason codes or scores', () => {
+    for (const x of base.decisions) {
+      expect(x.message.text.length).toBeGreaterThan(50);
+      expect(x.message.language).toBe(x.language);
+      expect(x.message.text).not.toMatch(/[A-Z]{3,}_[A-Z_]{3,}/);
+      if (x.score !== null) expect(x.message.text).not.toContain(String(x.score));
+    }
+    expect(d(base, 'APP-007').message.text).toMatch(/ಅಂಗಡಿ/); // Kannada
+    expect(d(base, 'APP-002').message.text).toMatch(/प्रतीक्षा सूची/); // Hindi waitlist
+  });
+
+  test('approved partners get a dated onboarding plan, documents and readiness; others do not', () => {
+    for (const x of base.decisions) {
+      const approved = x.outcome === 'APPROVED' || x.outcome === 'APPROVED_WITH_CONDITIONS';
+      expect(!!x.onboarding).toBe(approved);
+      if (approved) {
+        expect(x.onboarding!.steps.map((s) => s.stage)).toEqual(expect.arrayContaining(['Agreement and KYC', 'Fit-out and signage', 'Training', 'Grand opening']));
+        expect(x.documents!.length).toBe(8);
+        expect(x.readiness!.percent).toBe(0);
+      }
+    }
+  });
+
+  test('training depth follows experience; conditions appear as preconditions', () => {
+    expect(d(base, 'APP-024').onboarding!.trainingTrack).toBe('Extended');
+    expect(d(base, 'APP-026').onboarding!.trainingTrack).toBe('Compressed');
+    expect(d(base, 'APP-009').onboarding!.preconditions.length).toBeGreaterThan(0);
+  });
+
+  test('drop-off risk flags loan and part-time commitment', () => {
+    const r = d(base, 'APP-025').risk!;
+    expect(r.level).toBe('High');
+    expect(r.actions.join(' ')).toMatch(/loan/);
+  });
+
+  test('opening cannot be marked done while readiness is below 100%', () => {
+    const after = run(withEvents([ev('checklist', 'APP-001', { kind: 'onboarding', item: 'opening', status: 'Done' })], base));
+    expect(d(after, 'APP-001').onboarding!.steps.find((s) => s.id === 'opening')!.status).toBe('Blocked');
+  });
+});
