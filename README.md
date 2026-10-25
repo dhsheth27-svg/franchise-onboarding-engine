@@ -20,6 +20,10 @@ ground-floor space"), re-deciding and showing what changed.
 | Drop-off | Risk flag with reasons and a suggested action |
 | Partners open unprepared | Gap-based onboarding plan (training depth by experience, extra modules, site checks), documents, readiness check |
 | Teams can't overrule the tool | Overrides with a logged name and reason; the three hard rules can never be broken |
+| Approved partners stall between agreement and opening | **Journey board**: every partner by stage (Agreement → Site → Fit-out & stock → People & training → Readiness → Launch → Open) with overdue flags, the bottleneck stage and one-click progress |
+| Messages are written but never sent | **Outbox**: every message in the applicant's language with WhatsApp / email buttons, "mark as sent" tracking, and a warning when the decision changed after sending |
+| Thresholds are guesses | **Policy simulator**: change the approval bar, minimums, reservation window or territory slots, preview exactly who changes, then apply it as a logged version |
+| Committee and partner files | **Printable one-pager** per applicant with the decision, reasons, checks, next steps and sign-off lines |
 
 ## Outcomes
 

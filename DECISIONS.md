@@ -57,3 +57,8 @@ Judgement calls made where the spec was ambiguous. Each is the simplest reasonab
     OpenAI API instead (`OPENAI_API_KEY`, model `gpt-4o-mini` by default, strict JSON-schema output validated with zod).
     Its role is unchanged: it only reads free text and parses follow-up messages; it never decides an outcome, and any
     failure falls back to the keyword rules.
+21. **Operations layer.** A run carries an optional team *policy* (threshold and slot overrides) that is applied before
+    the engine runs and recorded on every later version; the three hard rules cannot be changed by policy. Marking the
+    "Agreement and KYC" step done counts as the agreement milestone. A message marked as sent is tied to the decision
+    it was sent for, so it is flagged "out of date" if that decision later changes; sending it completes the matching
+    hold or redirect task on the Today list.
