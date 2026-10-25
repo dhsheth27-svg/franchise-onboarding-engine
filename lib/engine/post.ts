@@ -23,7 +23,9 @@ export function buildPost(w: Work, core: CoreResult, redirects: Redirect[], what
     onboarding = buildPlan(w, core, status, readiness.percent);
   }
   const risk = w.outcome === 'HOLD' || approved ? buildRisk(w, core, documents) : undefined;
-  const message = buildMessage({ w, cfg: core.cfg, asOf: core.asOf, redirects, whatWouldChange });
+  const message: Decision['message'] = buildMessage({ w, cfg: core.cfg, asOf: core.asOf, redirects, whatWouldChange });
+  const sent = checks['message'];
+  if (sent && sent.status === 'Sent') message.sent = { at: sent.at, channel: sent.channel ?? 'manual', by: sent.by ?? 'Team', current: sent.outcome === w.outcome };
   return { onboarding, documents, readiness, risk, message };
 }
 

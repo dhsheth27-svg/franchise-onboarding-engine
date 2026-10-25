@@ -1,6 +1,7 @@
 // Run lifecycle: create from an upload, append events (new immutable version), compare versions.
 
-import { config, configValues } from './config';
+import { configValues } from './config';
+import { describePolicyChange, effectiveConfig, effectiveInput, mergePolicy, type Policy } from './policy';
 import { cleanApplications } from './engine/validate';
 import { extractSignalsLLM, llmEnabled } from './llm';
 import { runEngine } from './engine';
@@ -28,7 +29,8 @@ async function withLlmSignals(input: EngineInput, today: string): Promise<Engine
 export async function createRun(rawInput: EngineInput, label: string): Promise<StoredRun> {
   const today = todayIST();
   const input = await withLlmSignals(rawInput, today);
-  const result = runEngine(input, config, today);
+  const config = effectiveConfig(input.policy as Policy | undefined);
+  const result = runEngine(effectiveInput(input), config, today);
   const id = newRunId();
   const run: StoredRun = {
     id,
@@ -58,7 +60,8 @@ export async function appendEvents(parent: StoredRun, events: NewEvent[], label:
     priorApprovals: parent.result.approvalDates,
     today,
   };
-  const result = runEngine(input, config, today);
+  const config = effectiveConfig(input.policy as Policy | undefined);
+  const result = runEngine(effectiveInput(input), config, today);
   const run: StoredRun = {
     id: newRunId(),
     createdAt: new Date().toISOString(),
@@ -79,11 +82,32 @@ export function whatIf(parent: StoredRun, events: NewEvent[]): { result: RunResu
   const at = parent.result.asOf;
   const stamped: EngineEvent[] = events.map((e, i) => ({ ...e, id: `whatif-${i}`, at: e.at ?? at }));
   const input = { ...parent.input, events: [...(parent.input.events ?? []), ...stamped], priorApprovals: parent.result.approvalDates };
-  const result = runEngine(input, config, parent.input.today);
+  const result = runEngine(effectiveInput(input), effectiveConfig(input.policy as Policy | undefined), parent.input.today);
   return { result, diff: diffRuns(parent.result, result) };
 }
 
 export async function loadRun(id: string): Promise<StoredRun | null> {
   if (!/^[A-Za-z0-9_-]{8,40}$/.test(id)) return null;
   return getRun(id);
+}
+
+/** Preview a policy change (nothing saved), or apply it as a new logged version. */
+export function previewPolicy(parent: StoredRun, change: Policy): { result: RunResult; diff: DiffEntry[]; label: string } {
+  const policy = mergePolicy(parent.input.policy as Policy | undefined, change);
+  const input = { ...parent.input, policy, priorApprovals: parent.result.approvalDates };
+  const cfg = effectiveConfig(policy);
+  const result = runEngine(effectiveInput(input), cfg, parent.input.today);
+  return { result, diff: diffRuns(parent.result, result), label: describePolicyChange(change, effectiveConfig(parent.input.policy as Policy | undefined), parent.result.territories) };
+}
+
+export async function applyPolicy(parent: StoredRun, change: Policy, by: string): Promise<{ run: StoredRun; diff: DiffEntry[] }> {
+  const today = todayIST() > parent.input.today ? todayIST() : parent.input.today;
+  const policy = mergePolicy(parent.input.policy as Policy | undefined, change);
+  const input: EngineInput & { today: string } = { ...parent.input, policy, priorApprovals: parent.result.approvalDates, today };
+  const config = effectiveConfig(policy);
+  const result = runEngine(effectiveInput(input), config, today);
+  const label = `Policy by ${by}: ${describePolicyChange(change, effectiveConfig(parent.input.policy as Policy | undefined), parent.result.territories)}`;
+  const run: StoredRun = { id: newRunId(), createdAt: new Date().toISOString(), parentRunId: parent.id, rootId: parent.rootId, version: await nextVersion(parent.rootId), label, input, config, result };
+  await saveRun(run);
+  return { run, diff: diffRuns(parent.result, result) };
 }

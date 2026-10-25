@@ -72,6 +72,8 @@ export interface EngineInput {
   llmSignals?: Record<string, Signals>;
   source?: string;
   importNotes?: string[];
+  /** Team policy (threshold and slot overrides); see lib/policy.ts. Applied before the engine runs. */
+  policy?: { territorySlots?: Record<string, number>; [key: string]: unknown };
 }
 
 // ---------- Cleaned records ----------
@@ -309,7 +311,7 @@ export interface Decision {
   onboarding: OnboardingPlan | null;
   documents?: ChecklistItem[];
   readiness?: { items: ChecklistItem[]; percent: number; readyToOpen: boolean };
-  message: { language: Language; text: string; english: string };
+  message: { language: Language; text: string; english: string; sent?: { at: string; channel: string; by: string; current: boolean } };
   estimatedPaybackMonths: number | null;
   flags: Flag[];
   cleaning: CleanNote[];

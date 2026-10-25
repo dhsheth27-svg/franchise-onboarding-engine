@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { ChecklistStatus, Decision, PlanStep, TraceStep } from '@/lib/engine/types';
+import { emailLink, getSender, messageState, setSender, whatsappLink } from '@/lib/client-messaging';
 import { Button, Collapsible, ConfidenceLabel, fmtDate, OUTCOME_LABEL, OutcomeChip, RiskLabel, Section, Tag } from './ui';
 
 export interface DrawerActions {
@@ -9,6 +10,8 @@ export interface DrawerActions {
   onOverride?: (d: Decision) => void;
   onChecklist?: (d: Decision, kind: 'onboarding' | 'document' | 'readiness', item: string, status: ChecklistStatus) => void;
   onMilestone?: (d: Decision, stage: string) => void;
+  onMarkSent?: (d: Decision, channel: string, by: string) => void;
+  printHref?: string;
   busy?: boolean;
   history?: ReactNode;
 }
@@ -86,6 +89,11 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
               </p>
             </div>
             <div className="flex flex-none items-center gap-2">
+              {actions.printHref && (
+                <a href={actions.printHref} target="_blank" rel="noopener noreferrer" className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 transition hover:bg-[#F4F4F6] hover:text-black sm:inline-flex">
+                  Print
+                </a>
+              )}
               {actions.onOverride && (
                 <Button onClick={() => actions.onOverride!(d)} disabled={actions.busy}>
                   Override
@@ -193,7 +201,39 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
               </div>
             }
           >
-            <pre className="whitespace-pre-wrap rounded-md bg-slate-50 p-3 font-sans text-sm leading-relaxed text-slate-800">{msg}</pre>
+            <pre className="whitespace-pre-wrap rounded-2xl bg-slate-50 p-3 font-sans text-sm leading-relaxed text-slate-800">{msg}</pre>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <a href={whatsappLink(msg)} target="_blank" rel="noopener noreferrer" className="rounded-full px-3 py-1 text-xs font-medium text-emerald-800 ring-1 ring-emerald-300 transition hover:bg-emerald-50">
+                Open in WhatsApp
+              </a>
+              <a href={emailLink(d, msg)} className="rounded-full px-3 py-1 text-xs font-medium text-sky-800 ring-1 ring-sky-300 transition hover:bg-sky-50">
+                Open in email
+              </a>
+              {messageState(d) === 'sent' ? (
+                <span className="text-xs text-emerald-800">
+                  Sent {fmtDate(d.message.sent!.at)} via {d.message.sent!.channel} by {d.message.sent!.by}
+                </span>
+              ) : (
+                actions.onMarkSent && (
+                  <Button
+                    variant="primary"
+                    className="!py-1 text-xs"
+                    disabled={actions.busy}
+                    onClick={() => {
+                      let by = getSender();
+                      if (!by) {
+                        by = (window.prompt('Your name (logged with the message):') ?? '').trim();
+                        if (!by) return;
+                        setSender(by);
+                      }
+                      actions.onMarkSent!(d, 'WhatsApp/Email', by);
+                    }}
+                  >
+                    {messageState(d) === 'stale' ? 'Decision changed: mark new message sent' : 'Mark as sent'}
+                  </Button>
+                )
+              )}
+            </div>
             {d.message.language !== 'English' && <p className="mt-1.5 text-xs text-slate-500">Kannada and Hindi templates should be reviewed by a native speaker.</p>}
           </Section>
         )}

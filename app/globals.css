@@ -58,3 +58,12 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+  body::before {
+    display: none;
+  }
+}

@@ -8,7 +8,9 @@ import type { ActionItem, DataIssue, Decision, TerritorySummary } from './types'
 
 export function buildActions(decisions: Decision[], territories: TerritorySummary[], dataIssues: DataIssue[], cfg: ConfigValues, asOf: string, done: Set<string>): ActionItem[] {
   const items: ActionItem[] = [];
-  const push = (x: Omit<ActionItem, 'done' | 'priority'>, priority: number) => items.push({ ...x, priority, done: done.has(x.id) });
+  const messaged = new Set(decisions.filter((d) => d.message.sent?.current).map((d) => d.key));
+  const push = (x: Omit<ActionItem, 'done' | 'priority'>, priority: number) =>
+    items.push({ ...x, priority, done: done.has(x.id) || (!!x.applicationKey && (x.category === 'hold' || x.category === 'redirect') && messaged.has(x.applicationKey)) });
   const live = decisions.filter((d) => !d.withdrawn);
 
   // 1. Reservations and condition deadlines within the due-soon window

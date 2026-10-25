@@ -9,6 +9,9 @@ import type { NewEvent } from '@/lib/runs';
 import ApplicantDrawer from './ApplicantDrawer';
 import AskPanel from './AskPanel';
 import DashboardTab from './DashboardTab';
+import JourneyTab from './JourneyTab';
+import OutboxTab from './OutboxTab';
+import PolicyPanel from './PolicyPanel';
 import DataQualityTab from './DataQualityTab';
 import DecisionsTable from './DecisionsTable';
 import DiffBanner from './DiffBanner';
@@ -23,10 +26,12 @@ import { Button, fmtDate, Logo, OUTCOME_DOT, OUTCOME_LABEL, Spinner } from './ui
 const TABS = [
   { id: 'overview', label: 'Overview' },
   { id: 'today', label: 'Today' },
+  { id: 'outbox', label: 'Outbox' },
   { id: 'decisions', label: 'Decisions' },
+  { id: 'journey', label: 'Journey' },
   { id: 'territories', label: 'Territories' },
   { id: 'insights', label: 'Insights' },
-  { id: 'rules', label: 'Rules in use' },
+  { id: 'rules', label: 'Rules & policy' },
   { id: 'data', label: 'Data quality' },
 ] as const;
 type TabId = (typeof TABS)[number]['id'];
@@ -122,6 +127,19 @@ function RunViewInner({ id }: { id: string }) {
   const onChecklist = useCallback(
     (d: Decision, kind: 'onboarding' | 'document' | 'readiness', item: string, status: ChecklistStatus) =>
       postEvents([{ type: 'checklist', applicationId: d.key, payload: { kind, item, status } }], `${d.applicationId}: ${item} → ${status}`),
+    [postEvents],
+  );
+  const onMarkSent = useCallback(
+    (d: Decision, channel: string, by: string) =>
+      postEvents([{ type: 'checklist', applicationId: d.key, payload: { kind: 'message', item: 'message', status: 'Sent', channel, outcome: d.outcome }, by }], `${d.applicationId}: message sent via ${channel}`),
+    [postEvents],
+  );
+  const onAdvance = useCallback(
+    (d: Decision, stepIds: string[], status: ChecklistStatus) =>
+      postEvents(
+        stepIds.map((item) => ({ type: 'checklist' as const, applicationId: d.key, payload: { kind: 'onboarding', item, status } })),
+        `${d.applicationId}: ${stepIds.length} onboarding step(s) → ${status}`,
+      ),
     [postEvents],
   );
   const onMilestone = useCallback((d: Decision, stage: string) => postEvents([{ type: 'milestone', applicationId: d.key, payload: { stage } }], `${d.applicationId}: agreement signed`), [postEvents]);
@@ -247,7 +265,14 @@ function RunViewInner({ id }: { id: string }) {
             {tab === 'decisions' && <DecisionsTable decisions={r.decisions} outcomeFilter={outcomeFilter} onOutcomeFilter={setOutcomeFilter} onOpen={(k) => setQuery({ a: k })} selectedKey={selectedKey} />}
             {tab === 'territories' && <TerritoriesTab result={r} onOpen={(k) => setQuery({ a: k })} />}
             {tab === 'insights' && <InsightsTab result={r} config={data.config} events={data.events} onOpen={(k) => setQuery({ a: k })} />}
-            {tab === 'rules' && <RulesTab config={data.config} />}
+            {tab === 'rules' && (
+              <div className="space-y-6">
+                <PolicyPanel runId={id} config={data.config} territories={r.territories} onApplied={(next) => router.push(`/run/${next}?tab=rules&changed=1`, { scroll: false })} />
+                <RulesTab config={data.config} />
+              </div>
+            )}
+            {tab === 'journey' && <JourneyTab decisions={r.decisions} asOf={r.asOf} onOpen={(k) => setQuery({ a: k })} onAdvance={onAdvance} onTab={(t) => setQuery({ tab: t })} busy={!!busy} />}
+            {tab === 'outbox' && <OutboxTab decisions={r.decisions} onOpen={(k) => setQuery({ a: k })} onMarkSent={onMarkSent} busy={!!busy} />}
             {tab === 'data' && <DataQualityTab result={r} importNotes={data.importNotes} onOpen={(k) => setQuery({ a: k })} />}
           </div>
         </main>
@@ -263,6 +288,8 @@ function RunViewInner({ id }: { id: string }) {
             onOverride: setOverrideFor,
             onChecklist,
             onMilestone,
+            onMarkSent,
+            printHref: `/run/${id}/print/${encodeURIComponent(decision.key)}`,
             busy: !!busy,
             history: <ApplicantHistory runId={id} rootKey={decision.key} />,
           }}

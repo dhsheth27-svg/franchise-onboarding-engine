@@ -17,7 +17,7 @@ export interface EventState {
   withdrawn: Map<string, EngineEvent>;
   overrides: EngineEvent[];
   milestones: Map<string, { stage: string; at: string }[]>;
-  checklist: Map<string, Record<string, { status: string; at: string }>>;
+  checklist: Map<string, Record<string, { status: string; at: string; by?: string; channel?: string; outcome?: string }>>;
   missed: Map<string, EngineEvent>;
   actionsDone: Set<string>;
   byApplication: Map<string, EngineEvent[]>;
@@ -101,8 +101,14 @@ export function applyEvents(input: EngineInput, today: string): EventState {
       }
       case 'checklist': {
         const rec = state.checklist.get(key) ?? {};
-        rec[String(ev.payload.item)] = { status: String(ev.payload.status), at: ev.at };
+        rec[String(ev.payload.item)] = { status: String(ev.payload.status), at: ev.at, by: ev.by, channel: ev.payload.channel ? String(ev.payload.channel) : undefined, outcome: ev.payload.outcome ? String(ev.payload.outcome) : undefined };
         state.checklist.set(key, rec);
+        // Marking the agreement step done is the same fact as the "agreement signed" milestone.
+        if (ev.payload.kind === 'onboarding' && ev.payload.item === 'agreement' && ev.payload.status === 'Done') {
+          const list = state.milestones.get(key) ?? [];
+          list.push({ stage: 'agreement', at: ev.at });
+          state.milestones.set(key, list);
+        }
         break;
       }
       case 'reservationMissed':

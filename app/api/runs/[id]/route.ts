@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { jsonError, serverError } from '@/lib/api';
-import { config } from '@/lib/config';
+import { effectiveConfig, type Policy } from '@/lib/policy';
 import { loadRun } from '@/lib/runs';
 import { storageMode } from '@/lib/store';
 
@@ -22,7 +22,8 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
       importNotes: run.input.importNotes ?? [],
       events: run.input.events ?? [],
       storage: storageMode(),
-      config,
+      config: effectiveConfig(run.input.policy as Policy | undefined),
+      policy: run.input.policy ?? null,
       result: run.result,
     });
   } catch (e) {
