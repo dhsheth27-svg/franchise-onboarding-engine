@@ -272,7 +272,9 @@ function RunViewInner({ id }: { id: string }) {
 
 function SimulateDate({ asOf, today, busy, onApply }: { asOf: string; today: string; busy: boolean; onApply: (days: number) => void }) {
   const [value, setValue] = useState(asOf);
-  useEffect(() => setValue(asOf), [asOf]);
+  useEffect(() => {
+    setValue(asOf);
+  }, [asOf]);
   const days = Math.round((Date.parse(value) - Date.parse(asOf)) / 86400000);
   return (
     <div className="flex items-center gap-1.5 text-sm">

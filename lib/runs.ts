@@ -1,6 +1,8 @@
 // Run lifecycle: create from an upload, append events (new immutable version), compare versions.
 
-import { config } from './config';
+import { config, configValues } from './config';
+import { cleanApplications } from './engine/validate';
+import { extractSignalsLLM, llmEnabled } from './llm';
 import { runEngine } from './engine';
 import { diffRuns, type DiffEntry } from './engine/diff';
 import type { EngineEvent, EngineInput, RunResult } from './engine/types';
@@ -11,8 +13,21 @@ export function todayIST(): string {
   return new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slice(0, 10);
 }
 
-export async function createRun(input: EngineInput, label: string): Promise<StoredRun> {
+/** When an API key is set, read the free text with the LLM once at upload; otherwise keyword rules are used. */
+async function withLlmSignals(input: EngineInput, today: string): Promise<EngineInput> {
+  if (!llmEnabled()) return input;
+  const apps = cleanApplications(input.applications, configValues(), today);
+  const deterministic = Object.fromEntries(apps.map((a) => [a.key, a.signals]));
+  const llm = await extractSignalsLLM(
+    apps.map((a) => ({ key: a.key, business: a.business, notes: a.notes })),
+    deterministic,
+  );
+  return llm ? { ...input, llmSignals: llm } : input;
+}
+
+export async function createRun(rawInput: EngineInput, label: string): Promise<StoredRun> {
   const today = todayIST();
+  const input = await withLlmSignals(rawInput, today);
   const result = runEngine(input, config, today);
   const id = newRunId();
   const run: StoredRun = {

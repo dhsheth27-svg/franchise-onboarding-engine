@@ -1,0 +1,62 @@
+import { describe, expect, test } from 'vitest';
+import { config } from '@/lib/config';
+import { runEngine } from '@/lib/engine';
+import { compareAnswer, explainAnswer, parseRules, statusAnswer } from '@/lib/followup';
+import { sampleInput } from '@/lib/sample';
+
+const r = runEngine(sampleInput(), config, '2026-10-25');
+const p = (m: string) => parseRules(m, r.decisions, r.territories);
+
+describe('rule-based follow-up parsing', () => {
+  test('explain', () => {
+    expect(p('Why is APP-007 on hold?')).toEqual({ kind: 'explain', id: 'APP-007' });
+    expect(p('explain app 3')).toEqual({ kind: 'explain', id: 'APP-003' });
+  });
+  test('update from the case brief example', () => {
+    const i = p('APP-012 has now found a ground-floor space');
+    expect(i.kind).toBe('update');
+    if (i.kind === 'update') expect(i.patch).toMatchObject({ spaceAvailable: 'Rented', floor: 'Ground' });
+    const j = p('APP-012 found a ground floor space of 400 sq ft, owned');
+    if (j.kind === 'update') expect(j.patch).toMatchObject({ spaceAvailable: 'Owned', floor: 'Ground', spaceSize: 400 });
+  });
+  test('numbers: lakh, months, years experience, pin', () => {
+    const i = p('APP-011 can now invest 20 lakh');
+    if (i.kind === 'update') expect(i.patch.investment).toBe(20);
+    const m = p('APP-005 moved to pin 560103');
+    if (m.kind === 'update') expect(m.patch.pin).toBe('560103');
+    const e = p('APP-020 actually has 6 years experience');
+    if (e.kind === 'update') expect(e.patch.experience).toBe(6);
+  });
+  test('what-if is not an update', () => {
+    expect(p('What if APP-007 found a ground floor space of 300 sq ft?').kind).toBe('whatif');
+  });
+  test('withdraw, missed deadline, signed, move forward', () => {
+    expect(p('APP-001 has dropped out')).toEqual({ kind: 'withdraw', id: 'APP-001' });
+    expect(p('APP-015 missed the deadline')).toEqual({ kind: 'reservationMissed', id: 'APP-015' });
+    expect(p('APP-001 signed the agreement')).toEqual({ kind: 'milestone', id: 'APP-001', stage: 'agreement' });
+    expect(p('move forward 35 days')).toEqual({ kind: 'dateAdvance', days: 35 });
+  });
+  test('status, compare, actions, clarify', () => {
+    expect(p('Who got approved in Mysuru?')).toEqual({ kind: 'status', city: 'Mysuru' });
+    expect(p('slots left in TER-02')).toEqual({ kind: 'status', territoryId: 'TER-02' });
+    expect(p('Why did APP-001 beat APP-002?')).toEqual({ kind: 'compare', a: 'APP-001', b: 'APP-002' });
+    expect(p('What should the team do today?')).toEqual({ kind: 'actions' });
+    expect(p('Why is APP-099 on hold?').kind).toBe('clarify');
+    expect(p('hello').kind).toBe('clarify');
+  });
+});
+
+describe('answers come from the stored decision', () => {
+  test('explain uses the summary', () => {
+    const d = r.decisions.find((x) => x.key === 'APP-007')!;
+    expect(explainAnswer(d)).toContain(d.summary);
+  });
+  test('compare names the winner and the pin', () => {
+    const a = r.decisions.find((x) => x.key === 'APP-001')!;
+    const b = r.decisions.find((x) => x.key === 'APP-002')!;
+    expect(compareAnswer(a, b)).toMatch(/same pin 560010/);
+  });
+  test('status lists approvals in the city', () => {
+    expect(statusAnswer(r, { city: 'Mysuru' })).toMatch(/APP-025/);
+  });
+});
