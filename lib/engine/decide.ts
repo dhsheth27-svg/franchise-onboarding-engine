@@ -42,6 +42,7 @@ export interface Work {
   override?: Override;
   engineOutcome?: Outcome;
   withdrawn?: boolean;
+  wasApproved?: boolean;
   reservation?: Reservation;
   conditions: Condition[];
   confidence: Confidence;
@@ -438,6 +439,7 @@ export function decide(input: EngineInput, cfg: ConfigValues, todayInput: string
     if (!e) continue;
     excludedBase.add(w.app.key);
     w.withdrawn = true;
+    w.wasApproved = !!input.priorApprovals?.[w.app.key];
     step(w, { step: 'event', check: 'Withdrawn', code: 'WITHDRAWN', result: 'fail', values: { at: e.at }, sentence: `The applicant withdrew on ${fmtDate(e.at)}${e.reason ? ` (${e.reason})` : ''}.` });
   }
 

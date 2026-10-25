@@ -181,7 +181,7 @@ function RunViewInner({ id }: { id: string }) {
       <div className="flex flex-1">
         <main className="min-w-0 flex-1 px-4 pb-16 pt-4 sm:px-6">
           {/* Stats strip */}
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-8">
             {outcomes.map((o) => (
               <button
                 key={o}
@@ -191,7 +191,7 @@ function RunViewInner({ id }: { id: string }) {
                 }}
                 className={`rounded-lg px-3 py-2 text-left ring-1 ring-inset transition ${OUTCOME_STYLE[o]} ${outcomeFilter === o ? 'ring-2' : ''}`}
               >
-                <div className="text-2xl font-semibold tabular-nums">{r.counts[o]}</div>
+                <div className="text-xl font-semibold tabular-nums sm:text-2xl">{r.counts[o]}</div>
                 <div className="text-xs font-medium">{OUTCOME_LABEL[o]}</div>
               </button>
             ))}
@@ -203,7 +203,7 @@ function RunViewInner({ id }: { id: string }) {
               <div className="text-2xl font-semibold tabular-nums text-stone-900">{issues}</div>
               <div className="text-xs font-medium text-stone-600">Data issues</div>
             </button>
-            <div className="col-span-2 flex flex-col justify-center rounded-lg bg-white px-3 py-2 text-xs text-stone-500 ring-1 ring-inset ring-stone-200 sm:col-span-4 lg:col-span-1">
+            <div className="hidden flex-col justify-center rounded-lg bg-white px-3 py-2 text-xs text-stone-500 ring-1 ring-inset ring-stone-200 sm:col-span-4 sm:flex lg:col-span-1">
               <span>
                 As of <span className="font-medium text-stone-800">{fmtDate(r.asOf)}</span>
               </span>

@@ -58,7 +58,7 @@ export function reasonSentence(w: Work, code: string, cfg: ConfigValues): string
       return `${a.id} is rejected because the score of ${w.sr?.score} is below the approval bar of ${cfg.MIN_SCORE_TO_APPROVE}${weak ? `; the weakest area is ${weak.label.toLowerCase()} (${weak.explanation.replace(/\.$/, '')})` : ''}.`;
     }
     case 'WITHDRAWN':
-      return `${a.id} has withdrawn${isApproved(w.engineOutcome) ? ', so the slot and pin have been released to the next applicant' : ''}.`;
+      return `${a.id} has withdrawn${w.wasApproved ? `, so the slot and pin ${a.pin} have been released to the next eligible applicant` : ''}.`;
     case 'RESERVATION_EXPIRED':
       return `${a.id} is back on hold because the slot reservation lapsed: ${w.trace.find((t) => t.code === 'RESERVATION_EXPIRED')?.sentence ?? ''}`;
     case 'RELEASED_BY_OVERRIDE':
