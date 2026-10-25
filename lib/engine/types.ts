@@ -69,6 +69,7 @@ export interface EngineInput {
   /** Signals extracted by the LLM before the run, keyed by application key. Deterministic extraction is used otherwise. */
   llmSignals?: Record<string, Signals>;
   source?: string;
+  importNotes?: string[];
 }
 
 // ---------- Cleaned records ----------
