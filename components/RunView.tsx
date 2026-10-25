@@ -17,7 +17,7 @@ import OverrideDialog from './OverrideDialog';
 import RulesTab from './RulesTab';
 import TerritoriesTab from './TerritoriesTab';
 import TodayTab from './TodayTab';
-import { Button, fmtDate, OUTCOME_LABEL, OUTCOME_STYLE, Spinner } from './ui';
+import { Button, fmtDate, Logo, OUTCOME_DOT, OUTCOME_LABEL, Spinner } from './ui';
 
 const TABS = [
   { id: 'today', label: 'Today' },
@@ -141,14 +141,19 @@ function RunViewInner({ id }: { id: string }) {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 backdrop-blur">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6">
-          <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <span className="inline-block h-2.5 w-2.5 rounded-sm bg-brand-700" aria-hidden />
-            <span className="hidden sm:inline">Franchise Onboarding Engine</span>
+          <Link href="/" aria-label="Home" className="flex items-center">
+            <span className="sm:hidden">
+              <Logo compact />
+            </span>
+            <span className="hidden sm:inline">
+              <Logo />
+            </span>
           </Link>
           <div className="min-w-0 flex-1 truncate text-sm text-slate-500">
-            {data.source ?? data.label} · <span className="font-medium text-slate-700">v{data.version}</span>
+            <span className="hidden sm:inline">{data.source ?? data.label} · </span>
+            <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">v{data.version}</span>
             {data.version > 1 && <span className="hidden md:inline"> · {data.label}</span>}
           </div>
           <SimulateDate asOf={r.asOf} today={data.today} busy={!!busy} onApply={(days) => postEvents([{ type: 'dateAdvance', payload: { days } }], `Moved the date forward ${days} days`)} />
@@ -189,21 +194,24 @@ function RunViewInner({ id }: { id: string }) {
                   setOutcomeFilter(outcomeFilter === o ? null : o);
                   setQuery({ tab: 'decisions' });
                 }}
-                className={`rounded-lg px-3 py-2 text-left ring-1 ring-inset transition ${OUTCOME_STYLE[o]} ${outcomeFilter === o ? 'ring-2' : ''}`}
+                className={`rounded-2xl border bg-white px-3.5 py-3 text-left shadow-card transition hover:shadow-lift ${outcomeFilter === o ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-slate-200/70'}`}
               >
-                <div className="text-xl font-semibold tabular-nums sm:text-2xl">{r.counts[o]}</div>
-                <div className="text-xs font-medium">{OUTCOME_LABEL[o]}</div>
+                <div className="text-xl font-extrabold tabular-nums text-ink sm:text-2xl">{r.counts[o]}</div>
+                <div className="mt-0.5 flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                  <span aria-hidden className={`h-2 w-2 rounded-full ${OUTCOME_DOT[o]}`} />
+                  {OUTCOME_LABEL[o]}
+                </div>
               </button>
             ))}
-            <button onClick={() => setQuery({ tab: 'today' })} className="rounded-lg bg-white px-3 py-2 text-left ring-1 ring-inset ring-slate-200 hover:bg-slate-50">
-              <div className="text-2xl font-semibold tabular-nums text-slate-900">{openActions}</div>
-              <div className="text-xs font-medium text-slate-600">Open actions</div>
+            <button onClick={() => setQuery({ tab: 'today' })} className="rounded-2xl border border-brand-600 bg-brand-600 px-3.5 py-3 text-left text-white shadow-lift transition hover:bg-brand-700">
+              <div className="text-xl font-extrabold tabular-nums sm:text-2xl">{openActions}</div>
+              <div className="mt-0.5 text-xs font-semibold text-brand-50">Open actions</div>
             </button>
-            <button onClick={() => setQuery({ tab: 'data' })} className="rounded-lg bg-white px-3 py-2 text-left ring-1 ring-inset ring-slate-200 hover:bg-slate-50">
-              <div className="text-2xl font-semibold tabular-nums text-slate-900">{issues}</div>
-              <div className="text-xs font-medium text-slate-600">Data issues</div>
+            <button onClick={() => setQuery({ tab: 'data' })} className="rounded-2xl border border-slate-200/70 bg-white px-3.5 py-3 text-left shadow-card transition hover:shadow-lift">
+              <div className="text-xl font-extrabold tabular-nums text-ink sm:text-2xl">{issues}</div>
+              <div className="mt-0.5 text-xs font-semibold text-slate-600">Data issues</div>
             </button>
-            <div className="hidden flex-col justify-center rounded-lg bg-white px-3 py-2 text-xs text-slate-500 ring-1 ring-inset ring-slate-200 sm:col-span-4 sm:flex lg:col-span-1">
+            <div className="hidden flex-col justify-center rounded-2xl border border-slate-200/70 bg-white px-3.5 py-3 text-xs text-slate-500 shadow-card sm:col-span-4 sm:flex lg:col-span-1">
               <span>
                 As of <span className="font-medium text-slate-800">{fmtDate(r.asOf)}</span>
               </span>
@@ -216,21 +224,21 @@ function RunViewInner({ id }: { id: string }) {
           {params.get('changed') && data.parentRunId && <DiffBanner runId={id} onOpen={(k) => setQuery({ a: k })} onClose={() => setQuery({ changed: null })} />}
 
           {/* Tabs */}
-          <nav className="mt-5 flex gap-1 overflow-x-auto border-b border-slate-200" aria-label="Sections">
+          <nav className="mt-6 flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-slate-200/70 bg-white p-1 shadow-card" aria-label="Sections">
             {TABS.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setQuery({ tab: t.id })}
                 aria-current={tab === t.id ? 'page' : undefined}
-                className={`-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition ${tab === t.id ? 'border-brand-700 text-brand-800' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-semibold transition ${tab === t.id ? 'bg-brand-600 text-white shadow-btn' : 'text-slate-600 hover:bg-brand-50 hover:text-brand-700'}`}
               >
                 {t.label}
-                {t.id === 'today' && openActions > 0 && <span className="ml-1.5 rounded-full bg-brand-100 px-1.5 text-xs text-brand-800">{openActions}</span>}
+                {t.id === 'today' && openActions > 0 && <span className={`ml-1.5 rounded-full px-1.5 text-xs ${tab === t.id ? 'bg-white/20 text-white' : 'bg-brand-100 text-brand-800'}`}>{openActions}</span>}
               </button>
             ))}
           </nav>
 
-          <div className="pt-4">
+          <div className="pt-5">
             {tab === 'today' && <TodayTab result={r} onOpen={(k) => setQuery({ a: k })} onDone={(itemId, label) => postEvents([{ type: 'checklist', payload: { kind: 'action', item: itemId, status: 'Done' } }], `Done: ${label}`)} busy={!!busy} />}
             {tab === 'decisions' && <DecisionsTable decisions={r.decisions} outcomeFilter={outcomeFilter} onOutcomeFilter={setOutcomeFilter} onOpen={(k) => setQuery({ a: k })} selectedKey={selectedKey} />}
             {tab === 'territories' && <TerritoriesTab result={r} onOpen={(k) => setQuery({ a: k })} />}

@@ -175,7 +175,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
       {msgs.length > 0 && (
         <div className="flex gap-1.5 overflow-x-auto border-t border-slate-100 px-4 py-2">
           {prompts.slice(0, 4).map((p) => (
-            <button key={p} onClick={() => send(p)} disabled={pending} className="whitespace-nowrap rounded-full border border-slate-200 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50">
+            <button key={p} onClick={() => send(p)} disabled={pending} className="whitespace-nowrap rounded-full border border-slate-200 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50/70">
               {p}
             </button>
           ))}

@@ -113,9 +113,9 @@ export default function DecisionsTable({
       {rows.length === 0 ? (
         <Empty>No applications match these filters.</Empty>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200/70 bg-white shadow-card">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50">
+            <thead className="bg-slate-50/70">
               <tr>
                 {th('id', 'ID')}
                 {th('name', 'Name')}

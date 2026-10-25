@@ -19,7 +19,7 @@ export const OUTCOME_STYLE: Record<Outcome, string> = {
   REJECTED: 'bg-rose-50 text-rose-800 ring-rose-600/25',
 };
 
-const OUTCOME_DOT: Record<Outcome, string> = {
+export const OUTCOME_DOT: Record<Outcome, string> = {
   APPROVED: 'bg-emerald-600',
   APPROVED_WITH_CONDITIONS: 'bg-teal-600',
   HOLD: 'bg-amber-500',

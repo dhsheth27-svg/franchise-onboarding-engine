@@ -154,7 +154,7 @@ export function summarise(w: Work, cfg: ConfigValues, x: SummaryExtras): string 
     if (w.reservation) parts.push(`The slot is reserved until ${fmtDate(w.reservation.deadline)}; the next step is signing the agreement and confirming the space.`);
   } else if (w.outcome === 'HOLD' && w.sr && !w.withdrawn) {
     const others = w.gateFails.filter((g) => g.code !== primary).map((g) => g.code);
-    const rank = w.provisionalRank && w.territory ? `; would rank #${w.provisionalRank} for ${slotsPhrase(w)} if the hold cleared` : '';
+    const rank = w.provisionalRank && w.territory && !x.whatWouldChange.length ? `; would rank #${w.provisionalRank} for ${slotsPhrase(w)} if the hold cleared` : '';
     const pinNote = w.pinTakenBy ? ` Note that pin ${a.pin} is already taken by ${w.pinTakenBy}, so a different pin would be needed.` : '';
     const tone = w.sr.score >= cfg.MIN_SCORE_TO_APPROVE + 15 ? 'Everything else looks strong' : w.sr.score >= cfg.MIN_SCORE_TO_APPROVE ? 'Otherwise the application clears the bar' : 'Even then the score is below the bar';
     if (!['SCORE_NEAR_MISS', 'RESERVATION_EXPIRED'].includes(primary ?? '')) parts.push(`${others.length ? 'Other open points: ' + others.map(shortFlag).join(', ').toLowerCase() + '. ' : ''}${tone} (${w.sr.provisional ? 'provisional ' : ''}score ${w.sr.score}${rank}).${pinNote}`);

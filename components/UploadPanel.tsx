@@ -44,7 +44,7 @@ export default function UploadPanel() {
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <div className="rounded-3xl border border-slate-200/70 bg-white p-5 shadow-lift sm:p-7">
       <div
         role="button"
         tabIndex={0}
@@ -62,8 +62,8 @@ export default function UploadPanel() {
           const f = e.dataTransfer.files?.[0];
           if (f && !busy) upload(f);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-12 text-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-          drag ? 'border-brand-500 bg-brand-50' : 'border-slate-300 hover:border-slate-400 hover:bg-slate-50'
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-10 text-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+          drag ? 'border-brand-500 bg-brand-50' : 'border-brand-200 bg-brand-50/40 hover:border-brand-400 hover:bg-brand-50'
         }`}
       >
         {busy ? (
@@ -73,10 +73,10 @@ export default function UploadPanel() {
           </>
         ) : (
           <>
-            <svg aria-hidden viewBox="0 0 24 24" className="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg aria-hidden viewBox="0 0 24 24" className="h-11 w-11 rounded-xl bg-brand-600 p-2.5 text-white shadow-btn" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <p className="mt-3 text-base font-medium text-slate-900">Drop your Excel file here</p>
+            <p className="mt-4 text-base font-bold text-ink">Drop your Excel file here</p>
             <p className="mt-1 text-sm text-slate-500">or click to choose · .xlsx with Applications and Territories sheets</p>
           </>
         )}
@@ -111,17 +111,17 @@ export default function UploadPanel() {
       <button
         onClick={sample}
         disabled={busy}
-        className="w-full rounded-md bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:bg-brand-300"
+        className="w-full rounded-full bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-btn transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:bg-brand-300"
       >
         Try with sample data
       </button>
       <p className="mt-2 text-center text-xs text-slate-500">29 deliberately messy applications covering every tricky case.</p>
 
       <div className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm">
-        <a className="text-brand-700 underline-offset-2 hover:underline" href="/api/template">
+        <a className="font-medium text-brand-700 underline-offset-2 hover:underline" href="/api/template">
           Download blank template
         </a>
-        <a className="text-brand-700 underline-offset-2 hover:underline" href="/api/sample-file">
+        <a className="font-medium text-brand-700 underline-offset-2 hover:underline" href="/api/sample-file">
           Download sample as Excel
         </a>
       </div>
