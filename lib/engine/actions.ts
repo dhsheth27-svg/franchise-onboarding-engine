@@ -3,6 +3,7 @@
 // waitlisted/rejected applicants, 5 high-priority territories to recruit in, 6 data to confirm.
 
 import type { ConfigValues } from '../config';
+import { rankOnceCleared } from './rank';
 import { addDays, daysBetween, fmtDate } from './normalize';
 import type { ActionItem, DataIssue, Decision, TerritorySummary } from './types';
 
@@ -50,20 +51,21 @@ export function buildActions(decisions: Decision[], territories: TerritorySummar
   // 2. Holds closest to approval: send the info request
   const holds = live
     .filter((d) => d.outcome === 'HOLD' && d.score !== null && !['DUPLICATE_ID', 'DUPLICATE_APPLICANT'].includes(d.primaryReason))
-    .sort((a, b) => (a.provisionalRank ?? 99) - (b.provisionalRank ?? 99) || (b.score ?? 0) - (a.score ?? 0));
+    .sort((a, b) => (rankOnceCleared(a.provisionalRank, a.whatWouldChange) ?? 99) - (rankOnceCleared(b.provisionalRank, b.whatWouldChange) ?? 99) || (b.score ?? 0) - (a.score ?? 0));
   for (const d of holds) {
-    const wouldGetSlot = !d.pinTakenBy && d.provisionalRank && d.territorySlots && d.provisionalRank <= d.territorySlots;
+    const rank = rankOnceCleared(d.provisionalRank, d.whatWouldChange);
+    const wouldGetSlot = !d.pinTakenBy && rank && d.territorySlots && rank <= d.territorySlots;
     push(
       {
         id: `hold:${d.key}`,
         category: 'hold',
         who: 'Expansion team',
         what: `Send ${d.applicationId} the info request (${d.language})`,
-        why: `${d.oneLine}.${wouldGetSlot ? ` Would rank #${d.provisionalRank} for ${d.territorySlots} slot(s) in ${d.territoryId} once this is cleared.` : ''}${d.pinTakenBy ? ` Pin ${d.pin} is already taken by ${d.pinTakenBy}, so suggest another pin.` : ''}`,
+        why: `${d.oneLine}.${wouldGetSlot ? ` Would rank #${rank} for ${d.territorySlots} slot(s) in ${d.territoryId} once this is cleared.` : ''}${d.pinTakenBy ? ` Pin ${d.pin} is already taken by ${d.pinTakenBy}, so suggest another pin.` : ''}`,
         deadline: addDays(asOf, 2),
         applicationKey: d.key,
       },
-      200 + (wouldGetSlot ? 0 : 50) + (d.provisionalRank ?? 40),
+      200 + (wouldGetSlot ? 0 : 50) + (rank ?? 40),
     );
   }
 

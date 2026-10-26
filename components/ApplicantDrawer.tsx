@@ -402,6 +402,15 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
                 <span className="tabular-nums text-rose-700">−{p.cannibalisationDeduction.points.toFixed(1)}</span>
               </div>
               <p className="text-xs text-slate-500">{p.cannibalisationDeduction.explanation}</p>
+              {d.estimatedPaybackMonths !== null && (
+                <div className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm">
+                  <div className="flex items-baseline justify-between">
+                    <span className="font-medium text-slate-800">Estimated payback</span>
+                    <span className="tabular-nums text-ink">about {d.estimatedPaybackMonths} months</span>
+                  </div>
+                  <p className="mt-0.5 text-xs text-slate-500">How long the partner takes to earn back the minimum investment, from illustrative sales, margin, rent and running-cost assumptions (see Rules &amp; policy). Shown for context; not part of the score.</p>
+                </div>
+              )}
             </div>
           </Collapsible>
         )}

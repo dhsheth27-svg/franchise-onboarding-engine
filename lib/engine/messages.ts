@@ -3,6 +3,7 @@
 // Kannada and Hindi templates should be reviewed by a native speaker.
 
 import type { ConfigValues } from '../config';
+import { rankOnceCleared } from './rank';
 import { isApproved, type Work } from './decide';
 import { toDate } from './normalize';
 import type { Counterfactual, Language, Redirect } from './types';
@@ -324,7 +325,8 @@ function build(lang: Language, x: MessageFacts): string {
     }
     if (!n) lines.push(`1. ${d.ask.MISSING_REQUIRED({ fields: '—' })}`);
     lines.push('', d.howToSend({ deadline: d.date(addDaysIso(x.asOf, cfg.conditionDays)) }));
-    lines.push(w.provisionalRank && w.territory && !w.pinTakenBy ? d.afterHoldRank({ rank: w.provisionalRank, slots: w.territory.openSlots, city }) : d.afterHold);
+    const rank = rankOnceCleared(w.provisionalRank, x.whatWouldChange);
+    lines.push(rank && w.territory && !w.pinTakenBy ? d.afterHoldRank({ rank, slots: w.territory.openSlots, city }) : d.afterHold);
     if (w.pinTakenBy) lines.push(...redirectLines());
   } else if (w.outcome === 'WAITLISTED') {
     lines.push(w.waitlistPosition ? d.waitlisted({ id: a.id, city, pos: w.waitlistPosition }) : d.waitlisted({ id: a.id, city, pos: '—' }));

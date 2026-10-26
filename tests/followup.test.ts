@@ -101,3 +101,28 @@ test('event-creating readings must be backed by the message wording', async () =
   expect(confirmEventWording({ kind: 'milestone', id: 'APP-001', stage: 'agreement' }, 'APP-001 signed the agreement today')).toBe(true);
   expect(confirmEventWording({ kind: 'update', id: 'APP-012', patch: {}, notes: [] }, msg)).toBe(true);
 });
+
+describe('consistency and next steps', () => {
+  test('a hold quotes the same once-cleared rank in its explanation, message and action', () => {
+    let checked = 0;
+    for (const d of r.decisions.filter((x) => x.outcome === 'HOLD')) {
+      const fix = d.whatWouldChange.find((c) => ['space', 'capital', 'data', 'launch', 'score'].includes(c.kind) && c.outcome.startsWith('APPROVED') && c.rank);
+      if (!fix) continue;
+      const action = r.actions.find((a) => a.applicationKey === d.key && a.id.startsWith('hold:'));
+      if (action && /Would rank #/.test(action.why)) {
+        expect(action.why).toContain(`Would rank #${fix.rank} `);
+        checked++;
+      }
+      if (d.language === 'English' && /rank #/.test(d.message.text)) expect(d.message.text).toContain(`#${fix.rank}`);
+    }
+    expect(checked).toBeGreaterThan(0);
+  });
+
+  test('approved partners are told what to do next and how they will be prepared', () => {
+    const d = r.decisions.find((x) => x.outcome === 'APPROVED' && x.onboarding)!;
+    const a = explainAnswer(d);
+    expect(a).toMatch(/Next steps: 1\. /);
+    expect(a).toContain(`How ${d.applicationId} will be prepared:`);
+    expect(a).toMatch(/programme \(\d+ weeks?\) in (English|Kannada|Hindi)/);
+  });
+});

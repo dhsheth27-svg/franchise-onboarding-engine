@@ -193,7 +193,33 @@ export function explainAnswer(d: Decision): string {
   const failed = d.trace.filter((s) => s.step === 'gate' && s.result === 'fail').map((s) => s.sentence);
   if (failed.length > 1) parts.push(`All checks that failed: ${failed.join(' ')}`);
   if (d.whatWouldChange.length > 1) parts.push(`Other ways forward: ${d.whatWouldChange.slice(1).map((c) => c.sentence).join(' ')}`);
+  const prep = preparationAnswer(d);
+  if (prep) parts.push(prep);
   return parts.join('\n\n');
+}
+
+/** For partners who move forward: what they do next and how they will be prepared to run the store (from the plan). */
+export function preparationAnswer(d: Decision): string | null {
+  const o = d.onboarding;
+  if (!o || d.withdrawn) return null;
+  const who = (s: { owner: string }) => (s.owner === 'Both' ? 'brand and partner' : s.owner === 'Brand' ? 'brand team' : 'partner');
+  const next = o.steps
+    .filter((s) => s.status !== 'Done')
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+    .slice(0, 3)
+    .map((s, i) => `${i + 1}. ${s.stage} (${who(s)}, by ${fmtDate(s.dueDate)})`);
+  const training = o.steps.find((s) => s.id === 'training');
+  const extra = o.steps.filter((s) => s.added).map((s) => s.stage.toLowerCase());
+  const docs = (d.documents ?? []).filter((x) => x.status !== 'Done').map((x) => x.label.replace(/\s*\(.*\)$/, ''));
+  return [
+    o.preconditions.length ? `Before the agreement: ${o.preconditions.map((c) => `${c.text} (by ${fmtDate(c.deadline)})`).join(' ')}` : '',
+    next.length ? `Next steps: ${next.join('; ')}.` : 'All onboarding steps are done.',
+    training ? `How ${d.applicationId} will be prepared: ${training.detail}${extra.length ? ` Extra steps for this partner: ${extra.join(', ')}.` : ''}` : '',
+    docs.length ? `Documents to collect: ${docs.slice(0, 4).join(', ')}${docs.length > 4 ? ` and ${docs.length - 4} more` : ''}.` : '',
+    o.timelineNote,
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 export function compareAnswer(a: Decision, b: Decision): string {
