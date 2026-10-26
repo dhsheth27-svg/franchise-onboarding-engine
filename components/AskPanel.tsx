@@ -113,7 +113,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
   }
 
   const panel = (
-    <div className="flex h-full flex-col bg-surface/70 backdrop-blur-xl">
+    <div className="flex h-full flex-col bg-surface">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <div>
           <h2 className="text-sm font-semibold text-slate-900">Ask or update</h2>
@@ -206,7 +206,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
 
   return (
     <>
-      <aside className="sticky top-[49px] hidden h-[calc(100vh-49px)] w-[380px] flex-none border-l border-slate-200 xl:block">{panel}</aside>
+      <aside className="sticky top-7 hidden h-[calc(100vh-3.5rem)] w-[360px] flex-none border-l border-slate-200 xl:block">{panel}</aside>
       {open && (
         <div className="fixed inset-0 z-40 flex justify-end xl:hidden" role="dialog" aria-modal="true" aria-label="Ask panel">
           <button aria-label="Close" className="absolute inset-0 animate-fade-in bg-ink/40 backdrop-blur-sm" onClick={onClose} />

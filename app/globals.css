@@ -6,47 +6,31 @@
   color-scheme: light;
 }
 body {
-  /* Warm paper with a faint cobalt wash at the top */
-  background:
-    radial-gradient(1200px 520px at 85% -12%, rgba(36, 67, 232, 0.07), transparent 65%),
-    radial-gradient(900px 500px at -10% 0%, rgba(214, 160, 76, 0.08), transparent 60%),
-    #f4efe6;
-  color: #16140f;
-}
-/* Paper grain */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.35;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.4  0 0 0 0 0.32  0 0 0 0.09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background: #e7e8f8;
+  color: #221f4a;
 }
 ::selection {
-  background: rgba(36, 67, 232, 0.18);
-  color: #16140f;
+  background: rgba(75, 51, 178, 0.2);
+  color: #221f4a;
 }
-/* Ledger rules used behind hero areas */
 .bg-dots {
-  background-image: radial-gradient(rgba(22, 20, 15, 0.13) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(75, 51, 178, 0.14) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 .bg-ledger {
-  background-image: linear-gradient(rgba(22, 20, 15, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(22, 20, 15, 0.055) 1px, transparent 1px);
-  background-size: 48px 48px;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 /* Skeleton shimmer */
 .skeleton {
-  background: linear-gradient(90deg, #f2ede3 0%, #e5ded0 50%, #f2ede3 100%);
+  background: linear-gradient(90deg, #efeff9 0%, #e2e2f2 50%, #efeff9 100%);
   background-size: 800px 100%;
 }
 select,
 input,
 textarea {
-  background-color: #fffdf8;
-  color: #16140f;
+  background-color: #ffffff;
+  color: #221f4a;
 }
 @media (prefers-reduced-motion: reduce) {
   *,

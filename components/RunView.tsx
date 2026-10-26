@@ -22,6 +22,7 @@ import OverrideDialog from './OverrideDialog';
 import RulesTab from './RulesTab';
 import TerritoriesTab from './TerritoriesTab';
 import TodayTab from './TodayTab';
+import { IconAlert, IconChart, IconClock, IconDownload, IconGrid, IconHistory, IconInbox, IconMap, IconRoute, IconSliders, IconTable } from './icons';
 import { Button, fmtDate, Logo, OUTCOME_DOT, OUTCOME_LABEL, Spinner } from './ui';
 
 const TABS = [
@@ -36,6 +37,18 @@ const TABS = [
   { id: 'data', label: 'Data quality' },
 ] as const;
 type TabId = (typeof TABS)[number]['id'];
+
+const TAB_ICON: Record<TabId, JSX.Element> = {
+  overview: <IconGrid className="h-5 w-5" />,
+  today: <IconClock className="h-5 w-5" />,
+  outbox: <IconInbox className="h-5 w-5" />,
+  decisions: <IconTable className="h-5 w-5" />,
+  journey: <IconRoute className="h-5 w-5" />,
+  territories: <IconMap className="h-5 w-5" />,
+  insights: <IconChart className="h-5 w-5" />,
+  rules: <IconSliders className="h-5 w-5" />,
+  data: <IconAlert className="h-5 w-5" />,
+};
 
 export default function RunView({ id }: { id: string }) {
   return (
@@ -170,86 +183,118 @@ function RunViewInner({ id }: { id: string }) {
   const r = data.result;
   const outcomes = Object.keys(OUTCOME_LABEL) as Outcome[];
 
+  const sideBtn = 'flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-left text-sm font-medium text-white/75 transition duration-200 hover:bg-white/10 hover:text-white';
+
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-canvas/60 backdrop-blur-xl">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6">
-          <Link href="/" aria-label="Home" className="flex items-center">
-            <span className="sm:hidden">
-              <Logo compact />
-            </span>
-            <span className="hidden sm:inline">
-              <Logo />
-            </span>
-          </Link>
-          <div className="min-w-0 flex-1 truncate text-sm text-slate-500">
-            <span className="hidden sm:inline">{data.source ?? data.label} · </span>
-            <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">v{data.version}</span>
-            {data.version > 1 && <span className="hidden md:inline"> · {data.label}</span>}
-          </div>
-          <Button variant="secondary" className="hidden sm:inline-flex" onClick={() => setQuery({ demo: '1', tab: 'overview', a: null, changed: null })} title="A guided walkthrough of the key features">
-            ▶ Demo
-          </Button>
-          <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => setShowHistory(true)}>
-            History
-          </Button>
-          <a className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 sm:inline-flex" href={`/api/runs/${id}/export`}>
-            Export Excel
-          </a>
-          <Button variant="primary" className="xl:hidden" onClick={() => setAskOpen(true)}>
-            Ask
-          </Button>
-        </div>
-      </header>
-
-      {busy && (
-        <div className="fixed left-1/2 top-16 z-50 flex -translate-x-1/2 items-center gap-2 animate-scale-in rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-btn" role="status">
-          <Spinner /> Re-deciding: {busy}
-        </div>
-      )}
-      {!r.assertions.ok && (
-        <div role="alert" className="border-b border-rose-300 bg-rose-50 px-6 py-2 text-sm text-rose-900">
-          <strong>Hard rule check failed.</strong> {r.assertions.violations.join(' ')}
-        </div>
-      )}
-
-      <div className="flex flex-1">
-        <main className="relative isolate min-w-0 flex-1 px-4 pb-16 pt-4 sm:px-6">
-          <div className="bg-dots pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 [mask-image:linear-gradient(to_bottom,black,transparent)]" aria-hidden />
-          {/* Title */}
-          <div className="flex flex-wrap items-end justify-between gap-4 pt-4">
-            <div className="animate-fade-up">
-              <div className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500">
-                {data.source ?? data.label} · as of {fmtDate(r.asOf)}
-              </div>
-              <h1 className="mt-2 font-display text-[40px] leading-none tracking-[-0.015em] text-ink sm:text-[56px]">
-                Expansion <span className="italic text-brand-600">control room</span>
-              </h1>
-            </div>
-            <div className="hidden animate-fade-up flex-wrap items-center gap-2 text-xs text-slate-500 sm:flex" style={{ animationDelay: '80ms' }}>
-              <span className="rounded-full border border-slate-200 px-3 py-1">
-                v{data.version} {data.version > 1 ? `· ${data.label}` : ''}
-              </span>
-            </div>
-          </div>
-
-          {params.get('changed') && data.parentRunId && <DiffBanner runId={id} onOpen={(k) => setQuery({ a: k })} onClose={() => setQuery({ changed: null })} />}
-
-          {/* Tabs: segmented control */}
-          <nav className="mt-6 flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-slate-200 bg-surface/75 p-1 shadow-card backdrop-blur-xl" aria-label="Sections">
-            {TABS.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => setQuery({ tab: t.id })}
-                aria-current={tab === t.id ? 'page' : undefined}
-                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-medium transition duration-200 ${tab === t.id ? 'bg-ink text-canvas shadow' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
-              >
-                {t.label}
-                {t.id === 'today' && openActions > 0 && <span className={`ml-1.5 rounded-full px-1.5 text-xs ${tab === t.id ? 'bg-brand-600 text-white' : 'bg-brand-200 text-brand-800'}`}>{openActions}</span>}
+    <div className="min-h-screen lg:p-4">
+      <div className="flex min-h-screen flex-col lg:min-h-[calc(100vh-2rem)] lg:flex-row lg:rounded-[36px] lg:bg-brand-600 lg:shadow-paper">
+        {/* Sidebar (desktop): the active section is a white tab joined to the panel */}
+        <aside className="hidden w-[236px] flex-none lg:block">
+          <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col py-8 pl-5">
+            <Link href="/" aria-label="Home" className="px-4">
+              <Logo light />
+            </Link>
+            <nav className="mt-10 flex flex-col gap-1" aria-label="Sections">
+              {TABS.map((t) => {
+                const on = tab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => setQuery({ tab: t.id })}
+                    aria-current={on ? 'page' : undefined}
+                    className={`flex items-center gap-3 rounded-l-2xl py-3 pl-4 pr-4 text-left text-sm font-medium transition duration-200 ${on ? 'bg-surface text-ink' : 'mr-5 rounded-r-2xl text-white/75 hover:bg-white/10 hover:text-white'}`}
+                  >
+                    <span className={on ? 'text-brand-600' : ''}>{TAB_ICON[t.id]}</span>
+                    <span className="flex-1">{t.label}</span>
+                    {t.id === 'today' && openActions > 0 && <span className={`rounded-full px-2 text-xs font-semibold ${on ? 'bg-brand-600 text-white' : 'bg-white/15 text-white'}`}>{openActions}</span>}
+                  </button>
+                );
+              })}
+            </nav>
+            <div className="mt-auto space-y-0.5 pr-5 pt-6">
+              <button className={sideBtn} onClick={() => setQuery({ demo: '1', tab: 'overview', a: null, changed: null })} title="A guided walkthrough of the key features">
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-[9px] text-brand-600">▶</span> Guided demo
               </button>
-            ))}
-          </nav>
+              <button className={sideBtn} onClick={() => setShowHistory(true)}>
+                <IconHistory className="h-5 w-5" /> History
+              </button>
+              <a className={sideBtn} href={`/api/runs/${id}/export`}>
+                <IconDownload className="h-5 w-5" /> Export Excel
+              </a>
+              <p className="px-4 pt-4 text-[11px] leading-relaxed text-white/50">
+                {data.source ?? data.label} · v{data.version}
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        {/* Top bar (phones and tablets) */}
+        <header className="sticky top-0 z-30 border-b border-slate-200 bg-surface/90 backdrop-blur-xl lg:hidden">
+          <div className="flex items-center gap-x-3 px-4 py-2.5 sm:px-6">
+            <Link href="/" aria-label="Home" className="flex items-center">
+              <Logo />
+            </Link>
+            <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">v{data.version}</span>
+            <div className="flex-1" />
+            <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => setShowHistory(true)}>
+              History
+            </Button>
+            <Button variant="primary" onClick={() => setAskOpen(true)}>
+              Ask
+            </Button>
+          </div>
+        </header>
+
+        {/* White panel */}
+        <div className="flex min-w-0 flex-1 bg-surface lg:my-3 lg:mr-3 lg:rounded-[30px]">
+          <main className="relative isolate min-w-0 flex-1 px-4 pb-16 pt-4 sm:px-6 lg:px-9 lg:pt-6">
+            {busy && (
+              <div className="fixed left-1/2 top-6 z-50 flex -translate-x-1/2 items-center gap-2 animate-scale-in rounded-full bg-ink px-4 py-2 text-sm font-medium text-white shadow-btn" role="status">
+                <Spinner /> Re-deciding: {busy}
+              </div>
+            )}
+            {!r.assertions.ok && (
+              <div role="alert" className="mb-4 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-2 text-sm text-rose-900">
+                <strong>Hard rule check failed.</strong> {r.assertions.violations.join(' ')}
+              </div>
+            )}
+            {/* Title */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+              <div className="animate-fade-up">
+                <h1 className="text-[30px] font-light leading-tight tracking-[-0.02em] text-ink sm:text-[38px]">
+                  Expansion <span className="font-semibold">control room</span>
+                </h1>
+                <div className="mt-1 text-sm text-slate-500">
+                  {data.source ?? data.label} · as of {fmtDate(r.asOf)}
+                  {data.version > 1 ? ` · v${data.version}: ${data.label}` : ''}
+                </div>
+              </div>
+              <div className="hidden animate-fade-up items-center gap-2 lg:flex" style={{ animationDelay: '80ms' }}>
+                <span className="rounded-2xl bg-slate-100 px-4 py-2.5 text-sm text-slate-600">
+                  Version <span className="font-semibold text-ink">{data.version}</span>
+                </span>
+                <Button variant="primary" className="xl:hidden" onClick={() => setAskOpen(true)}>
+                  Ask
+                </Button>
+              </div>
+            </div>
+
+            {params.get('changed') && data.parentRunId && <DiffBanner runId={id} onOpen={(k) => setQuery({ a: k })} onClose={() => setQuery({ changed: null })} />}
+
+            {/* Tabs (phones and tablets): segmented control */}
+            <nav className="mt-5 flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl bg-slate-100 p-1 lg:hidden" aria-label="Sections">
+              {TABS.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setQuery({ tab: t.id })}
+                  aria-current={tab === t.id ? 'page' : undefined}
+                  className={`whitespace-nowrap rounded-xl px-4 py-1.5 text-[13px] font-medium transition duration-200 ${tab === t.id ? 'bg-brand-600 text-white shadow' : 'text-slate-600 hover:bg-white hover:text-slate-900'}`}
+                >
+                  {t.label}
+                  {t.id === 'today' && openActions > 0 && <span className={`ml-1.5 rounded-full px-1.5 text-xs ${tab === t.id ? 'bg-white/20 text-white' : 'bg-brand-200 text-brand-800'}`}>{openActions}</span>}
+                </button>
+              ))}
+            </nav>
 
           {/* Outcome chips (filters) on every tab except the dashboard */}
           {tab !== 'overview' && (
@@ -289,9 +334,10 @@ function RunViewInner({ id }: { id: string }) {
             {tab === 'outbox' && <OutboxTab decisions={r.decisions} onOpen={(k) => setQuery({ a: k })} onMarkSent={onMarkSent} busy={!!busy} />}
             {tab === 'data' && <DataQualityTab result={r} importNotes={data.importNotes} onOpen={(k) => setQuery({ a: k })} />}
           </div>
-        </main>
+          </main>
 
-        <AskPanel runId={id} decisions={r.decisions} open={askOpen} onClose={() => setAskOpen(false)} onOpen={(k) => setQuery({ a: k })} />
+          <AskPanel runId={id} decisions={r.decisions} open={askOpen} onClose={() => setAskOpen(false)} onOpen={(k) => setQuery({ a: k })} />
+        </div>
       </div>
 
       {decision && (

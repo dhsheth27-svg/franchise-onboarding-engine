@@ -88,7 +88,7 @@ export default function UploadPanel() {
             aria-selected={mode === m.id}
             onClick={() => setMode(m.id)}
             className={`inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[13px] font-medium transition duration-200 ${
-              mode === m.id ? 'bg-ink text-canvas shadow' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+              mode === m.id ? 'bg-brand-600 text-white shadow' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
             }`}
           >
             <span className="hidden sm:inline-flex">{m.icon}</span>

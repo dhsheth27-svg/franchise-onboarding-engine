@@ -213,7 +213,7 @@ export default function DemoGuide({ id, data, step, onNav, onExit }: { id: strin
                 <span key={i} className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i < step ? 'bg-brand-600' : 'bg-slate-200'}`} />
               ))}
             </div>
-            <h3 className="mt-3 font-display text-2xl leading-tight text-ink">{s.title}</h3>
+            <h3 className="mt-3 text-xl font-semibold leading-tight text-ink">{s.title}</h3>
             <p className="mt-1.5 text-sm leading-relaxed text-slate-700">{s.caption}</p>
             {note && <p className="mt-2 rounded-2xl border border-brand-300 bg-brand-50 px-3 py-2 text-sm text-slate-800">{note}</p>}
             {link && (

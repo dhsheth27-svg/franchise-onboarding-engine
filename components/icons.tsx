@@ -59,3 +59,54 @@ export const IconArrow = ({ className = 'h-4 w-4' }) => (
     <path d="M5 12h14m-5-5 5 5-5 5" />
   </svg>
 );
+export const IconGrid = ({ className = 'h-5 w-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <rect x="4" y="4" width="7" height="7" rx="2" />
+    <rect x="13" y="4" width="7" height="7" rx="2" />
+    <rect x="4" y="13" width="7" height="7" rx="2" />
+    <rect x="13" y="13" width="7" height="7" rx="2" />
+  </svg>
+);
+export const IconClock = ({ className = 'h-5 w-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <circle cx="12" cy="12" r="8" />
+    <path d="M12 7.5V12l3 2" />
+  </svg>
+);
+export const IconInbox = ({ className = 'h-5 w-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <path d="M4 13.5 6.5 5h11l2.5 8.5V19H4v-5.5Z" />
+    <path d="M4 13.5h4.5l1.5 2.5h4l1.5-2.5H20" />
+  </svg>
+);
+export const IconTable = ({ className = 'h-5 w-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <rect x="4" y="4" width="16" height="16" rx="3" />
+    <path d="M4 9.5h16M4 14.5h16M9.5 9.5V20" />
+  </svg>
+);
+export const IconChart = ({ className = 'h-5 w-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <path d="M4 19h16" />
+    <path d="M5 15c2.5 0 3-5 6-5s3.5 3 6 3 2-6 2-6" />
+  </svg>
+);
+export const IconSliders = ({ className = 'h-5 w-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <path d="M5 7h9M18 7h1M5 17h3M12 17h7" />
+    <circle cx="16" cy="7" r="2" />
+    <circle cx="10" cy="17" r="2" />
+  </svg>
+);
+export const IconAlert = ({ className = 'h-5 w-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <path d="M12 4 3.5 19h17L12 4Z" />
+    <path d="M12 10v4M12 16.5v.01" />
+  </svg>
+);
+export const IconHistory = ({ className = 'h-5 w-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5" />
+    <path d="M4 4.5v4h4M12 8v4l2.5 1.5" />
+  </svg>
+);

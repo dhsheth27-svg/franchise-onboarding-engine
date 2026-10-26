@@ -108,8 +108,8 @@ export default function PolicyPanel({ runId, config, territories, onApplied }: {
     <section className="rounded-3xl border border-brand-300 bg-surface/75 p-5 shadow-card backdrop-blur-xl">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-3xl leading-tight text-ink">
-            Policy simulator <span className="italic text-brand-600">calibrate before you commit</span>
+          <h2 className="text-2xl font-light leading-tight text-ink">
+            <span className="font-semibold">Policy simulator</span> <span className="text-slate-500">· calibrate before you commit</span>
           </h2>
           <p className="mt-1 max-w-2xl text-sm text-slate-600">Change a threshold or a territory&apos;s slots and preview exactly who would change. Applying it saves a new version with your name, so every policy change is on record. The three hard rules never change.</p>
         </div>

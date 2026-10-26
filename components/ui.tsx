@@ -136,17 +136,17 @@ export function Spinner({ className = 'h-4 w-4' }: { className?: string }) {
   return <span aria-hidden className={`inline-block animate-spin rounded-full border-2 border-current border-r-transparent ${className}`} />;
 }
 
-export function Logo({ compact = false }: { compact?: boolean }) {
+export function Logo({ compact = false, light = false }: { compact?: boolean; light?: boolean }) {
   return (
     <span className="inline-flex items-center gap-2">
       <svg aria-hidden viewBox="0 0 32 32" className="h-7 w-7 flex-none">
-        <rect width="32" height="32" rx="9" fill="#16140F" />
-        <circle cx="16" cy="16.5" r="7" stroke="#F4EFE6" strokeWidth="3" fill="none" />
-        <circle cx="23" cy="9.5" r="2.6" fill="#3F5BF6" />
+        <rect width="32" height="32" rx="10" fill={light ? '#FFFFFF' : '#4B33B2'} />
+        <circle cx="16" cy="16.5" r="7" stroke={light ? '#4B33B2' : '#FFFFFF'} strokeWidth="3" fill="none" />
+        <circle cx="23" cy="9.5" r="2.6" fill="#F59BBE" />
       </svg>
       {!compact && (
-        <span className="font-display text-[23px] leading-none tracking-tight text-ink">
-          Op<span className="italic text-brand-600">smith</span>
+        <span className={`text-[20px] font-bold leading-none tracking-tight ${light ? 'text-white' : 'text-ink'}`}>
+          Op<span className="font-light">smith</span>
         </span>
       )}
     </span>
@@ -165,12 +165,12 @@ export function Eyebrow({ children }: { children: ReactNode }) {
   return <span className="inline-flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-slate-600">{children}</span>;
 }
 
-/** Editorial serif headline: the second part is set in cobalt italics. */
+/** Headline in two weights: a light lead and a bold second part ("Welcome, Damian"). */
 export function Headline({ lead, rest, as = 'h2', className = '' }: { lead: ReactNode; rest?: ReactNode; as?: 'h1' | 'h2' | 'h3'; className?: string }) {
   const Tag = as;
   return (
-    <Tag className={`font-display font-normal leading-[0.95] tracking-[-0.015em] text-ink ${className}`}>
-      {lead} {rest && <span className="italic text-brand-600">{rest}</span>}
+    <Tag className={`font-light leading-[1.05] tracking-[-0.02em] text-ink ${className}`}>
+      {lead} {rest && <span className="font-semibold">{rest}</span>}
     </Tag>
   );
 }

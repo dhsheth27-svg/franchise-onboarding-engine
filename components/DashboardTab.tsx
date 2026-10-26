@@ -4,7 +4,7 @@ import { useMemo, type ReactNode } from 'react';
 import type { Config } from '@/lib/config';
 import type { EngineEvent, Outcome, RunResult } from '@/lib/engine/types';
 import { computeInsights, monthLabel } from '@/lib/insights';
-import { IconArrow } from './icons';
+import { IconArrow, IconClock, IconInbox, IconMap, IconTable } from './icons';
 import { CountUp, GrowBar, OUTCOME_DOT, OUTCOME_LABEL, fmtDate } from './ui';
 
 function Tile({ title, children, className = '', delay = 0, action }: { title: string; children: ReactNode; className?: string; delay?: number; action?: ReactNode }) {
@@ -22,20 +22,24 @@ function Tile({ title, children, className = '', delay = 0, action }: { title: s
   );
 }
 
-function Kpi({ label, value, of, accent, delay, sub }: { label: string; value: number; of?: number; accent?: boolean; delay: number; sub?: string }) {
+const KPI_TONE = { cyan: 'bg-pastel-cyan', pink: 'bg-pastel-pink', violet: 'bg-pastel-violet', mint: 'bg-pastel-mint' } as const;
+
+function Kpi({ label, value, of, tone, icon, delay, sub }: { label: string; value: number; of?: number; tone: keyof typeof KPI_TONE; icon: JSX.Element; delay: number; sub?: string }) {
   return (
-    <div
-      className={`animate-fade-up rounded-3xl border p-5 shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-lift ${accent ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-200 bg-surface/75 backdrop-blur-xl hover:border-slate-300'}`}
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <div className={`text-xs font-semibold uppercase tracking-[0.14em] ${accent ? 'text-white/80' : 'text-slate-500'}`}>{label}</div>
-      <div className="mt-3 flex items-baseline gap-1.5">
-        <span className={`text-4xl font-display tracking-tight sm:text-5xl ${accent ? 'text-white' : 'text-ink'}`}>
-          <CountUp value={value} />
-        </span>
-        {of !== undefined && <span className={`text-lg ${accent ? 'text-white/70' : 'text-slate-500'}`}>/ {of}</span>}
+    <div className={`animate-fade-up rounded-[28px] p-5 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-lift ${KPI_TONE[tone]}`} style={{ animationDelay: `${delay}ms` }}>
+      <div className="flex items-center gap-3">
+        <span className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-white text-ink shadow-card">{icon}</span>
+        <div className="min-w-0">
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-bold tracking-tight text-ink">
+              <CountUp value={value} />
+            </span>
+            {of !== undefined && <span className="rounded-lg bg-ink px-2 py-0.5 text-xs font-semibold text-white">of {of}</span>}
+          </div>
+          <div className="text-sm font-medium leading-tight text-ink">{label}</div>
+        </div>
       </div>
-      {sub && <div className={`mt-1 text-xs ${accent ? 'text-white/80' : 'text-slate-500'}`}>{sub}</div>}
+      {sub && <div className="mt-3 text-xs text-slate-600">{sub}</div>}
     </div>
   );
 }
@@ -72,10 +76,10 @@ export default function DashboardTab({
     <div className="space-y-4">
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Kpi label="Applications decided" value={r.decisions.length} delay={0} sub="in this run" />
-        <Kpi label="Slots filled" value={approved} of={capacity} delay={60} sub="usable slots (free pins)" />
-        <Kpi label="Open actions" value={openActions.length} accent delay={120} sub="for the team today" />
-        <Kpi label="Info requests to send" value={ins.impact.holds} delay={180} sub="holds with a ready message" />
+        <Kpi label="Decided" value={r.decisions.length} tone="cyan" icon={<IconTable className="h-5 w-5" />} delay={0} sub="applications in this run" />
+        <Kpi label="Slots filled" value={approved} of={capacity} tone="pink" icon={<IconMap className="h-5 w-5" />} delay={60} sub="usable slots (free pins)" />
+        <Kpi label="Open actions" value={openActions.length} tone="violet" icon={<IconClock className="h-5 w-5" />} delay={120} sub="for the team today" />
+        <Kpi label="Info requests" value={ins.impact.holds} tone="mint" icon={<IconInbox className="h-5 w-5" />} delay={180} sub="holds with a ready message" />
       </div>
 
       <ImpactStrip result={r} />
@@ -267,7 +271,7 @@ function ImpactStrip({ result }: { result: RunResult }) {
         {items.map((it, i) => (
           <li key={it.label} className="group rounded-2xl border border-slate-200 bg-canvas/40 p-4 transition duration-300 hover:-translate-y-0.5 hover:border-brand-400" style={{ animationDelay: `${260 + i * 60}ms` }}>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-display text-ink">
+              <span className="text-3xl font-bold text-ink">
                 <CountUp value={it.n} />
               </span>
               <span className="text-sm text-slate-700">{it.label}</span>
