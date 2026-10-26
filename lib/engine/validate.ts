@@ -401,13 +401,15 @@ export function cleanStores(raws: RawStore[] | undefined): { stores: Store[]; is
 }
 
 /**
- * Combine keyword signals with the optional AI reading. Wherever the keyword rules give a definite answer it is kept,
- * so the same file always gets the same scores; the AI only fills what the rules could not read (an unknown business
- * type or commitment, a deadline or city phrased unusually) and can add risk signs the keywords missed.
+ * Combine keyword signals with the optional AI reading. Wherever the keyword rules can read the text their answer is
+ * kept, so the same file always gets the same scores. The AI only fills what the rules could not read: an unknown
+ * business type or commitment, a deadline or city phrased unusually, and risk signs in text the rules found no
+ * keywords in at all.
  */
 export function mergeSignals(rules: Signals, ai?: Signals): Signals {
   if (!ai) return rules;
   const relevanceFromAi = rules.relevance === 'unknown' && ai.relevance !== 'unknown';
+  const unreadable = rules.relevance === 'unknown'; // the keyword rules found nothing they recognise in the business text
   const deadlineFromAi = !rules.mentionsDeadline && ai.mentionsDeadline && !!ai.deadlineDate;
   const merged: Signals = {
     ...rules,
@@ -417,10 +419,10 @@ export function mergeSignals(rules: Signals, ai?: Signals): Signals {
     mentionsDeadline: rules.mentionsDeadline || deadlineFromAi,
     deadlineLabel: deadlineFromAi ? ai.deadlineLabel : rules.deadlineLabel,
     deadlineDate: deadlineFromAi ? ai.deadlineDate : rules.deadlineDate,
-    hiresManager: rules.hiresManager || ai.hiresManager,
-    loanPending: rules.loanPending || ai.loanPending,
-    flexibleOnLocation: rules.flexibleOnLocation || ai.flexibleOnLocation,
-    sideBusiness: rules.sideBusiness || ai.sideBusiness,
+    hiresManager: rules.hiresManager || (unreadable && ai.hiresManager),
+    loanPending: rules.loanPending || (unreadable && ai.loanPending),
+    flexibleOnLocation: rules.flexibleOnLocation || (unreadable && ai.flexibleOnLocation),
+    sideBusiness: rules.sideBusiness || (unreadable && ai.sideBusiness),
     preferredCities: rules.preferredCities.length ? rules.preferredCities : ai.preferredCities,
     statedYears: rules.statedYears ?? ai.statedYears,
   };
