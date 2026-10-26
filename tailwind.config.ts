@@ -64,10 +64,6 @@ const config: Config = {
         'grow-x': { from: { transform: 'scaleX(0)' }, to: { transform: 'scaleX(1)' } },
         shimmer: { '0%': { backgroundPosition: '-400px 0' }, '100%': { backgroundPosition: '400px 0' } },
         'pulse-dot': { '0%,100%': { opacity: '1' }, '50%': { opacity: '0.35' } },
-        float: {
-          '0%,100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-6px)' },
-        },
         drift: {
           '0%,100%': { transform: 'translate3d(0,0,0) scale(1)' },
           '33%': { transform: 'translate3d(6%,4%,0) scale(1.08)' },
@@ -82,8 +78,6 @@ const config: Config = {
         'grow-x': 'grow-x 0.9s cubic-bezier(0.22,1,0.36,1) both',
         shimmer: 'shimmer 1.4s linear infinite',
         'pulse-dot': 'pulse-dot 1.6s ease-in-out infinite',
-        float: 'float 7s ease-in-out infinite',
-        'float-slow': 'float 9s ease-in-out infinite reverse',
         drift: 'drift 26s ease-in-out infinite',
         'drift-slow': 'drift 38s ease-in-out infinite reverse',
       },
