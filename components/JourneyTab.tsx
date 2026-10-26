@@ -72,12 +72,12 @@ export default function JourneyTab({
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div className="rounded-3xl border border-slate-200 bg-surface/75 p-4 shadow-card backdrop-blur-xl">
           <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">In onboarding</div>
-          <div className="mt-2 text-3xl font-semibold italic text-ink">{cards.filter((c) => c.stage.id !== 'open').length}</div>
+          <div className="mt-2 text-3xl font-display text-ink">{cards.filter((c) => c.stage.id !== 'open').length}</div>
           <div className="text-xs text-slate-500">{byStage.get('open')!.length} open so far</div>
         </div>
         <div className={`rounded-3xl border p-4 shadow-card backdrop-blur-xl ${overdue.length ? 'border-rose-300 bg-rose-50' : 'border-slate-200 bg-surface/75'}`}>
           <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Overdue</div>
-          <div className={`mt-2 text-3xl font-semibold italic ${overdue.length ? 'text-rose-800' : 'text-ink'}`}>{overdue.length}</div>
+          <div className={`mt-2 text-3xl font-display ${overdue.length ? 'text-rose-800' : 'text-ink'}`}>{overdue.length}</div>
           <div className="text-xs text-slate-500">partners behind plan</div>
         </div>
         <div className="rounded-3xl border border-slate-200 bg-surface/75 p-4 shadow-card backdrop-blur-xl">

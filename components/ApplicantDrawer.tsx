@@ -69,7 +69,7 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
 
   return (
     <div className="fixed inset-0 z-40 flex justify-end" role="dialog" aria-modal="true" aria-label={`Application ${d.applicationId}`}>
-      <button aria-label="Close" className="absolute inset-0 animate-fade-in bg-black/70 backdrop-blur-sm" onClick={actions.onClose} />
+      <button aria-label="Close" className="absolute inset-0 animate-fade-in bg-ink/40 backdrop-blur-sm" onClick={actions.onClose} />
       <div ref={panel} tabIndex={-1} className="relative h-full w-full max-w-2xl animate-slide-in overflow-y-auto border-l border-slate-200 bg-surface shadow-2xl focus:outline-none">
         {/* Header */}
         <div className="sticky top-0 z-10 border-b border-slate-200 bg-surface/90 px-5 py-4 backdrop-blur sm:px-6">
@@ -90,7 +90,7 @@ export default function ApplicantDrawer({ d, actions }: { d: Decision; actions: 
             </div>
             <div className="flex flex-none items-center gap-2">
               {actions.printHref && (
-                <a href={actions.printHref} target="_blank" rel="noopener noreferrer" className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 transition hover:bg-[#F4F4F6] hover:text-black sm:inline-flex">
+                <a href={actions.printHref} target="_blank" rel="noopener noreferrer" className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 transition hover:bg-ink hover:text-canvas sm:inline-flex">
                   Print
                 </a>
               )}

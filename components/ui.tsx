@@ -105,9 +105,9 @@ export function Button({
 }) {
   const styles = {
     primary: 'bg-brand-600 text-white shadow-btn hover:-translate-y-px hover:bg-brand-500 active:translate-y-0 disabled:bg-brand-300 disabled:shadow-none',
-    secondary: 'bg-transparent text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-900 hover:text-black hover:ring-slate-900 disabled:text-slate-400',
+    secondary: 'bg-transparent text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-ink hover:text-canvas hover:ring-ink disabled:text-slate-400',
     ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:text-slate-400',
-    danger: 'bg-rose-500 text-white hover:bg-rose-400 disabled:bg-rose-800',
+    danger: 'bg-rose-600 text-white hover:bg-rose-700 disabled:bg-rose-300',
   };
   return (
     <button
@@ -140,11 +140,15 @@ export function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <span className="inline-flex items-center gap-2">
       <svg aria-hidden viewBox="0 0 32 32" className="h-7 w-7 flex-none">
-        <rect width="32" height="32" rx="10" fill="#7C5CFF" />
-        <circle cx="16" cy="16" r="7.2" stroke="white" strokeWidth="3.2" fill="none" />
-        <circle cx="23.2" cy="8.8" r="2.4" fill="white" />
+        <rect width="32" height="32" rx="9" fill="#16140F" />
+        <circle cx="16" cy="16.5" r="7" stroke="#F4EFE6" strokeWidth="3" fill="none" />
+        <circle cx="23" cy="9.5" r="2.6" fill="#3F5BF6" />
       </svg>
-      {!compact && <span className="text-[16px] font-bold uppercase tracking-tight text-ink">Op<span className="text-slate-500">smith</span></span>}
+      {!compact && (
+        <span className="font-display text-[23px] leading-none tracking-tight text-ink">
+          Op<span className="italic text-brand-600">smith</span>
+        </span>
+      )}
     </span>
   );
 }
@@ -158,15 +162,15 @@ export function IconTile({ children, tone = 'brand' }: { children: ReactNode; to
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {
-  return <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-xs font-medium uppercase italic tracking-wide text-slate-700">{children}</span>;
+  return <span className="inline-flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-slate-600">{children}</span>;
 }
 
-/** Two-tone uppercase headline: first part white, second part grey. */
+/** Editorial serif headline: the second part is set in cobalt italics. */
 export function Headline({ lead, rest, as = 'h2', className = '' }: { lead: ReactNode; rest?: ReactNode; as?: 'h1' | 'h2' | 'h3'; className?: string }) {
   const Tag = as;
   return (
-    <Tag className={`font-bold uppercase leading-[0.98] tracking-[-0.02em] text-ink ${className}`}>
-      {lead} {rest && <span className="text-slate-500">{rest}</span>}
+    <Tag className={`font-display font-normal leading-[0.95] tracking-[-0.015em] text-ink ${className}`}>
+      {lead} {rest && <span className="italic text-brand-600">{rest}</span>}
     </Tag>
   );
 }

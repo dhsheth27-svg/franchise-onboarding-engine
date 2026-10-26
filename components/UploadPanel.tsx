@@ -65,7 +65,7 @@ export default function UploadPanel() {
 
   return (
     <div
-      className={`rounded-[28px] border bg-surface/90 p-2.5 shadow-card backdrop-blur transition duration-300 ${drag ? 'border-brand-600 shadow-lift' : 'border-slate-200 hover:border-slate-300'}`}
+      className={`rounded-[28px] border bg-surface p-2.5 shadow-paper transition duration-300 ${drag ? 'border-brand-600 shadow-lift' : 'border-slate-200 hover:border-slate-300'}`}
       onDragOver={(e) => {
         e.preventDefault();
         setDrag(true);
@@ -88,16 +88,16 @@ export default function UploadPanel() {
             aria-selected={mode === m.id}
             onClick={() => setMode(m.id)}
             className={`inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[13px] font-medium transition duration-200 ${
-              mode === m.id ? 'bg-[#F4F4F6] text-black shadow' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+              mode === m.id ? 'bg-ink text-canvas shadow' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
             }`}
           >
-            {m.icon}
-            {m.label}
+            <span className="hidden sm:inline-flex">{m.icon}</span>
+            <span className="whitespace-nowrap">{m.label}</span>
           </button>
         ))}
       </div>
 
-      {/* "Search bar" row with the red action button */}
+      {/* "Search bar" row with the action button */}
       <div className="mt-2.5 flex items-center gap-2 rounded-full border border-slate-200 bg-canvas/70 py-1.5 pl-5 pr-1.5 transition focus-within:border-slate-400">
         <button
           type="button"
@@ -150,7 +150,7 @@ export default function UploadPanel() {
           ))}
         </div>
       )}
-      <p className="px-4 pb-1 pt-2.5 text-center text-xs uppercase tracking-wider text-slate-500">Workbook with Applications and Territories sheets</p>
+      <p className="px-4 pb-1 pt-2.5 text-center font-mono text-[10.5px] uppercase tracking-[0.16em] text-slate-500">Workbook with Applications and Territories sheets</p>
     </div>
   );
 }

@@ -1,65 +1,54 @@
 import type { Config } from 'tailwindcss';
-import colors from 'tailwindcss/colors';
-
-// Dark theme by design: neutral and status scales are inverted (50 <-> 950) so that "light tint"
-// classes read as dark tints and "dark text" classes read as light text on a near-black canvas.
-type Scale = Record<string, string>;
-const invert = (s: Scale): Scale => {
-  const keys = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'];
-  return Object.fromEntries(keys.map((k, i) => [k, s[keys[keys.length - 1 - i]]]));
-};
 
 const config: Config = {
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Neutral (inverted): 50 = darkest panel, 900 = primary text.
+        // Light "paper" theme. Neutrals are warm (stone-like) instead of cool grey so the app reads like
+        // a well-kept ledger rather than a generic dashboard.
         slate: {
-          50: '#121433',
-          100: '#1A1D40',
-          200: '#2A2E58',
-          300: '#3B4073',
-          400: '#70707B',
-          500: '#9A9AA4',
-          600: '#B8B8C1',
-          700: '#D2D2D9',
-          800: '#E4E4E8',
-          900: '#F4F4F6',
-          950: '#FAFAFA',
+          50: '#FAF7F1',
+          100: '#F2EDE3',
+          200: '#E5DED0',
+          300: '#D2C8B7',
+          400: '#A39A8A',
+          500: '#6F675A',
+          600: '#575045',
+          700: '#3F3A32',
+          800: '#2B2722',
+          900: '#1C1915',
+          950: '#12100C',
         },
-        emerald: invert(colors.emerald as Scale),
-        teal: invert(colors.teal as Scale),
-        amber: invert(colors.amber as Scale),
-        sky: invert(colors.sky as Scale),
-        rose: invert(colors.rose as Scale),
-        // One accent: signal red-orange. Low steps are dark tints, 600 is the accent, high steps are light text.
-        // One accent: electric violet. It is the only strong hue the status colours (green, teal,
-        // amber, sky, rose) do not use, so "click here" never reads as "something is wrong".
-        // Low steps are dark tints, 600 is the accent, high steps are light text.
+        // One accent: cobalt. No status colour (green, teal, amber, sky, rose) is close to it,
+        // so "click here" never reads as "something is wrong".
         brand: {
-          50: '#110C22',
-          100: '#18112F',
-          200: '#271C52',
-          300: '#3C2B80',
-          400: '#5E44E0',
-          500: '#9077FF',
-          600: '#7C5CFF',
-          700: '#A592FF',
-          800: '#C2B4FF',
-          900: '#DFD7FF',
+          50: '#EEF1FF',
+          100: '#DFE5FF',
+          200: '#C3CDFF',
+          300: '#9AAAFF',
+          400: '#6A7FFB',
+          500: '#3F5BF6',
+          600: '#2443E8',
+          700: '#1C34C2',
+          800: '#1A2D9A',
+          900: '#1A2A79',
+          950: '#121A4A',
         },
-        surface: '#14163A',
-        canvas: '#0B0C24',
-        ink: '#FAFAFA',
+        surface: '#FFFDF8',
+        canvas: '#F4EFE6',
+        ink: '#16140F',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'ui-serif', 'Georgia', 'serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       boxShadow: {
-        card: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 12px 32px -18px rgba(0,0,0,0.9)',
-        lift: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 24px 48px -20px rgba(124,92,255,0.38)',
-        btn: '0 10px 28px -10px rgba(124,92,255,0.85)',
+        card: '0 1px 0 rgba(22,20,15,0.03), 0 1px 3px rgba(22,20,15,0.05)',
+        lift: '0 1px 0 rgba(22,20,15,0.03), 0 22px 44px -24px rgba(22,20,15,0.32)',
+        btn: '0 8px 20px -10px rgba(36,67,232,0.75)',
+        paper: '0 1px 0 rgba(22,20,15,0.04), 0 30px 60px -30px rgba(22,20,15,0.35), 0 12px 24px -16px rgba(22,20,15,0.18)',
       },
       keyframes: {
         'fade-up': { from: { opacity: '0', transform: 'translateY(14px)' }, to: { opacity: '1', transform: 'none' } },
@@ -69,6 +58,10 @@ const config: Config = {
         'grow-x': { from: { transform: 'scaleX(0)' }, to: { transform: 'scaleX(1)' } },
         shimmer: { '0%': { backgroundPosition: '-400px 0' }, '100%': { backgroundPosition: '400px 0' } },
         'pulse-dot': { '0%,100%': { opacity: '1' }, '50%': { opacity: '0.35' } },
+        float: {
+          '0%,100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
         drift: {
           '0%,100%': { transform: 'translate3d(0,0,0) scale(1)' },
           '33%': { transform: 'translate3d(6%,4%,0) scale(1.08)' },
@@ -83,6 +76,8 @@ const config: Config = {
         'grow-x': 'grow-x 0.9s cubic-bezier(0.22,1,0.36,1) both',
         shimmer: 'shimmer 1.4s linear infinite',
         'pulse-dot': 'pulse-dot 1.6s ease-in-out infinite',
+        float: 'float 7s ease-in-out infinite',
+        'float-slow': 'float 9s ease-in-out infinite reverse',
         drift: 'drift 26s ease-in-out infinite',
         'drift-slow': 'drift 38s ease-in-out infinite reverse',
       },

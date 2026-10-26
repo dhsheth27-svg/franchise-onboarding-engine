@@ -220,14 +220,14 @@ function RunViewInner({ id }: { id: string }) {
           {/* Title */}
           <div className="flex flex-wrap items-end justify-between gap-4 pt-4">
             <div className="animate-fade-up">
-              <div className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">
+              <div className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500">
                 {data.source ?? data.label} · as of {fmtDate(r.asOf)}
               </div>
-              <h1 className="mt-2 text-3xl font-bold uppercase leading-none tracking-tight text-ink sm:text-4xl">
-                Expansion <span className="text-slate-500">control room</span>
+              <h1 className="mt-2 font-display text-[40px] leading-none tracking-[-0.015em] text-ink sm:text-[56px]">
+                Expansion <span className="italic text-brand-600">control room</span>
               </h1>
             </div>
-            <div className="flex animate-fade-up flex-wrap items-center gap-2 text-xs text-slate-500" style={{ animationDelay: '80ms' }}>
+            <div className="hidden animate-fade-up flex-wrap items-center gap-2 text-xs text-slate-500 sm:flex" style={{ animationDelay: '80ms' }}>
               <span className="rounded-full border border-slate-200 px-3 py-1">
                 v{data.version} {data.version > 1 ? `· ${data.label}` : ''}
               </span>
@@ -243,7 +243,7 @@ function RunViewInner({ id }: { id: string }) {
                 key={t.id}
                 onClick={() => setQuery({ tab: t.id })}
                 aria-current={tab === t.id ? 'page' : undefined}
-                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-medium transition duration-200 ${tab === t.id ? 'bg-[#F4F4F6] text-black shadow' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-[13px] font-medium transition duration-200 ${tab === t.id ? 'bg-ink text-canvas shadow' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
               >
                 {t.label}
                 {t.id === 'today' && openActions > 0 && <span className={`ml-1.5 rounded-full px-1.5 text-xs ${tab === t.id ? 'bg-brand-600 text-white' : 'bg-brand-200 text-brand-800'}`}>{openActions}</span>}

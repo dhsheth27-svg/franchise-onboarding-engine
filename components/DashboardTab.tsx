@@ -30,7 +30,7 @@ function Kpi({ label, value, of, accent, delay, sub }: { label: string; value: n
     >
       <div className={`text-xs font-semibold uppercase tracking-[0.14em] ${accent ? 'text-white/80' : 'text-slate-500'}`}>{label}</div>
       <div className="mt-3 flex items-baseline gap-1.5">
-        <span className={`text-4xl font-semibold italic tracking-tight sm:text-5xl ${accent ? 'text-white' : 'text-ink'}`}>
+        <span className={`text-4xl font-display tracking-tight sm:text-5xl ${accent ? 'text-white' : 'text-ink'}`}>
           <CountUp value={value} />
         </span>
         {of !== undefined && <span className={`text-lg ${accent ? 'text-white/70' : 'text-slate-500'}`}>/ {of}</span>}
@@ -80,7 +80,7 @@ export default function DashboardTab({
 
       <ImpactStrip result={r} />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-3">
         {/* Outcome mix */}
         <Tile title="Outcome mix" className="lg:col-span-2" delay={220} action={<button onClick={() => onTab('decisions')} className="text-xs text-slate-500 transition hover:text-brand-700">All decisions →</button>}>
           <div className="flex h-4 w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label="Outcome mix">
@@ -95,7 +95,7 @@ export default function DashboardTab({
               ) : null,
             )}
           </div>
-          <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-5">
+          <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-5 [&>*]:min-w-0">
             {OUTCOMES.map((o) => (
               <li key={o}>
                 <button onClick={() => onTab('decisions')} className="w-full rounded-2xl p-2 text-left transition hover:bg-slate-100">
@@ -263,11 +263,11 @@ function ImpactStrip({ result }: { result: RunResult }) {
         <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Impact on this run · without vs with Opsmith</h3>
         <span className="text-xs text-slate-500">Every number is counted from this run</span>
       </div>
-      <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((it, i) => (
           <li key={it.label} className="group rounded-2xl border border-slate-200 bg-canvas/40 p-4 transition duration-300 hover:-translate-y-0.5 hover:border-brand-400" style={{ animationDelay: `${260 + i * 60}ms` }}>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-semibold italic text-ink">
+              <span className="text-3xl font-display text-ink">
                 <CountUp value={it.n} />
               </span>
               <span className="text-sm text-slate-700">{it.label}</span>

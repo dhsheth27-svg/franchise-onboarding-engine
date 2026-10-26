@@ -77,7 +77,7 @@ export default function OverrideDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={`Override ${d.applicationId}`}>
-      <button aria-label="Cancel" className="absolute inset-0 animate-fade-in bg-black/70 backdrop-blur-sm" onClick={onCancel} />
+      <button aria-label="Cancel" className="absolute inset-0 animate-fade-in bg-ink/40 backdrop-blur-sm" onClick={onCancel} />
       <div className="relative w-full max-w-lg animate-scale-in rounded-t-3xl border border-slate-200 bg-surface p-6 shadow-2xl sm:rounded-3xl">
         <h2 className="text-lg font-semibold text-slate-900">Override {d.applicationId}</h2>
         <p className="mt-1 text-sm text-slate-600">

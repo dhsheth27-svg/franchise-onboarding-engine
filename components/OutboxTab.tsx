@@ -46,7 +46,7 @@ export default function OutboxTab({ decisions, onOpen, onMarkSent, busy }: { dec
             onClick={() => setState(s)}
             className={`rounded-3xl border p-4 text-left shadow-card backdrop-blur-xl transition hover:-translate-y-0.5 ${state === s ? 'border-brand-600 bg-brand-50' : 'border-slate-200 bg-surface/75 hover:border-slate-300'}`}
           >
-            <div className="text-3xl font-semibold italic text-ink">{counts[s]}</div>
+            <div className="text-3xl font-display text-ink">{counts[s]}</div>
             <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{STATE_LABEL[s]}</div>
           </button>
         ))}
@@ -110,7 +110,7 @@ export default function OutboxTab({ decisions, onOpen, onMarkSent, busy }: { dec
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     onClick={() => navigator.clipboard?.writeText(d.message.text).then(() => setCopied(d.key))}
-                    className="rounded-full px-3 py-1 text-xs font-medium text-slate-800 ring-1 ring-slate-300 transition hover:bg-[#F4F4F6] hover:text-black"
+                    className="rounded-full px-3 py-1 text-xs font-medium text-slate-800 ring-1 ring-slate-300 transition hover:bg-ink hover:text-canvas"
                   >
                     {copied === d.key ? 'Copied' : 'Copy'}
                   </button>
