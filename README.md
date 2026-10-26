@@ -6,7 +6,7 @@ builds onboarding plans for those who move forward, tells the expansion team wha
 answers follow-up questions and updates ("Why is APP-007 on hold?", "APP-012 has now found a
 ground-floor space"), re-deciding and showing what changed.
 
-**Live demo:** https://opsmith-app.vercel.app · Click **Try with sample data** for a 29-row messy dataset that covers every tricky case.
+**Live demo:** https://opsmith-app.vercel.app · Click **Watch the 2-minute guided demo** for a 10-step live walkthrough (explained hold → the brief's APP-012 update → a withdrawal promoting the waitlist → a refused override → the Journey board → the policy simulator → a printable one-pager), or **Sample data** to explore freely.
 
 ## What it does
 
