@@ -7,11 +7,8 @@ import { Spinner } from './ui';
 
 type Status = { kind: 'idle' } | { kind: 'busy'; text: string } | { kind: 'error'; text: string; details: string[] };
 
-/** The two ways to start: upload a workbook, or open the built-in sample (optionally with the guided demo). */
-export default function StartPanel() {
+function useStarter() {
   const router = useRouter();
-  const input = useRef<HTMLInputElement>(null);
-  const [drag, setDrag] = useState(false);
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const busy = status.kind === 'busy';
 
@@ -41,6 +38,30 @@ export default function StartPanel() {
     run(`Reading ${f.name} and deciding every application…`, () => fetch('/api/upload', { method: 'POST', body: fd }));
   };
   const sample = (demo: boolean) => run(demo ? 'Preparing the guided demo…' : 'Deciding 29 sample applications…', () => fetch('/api/sample', { method: 'POST' }), demo ? '?demo=1' : '');
+  return { status, busy, upload, sample };
+}
+
+/** Sample run and guided demo buttons, for use on a dark background. */
+export function SampleActions() {
+  const { busy, status, sample } = useStarter();
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <button type="button" disabled={busy} onClick={() => sample(true)} className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-ink shadow-lift transition hover:-translate-y-px disabled:opacity-60">
+        {busy ? <Spinner /> : <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-[9px] text-white">▶</span>}
+        {status.kind === 'busy' ? status.text : 'Take the 2-minute guided demo'}
+      </button>
+      <button type="button" disabled={busy} onClick={() => sample(false)} className="rounded-2xl px-5 py-3 text-sm font-semibold text-white ring-1 ring-inset ring-white/30 transition hover:bg-white/10 disabled:opacity-60">
+        Open the sample run
+      </button>
+    </div>
+  );
+}
+
+/** The two ways to start: upload a workbook, or open the built-in sample (optionally with the guided demo). */
+export default function StartPanel() {
+  const { status, busy, upload, sample } = useStarter();
+  const input = useRef<HTMLInputElement>(null);
+  const [drag, setDrag] = useState(false);
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
@@ -61,14 +82,14 @@ export default function StartPanel() {
             const f = e.dataTransfer.files?.[0];
             if (f) upload(f);
           }}
-          className={`flex h-full min-h-[220px] w-full flex-col items-center justify-center rounded-[20px] border-2 border-dashed px-6 py-10 text-center transition duration-200 ${
+          className={`flex h-full min-h-[200px] w-full flex-col items-center justify-center rounded-[20px] border-2 border-dashed px-6 py-10 text-center transition duration-200 ${
             drag ? 'border-brand-500 bg-brand-50' : 'border-slate-200 hover:border-brand-300 hover:bg-slate-50'
           }`}
         >
           {busy ? (
             <>
               <Spinner className="h-6 w-6 text-brand-600" />
-              <span className="mt-4 text-sm font-medium text-ink">{status.text}</span>
+              <span className="mt-4 text-sm font-medium text-ink">{status.kind === 'busy' && status.text}</span>
             </>
           ) : (
             <>
