@@ -52,7 +52,7 @@ export default function TodayTab({ result, onOpen, onDone, busy }: { result: Run
                           <span className={a.deadline && a.deadline <= result.asOf ? 'font-medium text-rose-700' : ''}>By: {a.deadline ? fmtDate(a.deadline) : 'when possible'}</span>
                         </div>
                       </div>
-                      <div className="flex flex-none flex-wrap gap-1.5">
+                      <div className="flex min-w-0 max-w-full flex-wrap gap-1.5">
                         {d && (
                           <Button variant="secondary" className="!py-1 text-xs" onClick={() => onOpen(d.key)}>
                             Open {d.applicationId}

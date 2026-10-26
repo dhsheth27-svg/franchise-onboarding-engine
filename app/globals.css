@@ -67,3 +67,9 @@ textarea {
     display: none;
   }
 }
+
+/* Safari: Tailwind composes backdrop-filter from empty CSS variables, which WebKit treats as invalid
+   (so the glass effect vanished). Plain values work everywhere. */
+.backdrop-blur-sm { -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.backdrop-blur { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.backdrop-blur-xl { -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
