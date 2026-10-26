@@ -415,7 +415,7 @@ export function mergeSignals(rules: Signals, ai?: Signals): Signals {
     ...rules,
     businessCategory: relevanceFromAi ? ai.businessCategory : rules.businessCategory,
     relevance: relevanceFromAi ? ai.relevance : rules.relevance,
-    commitment: rules.commitment === 'unknown' ? ai.commitment : rules.commitment,
+    commitment: unreadable && rules.commitment === 'unknown' ? ai.commitment : rules.commitment,
     mentionsDeadline: rules.mentionsDeadline || deadlineFromAi,
     deadlineLabel: deadlineFromAi ? ai.deadlineLabel : rules.deadlineLabel,
     deadlineDate: deadlineFromAi ? ai.deadlineDate : rules.deadlineDate,
