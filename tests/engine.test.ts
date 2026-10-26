@@ -457,3 +457,19 @@ describe('duplicate applicant detection', () => {
     expect([d(r, 'APP-907'), d(r, 'APP-908')].filter((x) => x.flags.some((f) => f.code === 'DUPLICATE_APPLICANT')).length).toBe(1);
   });
 });
+
+describe('AI signals never override a definite keyword reading', () => {
+  test('rules win where definite; AI fills unknowns and adds missed risk signs', async () => {
+    const { mergeSignals } = await import('@/lib/engine/validate');
+    const base = { businessCategory: 'Footwear retail', relevance: 'high', commitment: 'full', mentionsDeadline: false, hiresManager: false, loanPending: false, flexibleOnLocation: false, preferredCities: [], sideBusiness: false, contradictions: [], method: 'deterministic' } as const;
+    const ai = { ...base, businessCategory: 'Shoes', relevance: 'medium', commitment: 'partial', loanPending: true, method: 'llm' } as const;
+    const m = mergeSignals({ ...base, preferredCities: [], contradictions: [] }, { ...ai, preferredCities: [], contradictions: [] });
+    expect(m.relevance).toBe('high');
+    expect(m.commitment).toBe('full');
+    expect(m.loanPending).toBe(true);
+    const u = mergeSignals({ ...base, relevance: 'unknown', commitment: 'unknown', preferredCities: [], contradictions: [] }, { ...ai, preferredCities: [], contradictions: [] });
+    expect(u.relevance).toBe('medium');
+    expect(u.commitment).toBe('partial');
+    expect(u.method).toBe('llm');
+  });
+});

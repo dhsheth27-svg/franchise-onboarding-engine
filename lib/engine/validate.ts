@@ -216,7 +216,7 @@ export function cleanApplication(
   // Free-text signals
   const business = asText(raw.business);
   const notes = asText(raw.notes);
-  const signals: Signals = llmSignals ? { ...llmSignals, contradictions: [] } : extractSignals(business, notes, cfg, today);
+  const signals = mergeSignals(extractSignals(business, notes, cfg, today), llmSignals);
 
   if (signals.mentionsDeadline && signals.deadlineDate) {
     const daysToDeadline = daysBetween(today, signals.deadlineDate);
@@ -398,4 +398,34 @@ export function cleanStores(raws: RawStore[] | undefined): { stores: Store[]; is
   }
   if (!raws || !raws.length) issues.push({ scope: 'file', ref: 'Existing stores', code: 'STORES_DEFAULTED', severity: 'INFO', message: 'No Existing stores sheet was found; the fixed list of 10 stores from the case brief is used.' });
   return { stores, issues };
+}
+
+/**
+ * Combine keyword signals with the optional AI reading. Wherever the keyword rules give a definite answer it is kept,
+ * so the same file always gets the same scores; the AI only fills what the rules could not read (an unknown business
+ * type or commitment, a deadline or city phrased unusually) and can add risk signs the keywords missed.
+ */
+export function mergeSignals(rules: Signals, ai?: Signals): Signals {
+  if (!ai) return rules;
+  const relevanceFromAi = rules.relevance === 'unknown' && ai.relevance !== 'unknown';
+  const deadlineFromAi = !rules.mentionsDeadline && ai.mentionsDeadline && !!ai.deadlineDate;
+  const merged: Signals = {
+    ...rules,
+    businessCategory: relevanceFromAi ? ai.businessCategory : rules.businessCategory,
+    relevance: relevanceFromAi ? ai.relevance : rules.relevance,
+    commitment: rules.commitment === 'unknown' ? ai.commitment : rules.commitment,
+    mentionsDeadline: rules.mentionsDeadline || deadlineFromAi,
+    deadlineLabel: deadlineFromAi ? ai.deadlineLabel : rules.deadlineLabel,
+    deadlineDate: deadlineFromAi ? ai.deadlineDate : rules.deadlineDate,
+    hiresManager: rules.hiresManager || ai.hiresManager,
+    loanPending: rules.loanPending || ai.loanPending,
+    flexibleOnLocation: rules.flexibleOnLocation || ai.flexibleOnLocation,
+    sideBusiness: rules.sideBusiness || ai.sideBusiness,
+    preferredCities: rules.preferredCities.length ? rules.preferredCities : ai.preferredCities,
+    statedYears: rules.statedYears ?? ai.statedYears,
+  };
+  const changed = (['businessCategory', 'relevance', 'commitment', 'mentionsDeadline', 'hiresManager', 'loanPending', 'flexibleOnLocation', 'sideBusiness', 'statedYears'] as const).some(
+    (k) => JSON.stringify(merged[k]) !== JSON.stringify(rules[k]),
+  );
+  return { ...merged, method: changed ? 'llm' : 'deterministic' };
 }
