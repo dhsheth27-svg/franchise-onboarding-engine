@@ -75,7 +75,7 @@ function buildPlan(w: Work, core: CoreResult, status: (id: string) => ChecklistS
   };
 
   add('agreement', 'Agreement and KYC', `Sign the franchise agreement, complete KYC and collect documents.${w.conditions.length ? ' Conditions must be cleared first.' : ''}`, 'Both', 0, W.agreement);
-  add('space', 'Space verification and approval', `Brand team visits ${a.space === 'Owned' ? 'the owned' : 'the rented'} space (${fmtNum(a.spaceSqft ?? 0)} sq ft, ${a.floor ?? 'floor not known'}) and approves the layout.`, 'Brand', 1, 1 + W.spaceVerification);
+  add('space', 'Space verification and approval', `Brand team visits ${a.space === 'Owned' ? 'the owned' : 'the rented'} space (${a.spaceSqft ? `${fmtNum(a.spaceSqft)} sq ft` : 'size to be confirmed'}, ${a.floor ?? 'floor not known'}) and approves the layout.`, 'Brand', 1, 1 + W.spaceVerification);
   let prep = 1 + W.spaceVerification;
   if (!a.floor || a.floor === 'Not known') {
     add('site-visit', 'Site visit to confirm the floor', 'Floor was not stated: confirm access, visibility and frontage on site.', 'Brand', 1, 2, 'the floor of the space is not known');
