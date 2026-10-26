@@ -123,7 +123,7 @@ export default function AskPanel({ runId, decisions, open, onClose, onOpen }: { 
           ✕<span className="sr-only">Close</span>
         </Button>
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3" aria-live="polite">
+      <div className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-3" aria-live="polite">
         {msgs.length === 0 && (
           <div className="space-y-2">
             <p className="text-sm text-slate-600">Try one of these:</p>
