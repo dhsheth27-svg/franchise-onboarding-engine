@@ -9,6 +9,7 @@ import type { NewEvent } from '@/lib/runs';
 import ApplicantDrawer from './ApplicantDrawer';
 import AskPanel from './AskPanel';
 import DashboardTab from './DashboardTab';
+import DemoGuide, { type DemoNav } from './DemoGuide';
 import JourneyTab from './JourneyTab';
 import OutboxTab from './OutboxTab';
 import PolicyPanel from './PolicyPanel';
@@ -72,6 +73,16 @@ function RunViewInner({ id }: { id: string }) {
   const [askOpen, setAskOpen] = useState(false);
 
   const tab = (params.get('tab') as TabId) || 'overview';
+  const demoStep = params.get('demo') ? Math.max(1, parseInt(params.get('demo')!, 10) || 1) : null;
+  const demoNav = useCallback(
+    (step: number, nav: DemoNav) => {
+      const q = new URLSearchParams(params.toString());
+      for (const [k, v] of Object.entries(nav.query)) v === null ? q.delete(k) : q.set(k, v);
+      q.set('demo', String(step));
+      router.push(`/run/${nav.runId ?? id}?${q.toString()}`, { scroll: false });
+    },
+    [id, params, router],
+  );
   const selectedKey = params.get('a');
 
   const setQuery = useCallback(
@@ -177,6 +188,9 @@ function RunViewInner({ id }: { id: string }) {
             <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">v{data.version}</span>
             {data.version > 1 && <span className="hidden md:inline"> · {data.label}</span>}
           </div>
+          <Button variant="secondary" className="hidden sm:inline-flex" onClick={() => setQuery({ demo: '1', tab: 'overview', a: null, changed: null })} title="A guided walkthrough of the key features">
+            ▶ Demo
+          </Button>
           <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => setShowHistory(true)}>
             History
           </Button>
@@ -307,6 +321,7 @@ function RunViewInner({ id }: { id: string }) {
           }}
         />
       )}
+      {demoStep && <DemoGuide id={id} data={data} step={demoStep} onNav={demoNav} onExit={() => setQuery({ demo: null })} />}
       {showHistory && <HistoryPanel runId={id} currentId={id} onClose={() => setShowHistory(false)} />}
     </div>
   );

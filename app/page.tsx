@@ -1,4 +1,5 @@
 import { Eyebrow, Headline, Logo, Reveal } from '@/components/ui';
+import DemoStartButton from '@/components/DemoStartButton';
 import UploadPanel from '@/components/UploadPanel';
 
 export default function Home() {
@@ -36,6 +37,9 @@ export default function Home() {
           </Reveal>
           <Reveal delay={240} className="mx-auto mt-9 max-w-2xl text-left">
             <UploadPanel />
+          </Reveal>
+          <Reveal delay={320} className="mt-6 flex justify-center">
+            <DemoStartButton />
           </Reveal>
         </div>
       </main>

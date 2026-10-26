@@ -78,6 +78,8 @@ export default function DashboardTab({
         <Kpi label="Info requests to send" value={ins.impact.holds} delay={180} sub="holds with a ready message" />
       </div>
 
+      <ImpactStrip result={r} />
+
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Outcome mix */}
         <Tile title="Outcome mix" className="lg:col-span-2" delay={220} action={<button onClick={() => onTab('decisions')} className="text-xs text-slate-500 transition hover:text-brand-700">All decisions →</button>}>
@@ -235,5 +237,51 @@ export default function DashboardTab({
 
       {ins.concentrationWarning && <p className="animate-fade-up rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">⚠ {ins.concentrationWarning}</p>}
     </div>
+  );
+}
+
+/** "Without vs with" strip: what this run did that a manual process usually does not. Every number is counted from the run. */
+function ImpactStrip({ result }: { result: RunResult }) {
+  const ds = result.decisions.filter((d) => !d.withdrawn);
+  const holds = ds.filter((d) => d.outcome === 'HOLD').length;
+  const redirected = ds.filter((d) => (d.outcome === 'WAITLISTED' || d.outcome === 'REJECTED') && d.redirects.length).length;
+  const reserved = ds.filter((d) => d.reservation && d.reservation.status !== 'Expired').length;
+  const plans = ds.filter((d) => d.onboarding).length;
+  const caught = ds.reduce((n, d) => n + d.flags.filter((f) => f.severity !== 'INFO').length, 0) + result.dataIssues.filter((i) => i.scope !== 'application' && i.severity !== 'INFO').length;
+  const langs = new Set(ds.map((d) => d.language)).size;
+  const items = [
+    { n: ds.length, label: 'applications decided with reasons', usually: 'reviewed one by one, often over days', now: `each with a traceable reason, in ${result.durationMs < 1000 ? 'under a second' : `${(result.durationMs / 1000).toFixed(1)} s`}` },
+    { n: holds, label: 'holds with a specific ask', usually: '"on hold" with no clear ask, and applicants drift away', now: `exactly what is missing, a deadline, and a message in ${langs} language${langs === 1 ? '' : 's'}` },
+    { n: redirected, label: 'strong applicants redirected', usually: 'rejected or left waiting when their pin was taken', now: 'offered a free slot elsewhere, with where they would rank' },
+    { n: reserved, label: 'slots protected by reservations', usually: 'approved partners stall and block slots for months', now: '30-day reservations; lapsed slots pass to the waitlist automatically' },
+    { n: plans, label: 'dated onboarding plans', usually: 'partners open unprepared', now: 'training matched to experience, documents and a readiness check before opening' },
+    { n: caught, label: 'data problems caught', usually: 'contradictions slip through to the agreement stage', now: 'flagged up front: pin/city mismatches, missing sizes, duplicates, timeline conflicts' },
+  ];
+  return (
+    <section className="animate-fade-up rounded-3xl border border-slate-200 bg-surface/75 p-5 shadow-card backdrop-blur-xl" style={{ animationDelay: '200ms' }}>
+      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Impact on this run · without vs with Opsmith</h3>
+        <span className="text-xs text-slate-500">Every number is counted from this run</span>
+      </div>
+      <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {items.map((it, i) => (
+          <li key={it.label} className="group rounded-2xl border border-slate-200 bg-canvas/40 p-4 transition duration-300 hover:-translate-y-0.5 hover:border-brand-400" style={{ animationDelay: `${260 + i * 60}ms` }}>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-semibold italic text-ink">
+                <CountUp value={it.n} />
+              </span>
+              <span className="text-sm text-slate-700">{it.label}</span>
+            </div>
+            <div className="mt-2 text-xs leading-relaxed text-slate-500">
+              <span className="line-through decoration-rose-500/60">{it.usually}</span>
+            </div>
+            <div className="mt-1 text-xs leading-relaxed text-slate-800">
+              <span className="font-semibold text-brand-700">Now: </span>
+              {it.now}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
